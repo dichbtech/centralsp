@@ -490,11 +490,6 @@
         var btnAcoes = '<button class="btn-admin-icon btn-admin-edit" onclick="toggleEditRow(this)" title="Editar"><i class="fas fa-pencil-alt"></i></button>' +
                        '<button class="btn-admin-icon btn-admin-del" onclick="this.closest(\'tr\').remove()" title="Excluir"><i class="fas fa-trash"></i></button>';
 
-        // Bloqueia edição do próprio email para o admin não se excluir por engano
-        if (item.email === usuarioLogadoEmail) {
-            btnAcoes = '<span style="color: var(--text-sub); font-size: 13px; font-weight: 600;"><i class="fas fa-lock"></i> Segurança</span>';
-        }
-
         tr.innerHTML = 
             `<td><input type="text" class="admin-input inp-email" value="${item.email || ''}" readonly placeholder="exemplo@gmail.com"></td>` +
             `<td><input type="text" class="admin-input inp-nick" value="${item.nick || ''}" placeholder="Nick no Habbo..." readonly></td>` +
