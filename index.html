@@ -5,17 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Central de Sistemas - Supervisores</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* Paleta de Cores - Supervisores */
+        /* =======================================================
+           VARIÁVEIS GLOBAIS (TEMA SUPERVISORES - INSPIRADO NA DIC)
+           ======================================================= */
         :root {
-            --bg-color: #0f172a; /* Fundo principal escuro */
-            --sidebar-bg: #1e293b; /* Fundo da barra lateral */
-            --primary-color: #fbbf24; /* Dourado/Amarelo para destaque */
-            --primary-hover: #f59e0b;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
+            /* Cores Login DIC adaptadas para Supervisores */
+            --bg-deep: #070707;
+            --bg-panel: #111111;
+            --sup-neon: #fbbf24; /* Dourado/Amarelo */
+            --sup-glow: rgba(251, 191, 36, 0.4);
+            --sup-dark: #4a3800;
+            --text-main: #f4f4f4;
+            --text-sub: #a3a3a3;
+            --font-ui: 'Rajdhani', sans-serif;
+            --font-dash: 'Roboto', sans-serif;
+            --border-tech: 1px solid rgba(251, 191, 36, 0.3);
+
+            /* Cores Dashboard Original */
+            --sidebar-bg: #1e293b; 
             --card-bg: #1e293b;
             --border-color: #334155;
             --danger-color: #ef4444;
@@ -25,103 +36,164 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-light);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             height: 100vh;
             display: flex;
             overflow: hidden;
+            font-family: var(--font-dash);
         }
 
-        /* TELA DE LOGIN */
+        /* Efeito de Fundo Radial do Login */
+        body::before { 
+            content: ''; 
+            position: fixed; 
+            top: 50%; left: 50%; 
+            width: 150vw; height: 150vh; 
+            transform: translate(-50%, -50%); 
+            background: radial-gradient(circle at center, rgba(251, 191, 36, 0.08) 0%, transparent 60%); 
+            pointer-events: none; 
+            z-index: -1; 
+        }
+
+        /* =======================================================
+           TELA DE LOGIN (DESIGN DIC)
+           ======================================================= */
         #login-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--bg-color);
-            position: absolute;
-            z-index: 1000;
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: var(--bg-deep); 
+            z-index: 99999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            flex-direction: column; 
+            transition: opacity 0.3s;
+            font-family: var(--font-ui);
         }
 
-        .login-box {
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid var(--border-color);
+        .login-card {
+            background: var(--bg-panel); 
+            border: 1px solid var(--sup-neon); 
+            padding: 50px 40px; 
+            border-radius: 12px; 
+            text-align: center; 
+            box-shadow: 0 0 40px var(--sup-glow); 
+            max-width: 400px; 
+            width: 90%; 
         }
 
-        .login-box h2 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
+        .login-card img { 
+            width: 80px; 
+            filter: drop-shadow(0 0 10px var(--sup-neon)); 
+            margin-bottom: 25px; 
         }
 
-        .form-group {
+        .login-card h2 { 
+            color: #fff; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 10px; 
+            font-size: 26px; 
+            font-weight: 700;
+        }
+
+        .login-card p { 
+            color: var(--text-sub); 
+            margin-bottom: 35px; 
+            font-size: 16px; 
+            font-weight: 500; 
+            letter-spacing: 1px;
+        }
+
+        .input-block-login {
+            position: relative; 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid rgba(251, 191, 36, 0.15); 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 15px; 
             margin-bottom: 15px;
-            text-align: left;
+            transition: all 0.3s; 
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: var(--text-muted);
+        .input-block-login:focus-within { 
+            border-color: var(--sup-neon); 
+            box-shadow: 0 0 12px var(--sup-glow); 
         }
 
-        .form-group input {
+        .input-block-login i { 
+            color: var(--sup-neon); 
+            font-size: 16px; 
+            width: 25px;
+        }
+
+        .input-block-login input { 
+            width: 100%; 
+            background: transparent; 
+            border: none; 
+            color: var(--text-main); 
+            font-size: 16px; 
+            font-family: var(--font-ui); 
+            font-weight: 500; 
+            padding: 15px 10px; 
+            outline: none; 
+            letter-spacing: 1px; 
+        }
+
+        .btn-tech { 
+            background: rgba(251, 191, 36, 0.05); 
+            border: 1px solid var(--sup-neon); 
+            border-color: rgba(251, 191, 36, 0.5); 
+            color: var(--text-main); 
+            padding: 14px; 
+            border-radius: 6px; 
+            font-family: var(--font-ui); 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            transition: all 0.3s; 
             width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            color: var(--text-light);
-            outline: none;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary-color);
-        }
-
-        button.btn-primary {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: #000;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
             margin-top: 10px;
         }
 
-        button.btn-primary:hover {
-            background-color: var(--primary-hover);
+        .btn-tech:hover { 
+            background: var(--sup-neon); 
+            border-color: var(--sup-neon); 
+            color: #000; 
+            box-shadow: 0 0 20px var(--sup-glow); 
         }
 
         #login-error {
-            color: var(--danger-color);
-            font-size: 14px;
-            margin-top: 10px;
+            color: #ff2a2a;
+            font-size: 15px;
+            margin-top: 15px;
             display: none;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(255, 42, 42, 0.4);
         }
 
-        /* PAINEL PRINCIPAL (SIDEBAR + CONTEÚDO) */
+        /* =======================================================
+           PAINEL PRINCIPAL (SIDEBAR + CONTEÚDO ORIGINAL)
+           ======================================================= */
         #dashboard {
             display: none;
             width: 100%;
             height: 100%;
+            background-color: #0f172a; /* Mantido do original para o painel */
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
@@ -139,8 +211,10 @@
         }
 
         .sidebar-header h3 {
-            color: var(--primary-color);
+            color: var(--sup-neon);
             font-size: 18px;
+            font-family: var(--font-ui);
+            letter-spacing: 2px;
         }
 
         .sidebar-menu {
@@ -151,15 +225,18 @@
         .sidebar-menu li {
             padding: 15px 20px;
             cursor: pointer;
-            color: var(--text-muted);
+            color: var(--text-sub);
             border-left: 3px solid transparent;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .sidebar-menu li:hover, .sidebar-menu li.active {
             background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
-            border-left-color: var(--primary-color);
+            color: var(--text-main);
+            border-left-color: var(--sup-neon);
         }
 
         .sidebar-footer {
@@ -176,6 +253,8 @@
             border-radius: 4px;
             cursor: pointer;
             transition: 0.3s;
+            font-family: var(--font-dash);
+            font-weight: bold;
         }
 
         .sidebar-footer button:hover {
@@ -183,31 +262,18 @@
             color: #fff;
         }
 
-        /* ÁREA DE CONTEÚDO */
         .content {
             flex-grow: 1;
             padding: 40px;
             overflow-y: auto;
         }
 
-        .content-header {
-            margin-bottom: 30px;
-        }
+        .content-header { margin-bottom: 30px; }
+        .content-header h1 { font-size: 24px; font-weight: 500; }
+        
+        .module-section { display: none; }
+        .module-section.active { display: block; }
 
-        .content-header h1 {
-            font-size: 24px;
-            font-weight: 500;
-        }
-
-        .module-section {
-            display: none;
-        }
-
-        .module-section.active {
-            display: block;
-        }
-
-        /* CARD DO CALCULADOR DE AVAIS */
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -216,27 +282,51 @@
             max-width: 600px;
         }
 
-        .row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+        .row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .row .form-group { flex: 1; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-sub);
         }
 
-        .row .form-group {
-            flex: 1;
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: #0f172a;
+            color: var(--text-main);
+            outline: none;
         }
+
+        .form-group input:focus { border-color: var(--sup-neon); }
+
+        .btn-primary {
+            background-color: var(--sup-neon);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover { background-color: #f59e0b; }
 
         #resultado-aval {
             margin-top: 20px;
             padding: 15px;
             background-color: rgba(251, 191, 36, 0.1);
-            border: 1px solid var(--primary-color);
+            border: 1px solid var(--sup-neon);
             border-radius: 4px;
             display: none;
         }
 
         #resultado-aval h4 {
-            color: var(--primary-color);
+            color: var(--sup-neon);
             margin-bottom: 5px;
         }
     </style>
@@ -244,18 +334,25 @@
 <body>
 
     <div id="login-screen">
-        <div class="login-box">
-            <h2>Central dos Supervisores</h2>
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" placeholder="email@exemplo.com">
+        <div class="login-card">
+            <img src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" alt="Logo Supervisores">
+            <h2>Central de Sistemas</h2>
+            <p>Acesso restrito à Liderança dos Supervisores</p>
+
+            <div class="input-block-login">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="E-mail de acesso" autocomplete="off">
             </div>
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="Sua senha">
+            
+            <div class="input-block-login">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Senha do sistema">
             </div>
-            <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
-            <p id="login-error">Credenciais inválidas ou sem permissão.</p>
+
+            <button class="btn-tech" onclick="fazerLogin()">
+                <i class="fas fa-sign-in-alt"></i> Autenticar
+            </button>
+            <p id="login-error"><i class="fas fa-exclamation-triangle"></i> Credenciais inválidas.</p>
         </div>
     </div>
 
@@ -263,14 +360,14 @@
         <nav class="sidebar">
             <div class="sidebar-header">
                 <h3>SUPERVISORES</h3>
-                <span style="font-size: 12px; color: var(--text-muted)">Painel Administrativo</span>
+                <span style="font-size: 12px; color: var(--text-sub)">Painel Administrativo</span>
             </div>
             <ul class="sidebar-menu">
-                <li class="active" onclick="mudarModulo('modulo-avais', this)">Cálculo de Avais</li>
-                <li onclick="mudarModulo('modulo-futuro', this)">Sistema Futuro</li>
+                <li class="active" onclick="mudarModulo('modulo-avais', this)"><i class="fas fa-calculator"></i> Cálculo de Avais</li>
+                <li onclick="mudarModulo('modulo-futuro', this)"><i class="fas fa-cogs"></i> Sistema Futuro</li>
             </ul>
             <div class="sidebar-footer">
-                <button onclick="fazerLogout()">Sair da Central</button>
+                <button onclick="fazerLogout()"><i class="fas fa-sign-out-alt"></i> Sair da Central</button>
             </div>
         </nav>
 
@@ -278,7 +375,7 @@
             <section id="modulo-avais" class="module-section active">
                 <div class="content-header">
                     <h1>Cálculo Automático de Avais</h1>
-                    <p style="color: var(--text-muted); margin-top: 5px;">Calcule os dias de ausência desconsiderando o período congelado pelo aval.</p>
+                    <p style="color: var(--text-sub); margin-top: 5px;">Calcule os dias de ausência desconsiderando o período congelado pelo aval.</p>
                 </div>
 
                 <div class="card">
@@ -316,7 +413,7 @@
             <section id="modulo-futuro" class="module-section">
                 <div class="content-header">
                     <h1>Novo Sistema</h1>
-                    <p style="color: var(--text-muted); margin-top: 5px;">Em desenvolvimento...</p>
+                    <p style="color: var(--text-sub); margin-top: 5px;">Em desenvolvimento...</p>
                 </div>
                 <div class="card">
                     <p>Este espaço está reservado para os próximos sistemas que você desenvolverá para os Sps.</p>
@@ -355,13 +452,19 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 // Usuário logado
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'flex';
-                // Preenche a data de consulta com a data de hoje automaticamente
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'flex';
+                }, 300);
+                
                 document.getElementById('data-consulta').valueAsDate = new Date();
             } else {
                 // Usuário não logado
                 document.getElementById('login-screen').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.opacity = '1';
+                }, 10);
                 document.getElementById('dashboard').style.display = 'none';
             }
         });
@@ -372,18 +475,28 @@
             const errorElement = document.getElementById('login-error');
 
             if(!email || !password) {
-                errorElement.innerText = "Preencha todos os campos.";
+                errorElement.innerHTML = "<i class='fas fa-exclamation-triangle'></i> Preencha todos os campos.";
                 errorElement.style.display = "block";
                 return;
             }
 
+            // Efeito visual no botão durante o login
+            const btn = document.querySelector('.btn-tech');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Autenticando...";
+            btn.style.pointerEvents = 'none';
+
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
                     errorElement.style.display = "none";
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
                 })
                 .catch((error) => {
-                    errorElement.innerText = "Credenciais inválidas ou usuário sem permissão.";
+                    errorElement.innerHTML = "<i class='fas fa-exclamation-triangle'></i> E-mail ou senha incorretos.";
                     errorElement.style.display = "block";
+                    btn.innerHTML = originalText;
+                    btn.style.pointerEvents = 'auto';
                     console.error(error);
                 });
         }
@@ -392,16 +505,20 @@
             auth.signOut();
         }
 
+        // Permitir login apertando "Enter"
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                fazerLogin();
+            }
+        });
+
         // ==========================================
         // NAVEGAÇÃO DA BARRA LATERAL
         // ==========================================
         function mudarModulo(idModulo, elementoMenu) {
-            // Esconde todas as sessões
             document.querySelectorAll('.module-section').forEach(el => el.classList.remove('active'));
-            // Remove a classe active de todos os itens do menu
             document.querySelectorAll('.sidebar-menu li').forEach(el => el.classList.remove('active'));
             
-            // Ativa a sessão clicada
             document.getElementById(idModulo).classList.add('active');
             elementoMenu.classList.add('active');
         }
@@ -420,7 +537,6 @@
                 return;
             }
 
-            // O input type="date" retorna "AAAA-MM-DD". Vamos converter diretamente para Date considerando o fuso horário local para evitar bugs de virada de dia.
             const ultimoLogin = new Date(dataLoginStr + 'T00:00:00');
             const inicioAval = new Date(dataAvalStr + 'T00:00:00');
             const dataConsulta = new Date(dataConsultaStr + 'T00:00:00');
