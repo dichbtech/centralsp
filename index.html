@@ -77,7 +77,6 @@
     .admin-table { width: 100%; border-collapse: collapse; text-align: left; }
     .admin-table th { color: var(--text-sub); background: rgba(0,0,0,0.4); padding: 18px 15px; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid rgba(251, 191, 36, 0.2); white-space: nowrap; }
     .admin-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; transition: background 0.3s; }
-    .admin-table tr:hover td { background: rgba(251, 191, 36, 0.03); }
     .admin-input { width: 100%; background: transparent; border: 1px solid transparent; color: #fff; font-family: var(--font-ui); font-size: 15px; padding: 8px 12px; border-radius: 6px; outline: none; transition: all 0.3s; font-weight: 500; }
     .admin-input[readonly] { opacity: 0.6; cursor: default; }
     .admin-input:not([readonly]) { background: rgba(0,0,0,0.6); border: 1px solid var(--dynamic-neon); }
@@ -90,8 +89,6 @@
     .btn-tech { background: rgba(251, 191, 36, 0.05); border: 1px solid var(--dynamic-neon); border-color: rgba(251, 191, 36, 0.5); color: var(--text-main); padding: 12px 24px; border-radius: 6px; font-family: var(--font-ui); font-size: 15px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
     .btn-tech:hover { background: var(--dynamic-neon); border-color: var(--dynamic-neon); color: #000; box-shadow: 0 0 15px var(--dynamic-glow); }
     .admin-controls-bottom { display: flex; gap: 15px; margin-top: 25px; align-items: center; justify-content: flex-end; }
-    .btn-add { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--dynamic-neon); }
-    .btn-add:hover { background: rgba(251, 191, 36, 0.2); border-color: var(--dynamic-neon); }
     .btn-save { background: var(--dynamic-neon); color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
     .btn-save:hover { background: #f59e0b; transform: translateY(-2px); }
 
@@ -128,9 +125,10 @@
     .sponsor-avatar img { position: absolute; pointer-events: none; } 
     .sponsor-text { font-size: 13px; color: var(--text-sub); line-height: 1.5; font-style: italic; background: rgba(251,191,36,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid var(--sup-neon); margin-top: auto;}
 
-    /* Classes Infalíveis para a Edição */
-    .draggable-item { position: absolute; z-index: 5; image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
+    /* Classes Infalíveis para Edição de Drag & Drop */
+    .draggable-item { position: absolute; z-index: 5; image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); user-select: none; }
     
+    /* Força Absoluta no Display durante a Edição */
     .draggable-item.edit-mode { 
         cursor: move !important; 
         outline: 2px dashed #ff2a2a !important; 
@@ -266,7 +264,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="margin:0;"><i class="fas fa-bullseye"></i> Consulta de Metas - <span id="meta-week-title" style="color:#fff;">Carregando...</span></h3>
             <div id="admin-drag-controls" style="display: none; gap: 10px; align-items: center;">
-                <span id="dica-resize" style="display:none; color:var(--text-sub); font-size:12px; margin-right:10px;"><i class="fas fa-mouse"></i> Arraste e use Scroll para redimensionar</span>
+                <span id="dica-resize" style="display:none; color:var(--text-sub); font-size:12px; margin-right:10px;"><i class="fas fa-mouse"></i> Arraste os itens e use o Scroll para redimensionar</span>
                 <button class="btn-tech" onclick="abrirDashboard()" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
                 <button class="btn-tech" onclick="toggleEditMode()" id="btn-edit-pos" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-arrows-alt"></i> Editar Posições</button>
                 <button class="btn-tech btn-save" onclick="savePositions()" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-save"></i> Salvar Layout</button>
@@ -413,7 +411,7 @@
     let usuarioLogadoEmail = ''; let nivelUsuarioGlobal = 'COMUM'; let acessosData = [];
     let membrosDataArray = []; let eventoAtivo = false; let eventoMult = 1;
     
-    // Posições Padrão
+    // Posições Padrão Iniciais
     let layoutConfig = {
         'img-podio-base': { left: '100px', top: '150px', width: 'auto' },
         'avatar-1': { left: '175px', top: '50px', width: 'auto' },
@@ -440,7 +438,11 @@
         document.getElementById('data-consulta').valueAsDate = new Date();
         const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         document.getElementById('mes-atual').innerText = meses[new Date().getMonth()] + " de " + new Date().getFullYear();
-        carregarLayoutConfig(); escutarConfigDashboard(); escutarMetasDoFirebase();
+        
+        carregarLayoutConfig();
+        escutarConfigDashboard(); 
+        escutarMetasDoFirebase();
+        setupAllDraggables(); // Inicializa o motor de arrasto infalível
     }
 
     auth.onAuthStateChanged((user) => {
@@ -557,6 +559,7 @@
     // SISTEMA NATIVO DE ARRASTAR E REDIMENSIONAR INFALÍVEL
     // ==========================================
     function aplicarPosicoes() {
+        // Aplica posições do Config para a tela visualmente
         for(let id in layoutConfig) {
             if(id === 'sponsorInner') continue; 
             let el = document.getElementById(id);
@@ -564,7 +567,6 @@
                 if(layoutConfig[id].left) el.style.left = layoutConfig[id].left; 
                 if(layoutConfig[id].top) el.style.top = layoutConfig[id].top; 
                 if(layoutConfig[id].width) el.style.width = layoutConfig[id].width;
-                makeDraggableAndResizable(el, id); 
             }
         }
         aplicarSponsorInner();
@@ -588,6 +590,14 @@
         });
     }
 
+    function savePositions() {
+        if(nivelUsuarioGlobal !== 'ADMIN') return;
+        db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, {merge: true}).then(() => {
+            mostrarToastAdmin("Posições e Tamanhos salvos!");
+            if(isEditMode) toggleEditMode();
+        });
+    }
+
     function toggleEditMode() {
         isEditMode = !isEditMode;
         let btn = document.getElementById('btn-edit-pos');
@@ -601,10 +611,10 @@
             btn.style.borderColor = '#ef4444'; btn.style.color = '#ef4444';
             dica.style.display = 'inline';
             
-            // 1. Força as caixas a aparecerem para criar as dimensões físicas no navegador
+            // Força a exibição da área de membro para edição
             areaDet.style.display = 'flex'; areaDet.style.opacity = '1';
 
-            // 2. Coloca avatares provisórios (Placeholder) para não clicar no vento
+            // Avatares provisórios garantem que a imagem não fique invisível na edição
             let fallbacks = [
                 {id: 'avatar-1', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
                 {id: 'avatar-2', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
@@ -616,17 +626,12 @@
                 if(!img.src || img.src.endsWith('=')) img.src = f.src;
             });
 
-            // 3. Adiciona classes que forçam bloqueio de ponteiro e visualização
+            // Adiciona as classes que forçam visualização
             elsDrag.forEach(e => { 
                 e.classList.add('edit-mode'); 
-                // Evita que o script sobreponha o display flex de divs
                 if(e.tagName === 'IMG' || e.tagName === 'DIV') e.style.display = 'block'; 
             }); 
-            
-            elsSponImg.forEach(img => { 
-                img.classList.add('sponsor-edit', 'edit-mode'); 
-                makeSponsorInnerDraggable(img);
-            });
+            elsSponImg.forEach(img => { img.classList.add('sponsor-edit', 'edit-mode'); });
             
         } else {
             btn.innerHTML = '<i class="fas fa-arrows-alt"></i> Editar Posições';
@@ -655,100 +660,115 @@
         }
     }
 
-    function savePositions() {
-        if(nivelUsuarioGlobal !== 'ADMIN') return;
-        db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, {merge: true}).then(() => {
-            mostrarToastAdmin("Posições e Tamanhos salvos!");
-            if(isEditMode) toggleEditMode();
+    // Função Única de Arrasto e Resize - Anexa Eventos Globalmente
+    function setupAllDraggables() {
+        // Varre itens arrastáveis
+        document.querySelectorAll('.draggable-item').forEach(el => {
+            if(el.dataset.dragReady) return;
+            el.dataset.dragReady = "true";
+            el.ondragstart = () => false;
+
+            el.addEventListener('mousedown', (e) => {
+                if(!isEditMode) return;
+                e.preventDefault(); e.stopPropagation();
+
+                let startX = e.clientX;
+                let startY = e.clientY;
+                // getComputedStyle pega exatamente o pixel que a imagem está na tela agora
+                let style = window.getComputedStyle(el);
+                let startLeft = parseFloat(style.left) || 0;
+                let startTop = parseFloat(style.top) || 0;
+
+                const onMouseMove = (moveEvent) => {
+                    moveEvent.preventDefault();
+                    let dx = moveEvent.clientX - startX;
+                    let dy = moveEvent.clientY - startY;
+                    el.style.left = (startLeft + dx) + 'px';
+                    el.style.top = (startTop + dy) + 'px';
+                };
+
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                    // Salva a nova posição
+                    let idKey = el.id;
+                    if(idKey) {
+                        layoutConfig[idKey] = layoutConfig[idKey] || {};
+                        layoutConfig[idKey].left = el.style.left;
+                        layoutConfig[idKey].top = el.style.top;
+                    }
+                };
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            // Lógica de aumentar e diminuir usando o scroll
+            el.addEventListener('wheel', (e) => {
+                if(!isEditMode) return;
+                e.preventDefault(); e.stopPropagation();
+                let currentWidth = parseFloat(window.getComputedStyle(el).width) || el.offsetWidth;
+                currentWidth += e.deltaY < 0 ? 5 : -5;
+                if(currentWidth < 15) currentWidth = 15;
+                el.style.width = currentWidth + 'px';
+
+                let idKey = el.id;
+                if(idKey) {
+                    layoutConfig[idKey] = layoutConfig[idKey] || {};
+                    layoutConfig[idKey].width = el.style.width;
+                }
+            }, { passive: false });
         });
     }
 
-    // Motor de Arrasto Baseado na Posição Renderizada Real (offsetLeft/Top)
-    function makeDraggableAndResizable(el, idKey) {
-        // Previne chamadas duplas
-        el.onmousedown = function(e) {
-            if (!isEditMode) return;
-            e.preventDefault(); 
-            
-            var startX = e.clientX;
-            var startY = e.clientY;
-            
-            // Lê exatamente a coordenada do pixel em que a imagem está gerada
-            var initialLeft = el.offsetLeft;
-            var initialTop = el.offsetTop;
+    function setupSponsorInnerDraggable() {
+        document.querySelectorAll('.sponsor-avatar img').forEach(img => {
+            if (img.dataset.dragReady) return;
+            img.dataset.dragReady = "true";
+            img.ondragstart = () => false;
 
-            document.onmousemove = function(moveEvent) {
-                var dx = moveEvent.clientX - startX;
-                var dy = moveEvent.clientY - startY;
-                el.style.left = (initialLeft + dx) + "px";
-                el.style.top = (initialTop + dy) + "px";
-            };
+            img.addEventListener('mousedown', (e) => {
+                if(!isEditMode) return;
+                e.preventDefault(); e.stopPropagation();
 
-            document.onmouseup = function() {
-                document.onmousemove = null;
-                document.onmouseup = null;
-                layoutConfig[idKey] = layoutConfig[idKey] || {};
-                layoutConfig[idKey].left = el.style.left;
-                layoutConfig[idKey].top = el.style.top;
-            };
-        };
+                let startX = e.clientX;
+                let startY = e.clientY;
+                let style = window.getComputedStyle(img);
+                let startLeft = parseFloat(style.left) || 0;
+                let startTop = parseFloat(style.top) || 0;
 
-        el.onwheel = function(e) {
-            if (!isEditMode) return;
-            e.preventDefault(); 
-            var currentWidth = el.offsetWidth;
-            
-            if (e.deltaY < 0) currentWidth += 5; // scroll pra cima aumenta
-            else currentWidth -= 5;              // scroll pra baixo diminui
-            
-            if (currentWidth < 15) currentWidth = 15;
-            el.style.width = currentWidth + "px";
-            
-            layoutConfig[idKey] = layoutConfig[idKey] || {};
-            layoutConfig[idKey].width = el.style.width;
-        };
-    }
+                const onMouseMove = (moveEvent) => {
+                    moveEvent.preventDefault();
+                    let dx = moveEvent.clientX - startX;
+                    let dy = moveEvent.clientY - startY;
+                    
+                    layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
+                    layoutConfig['sponsorInner'].left = (startLeft + dx) + 'px';
+                    layoutConfig['sponsorInner'].top = (startTop + dy) + 'px';
+                    aplicarSponsorInner();
+                };
 
-    // Motor Isolado só para a foto interna dos patrocinadores
-    function makeSponsorInnerDraggable(el) {
-        el.onmousedown = function(e) {
-            if (!isEditMode) return;
-            e.preventDefault(); 
-            
-            var startX = e.clientX;
-            var startY = e.clientY;
-            var initialLeft = el.offsetLeft;
-            var initialTop = el.offsetTop;
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
 
-            document.onmousemove = function(moveEvent) {
-                var dx = moveEvent.clientX - startX;
-                var dy = moveEvent.clientY - startY;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            img.addEventListener('wheel', (e) => {
+                if(!isEditMode) return;
+                e.preventDefault(); e.stopPropagation();
+                let currentWidth = parseFloat(window.getComputedStyle(img).width) || img.offsetWidth;
+                currentWidth += e.deltaY < 0 ? 3 : -3;
+                if(currentWidth < 10) currentWidth = 10;
                 
                 layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
-                layoutConfig['sponsorInner'].left = (initialLeft + dx) + "px";
-                layoutConfig['sponsorInner'].top = (initialTop + dy) + "px";
+                layoutConfig['sponsorInner'].width = currentWidth + 'px';
                 aplicarSponsorInner();
-            };
-
-            document.onmouseup = function() {
-                document.onmousemove = null;
-                document.onmouseup = null;
-            };
-        };
-
-        el.onwheel = function(e) {
-            if (!isEditMode) return;
-            e.preventDefault(); 
-            var currentWidth = el.offsetWidth;
-            
-            if (e.deltaY < 0) currentWidth += 3;
-            else currentWidth -= 3;
-            
-            if (currentWidth < 10) currentWidth = 10;
-            layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
-            layoutConfig['sponsorInner'].width = currentWidth + "px";
-            aplicarSponsorInner();
-        };
+            }, { passive: false });
+        });
     }
 
     // ==========================================
@@ -797,9 +817,10 @@
             container.innerHTML += `<div class="sponsor-avatar" title="${limpo}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${limpo}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div>`;
         });
         aplicarSponsorInner();
+        setupSponsorInnerDraggable(); // Garante que as fotos novas fiquem arrastáveis
         if(isEditMode) {
             document.querySelectorAll('.sponsor-avatar img').forEach(img => { 
-                img.classList.add('sponsor-edit', 'edit-mode'); makeSponsorInnerDraggable(img); 
+                img.classList.add('sponsor-edit', 'edit-mode');
             });
         }
     }
