@@ -124,14 +124,29 @@
     
     .sponsor-list { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
     .sponsor-avatar { width: 50px; height: 50px; background: rgba(0,0,0,0.6); border: 1px solid rgba(251,191,36,0.3); border-radius: 8px; overflow: hidden; position: relative; }
-    .sponsor-avatar img { position: absolute; /* Controle interno do avatar */ }
+    .sponsor-avatar img { position: absolute; pointer-events: none; } 
     .sponsor-text { font-size: 13px; color: var(--text-sub); line-height: 1.5; font-style: italic; background: rgba(251,191,36,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid var(--sup-neon); margin-top: auto;}
 
-    /* Editáveis */
+    /* Editáveis com Força Máxima (!important) para garantir o clique e o visual */
     .draggable-item { position: absolute; z-index: 5; image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
-    .draggable-item.edit-mode { cursor: move; outline: 1px dashed rgba(255,255,255,0.5); filter: drop-shadow(0 0 10px rgba(251,191,36,0.8)); z-index: 100 !important; background: rgba(251,191,36,0.1); }
-    .sponsor-edit.edit-mode { cursor: move; outline: 1px dashed #fff; filter: drop-shadow(0 0 10px rgba(251,191,36,0.8)); z-index: 100 !important; pointer-events: auto !important; }
-    .medal-float.edit-mode { animation: none !important; } /* Pausa flutuador pra não bugar ao arrastar */
+    .draggable-item.edit-mode { 
+        cursor: move !important; 
+        outline: 2px dashed #ff2a2a !important; 
+        filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; 
+        z-index: 9999 !important; 
+        background: rgba(255,42,42,0.1) !important; 
+        pointer-events: auto !important; 
+    }
+    
+    .sponsor-edit.edit-mode { 
+        cursor: move !important; 
+        outline: 2px dashed #ff2a2a !important; 
+        filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; 
+        z-index: 9999 !important; 
+        pointer-events: auto !important; 
+    }
+
+    .medal-float.edit-mode { animation: none !important; } /* Pausa a animação ao editar */
 
     @keyframes floatMedal { 0% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } 50% { transform: translateY(-8px); filter: drop-shadow(0 0 15px rgba(255,255,255,1)); } 100% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } }
     .medal-float { animation: floatMedal 2.5s infinite ease-in-out; }
@@ -242,13 +257,13 @@
           
           <div id="evento-banner">
               <span><i class="fas fa-star" style="color: var(--sup-neon); font-size: 20px;"></i> <span id="evento-banner-txt">EVENTO ATIVO</span></span>
-              <span style="font-size: 13px; color: var(--sup-neon);"><i class="fas fa-info-circle"></i> Pontuações já multiplicadas</span>
+              <span style="font-size: 13px; color: var(--sup-neon);"><i class="fas fa-info-circle"></i> Pontuações multiplicadas</span>
           </div>
 
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="margin:0;"><i class="fas fa-bullseye"></i> Consulta de Metas - <span id="meta-week-title" style="color:#fff;">Carregando...</span></h3>
             <div id="admin-drag-controls" style="display: none; gap: 10px; align-items: center;">
-                <span id="dica-resize" style="display:none; color:var(--text-sub); font-size:12px; margin-right:10px;"><i class="fas fa-mouse"></i> Arraste os itens e use o Scroll para redimensionar</span>
+                <span id="dica-resize" style="display:none; color:var(--text-sub); font-size:12px; margin-right:10px;"><i class="fas fa-mouse"></i> Arraste e use Scroll para redimensionar</span>
                 <button class="btn-tech" onclick="abrirDashboard()" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
                 <button class="btn-tech" onclick="toggleEditMode()" id="btn-edit-pos" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-arrows-alt"></i> Editar Posições</button>
                 <button class="btn-tech btn-save" onclick="savePositions()" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-save"></i> Salvar Layout</button>
@@ -285,7 +300,7 @@
 
                 <div class="events-title" style="font-size: 15px;"><i class="fas fa-star"></i> Patrocinadores Oficiais</div>
                 <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px; position:relative;">
-                   <img src="https://www.habbo.com.br/habbo-imaging/badge/b09134s12017s55012t12014s4301414a5c32c3d12825df4b3496e1fb8ba98.gif" alt="Badge" style="width: 50px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));">
+                   <img src="https://www.habbo.com.br/habbo-imaging/badge/b09134s12017s55012t12014s4301414a5c32c3d12825df4b3496e1fb8ba98.gif" alt="Badge" style="width: 50px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); pointer-events: none;">
                    <div id="sponsors-container" class="sponsor-list"></div>
                 </div>
                 
@@ -395,7 +410,7 @@
     let usuarioLogadoEmail = ''; let nivelUsuarioGlobal = 'COMUM'; let acessosData = [];
     let membrosDataArray = []; let eventoAtivo = false; let eventoMult = 1;
     
-    // Posições Padrão
+    // Posições Padrão Iniciais
     let layoutConfig = {
         'img-podio-base': { left: '100px', top: '150px', width: 'auto' },
         'avatar-1': { left: '175px', top: '50px', width: 'auto' },
@@ -536,7 +551,7 @@
     }
 
     // ==========================================
-    // SISTEMA NATIVO DE ARRASTAR E REDIMENSIONAR
+    // SISTEMA NATIVO DE ARRASTAR E REDIMENSIONAR (CORRIGIDO)
     // ==========================================
     function aplicarPosicoes() {
         for(let id in layoutConfig) {
@@ -555,7 +570,9 @@
     function aplicarSponsorInner() {
         let conf = layoutConfig['sponsorInner'];
         document.querySelectorAll('.sponsor-avatar img').forEach(img => {
-            img.style.left = conf.left; img.style.top = conf.top; img.style.width = conf.width;
+            if(conf.left) img.style.left = conf.left; 
+            if(conf.top) img.style.top = conf.top; 
+            if(conf.width) img.style.width = conf.width;
         });
     }
 
@@ -581,10 +598,10 @@
             btn.style.borderColor = '#ef4444'; btn.style.color = '#ef4444';
             dica.style.display = 'inline';
             
-            // Força a exibição das áreas para poderem ser editadas
+            // Força a exibição da área de membro para edição
             areaDet.style.display = 'flex'; areaDet.style.opacity = '1';
 
-            // Coloca avatares falsos pra não ficarem invisíveis na hora de arrastar
+            // Avatares provisórios (Placeholder) garantem que a imagem não fique invisível na edição
             let fallbacks = [
                 {id: 'avatar-1', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
                 {id: 'avatar-2', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
@@ -596,7 +613,7 @@
                 if(!img.src || img.src.endsWith('=')) img.src = f.src;
             });
 
-            // Ativa classes de edição
+            // Adiciona as classes que criam a borda vermelha e liberam o pointer
             elsDrag.forEach(e => { 
                 e.classList.add('edit-mode'); 
                 if(e.tagName === 'IMG' || e.tagName === 'DIV') e.style.display = 'block'; 
@@ -611,21 +628,23 @@
             btn.innerHTML = '<i class="fas fa-arrows-alt"></i> Editar Posições';
             btn.style.borderColor = ''; btn.style.color = '';
             dica.style.display = 'none';
+            
             elsDrag.forEach(e => { e.classList.remove('edit-mode'); });
             elsSponImg.forEach(img => { img.classList.remove('sponsor-edit', 'edit-mode'); });
             
-            // Oculta area de membro se nenhum estiver selecionado
+            // Retorna a área do membro ao estado normal (esconde se estiver vazia)
             if(!document.getElementById('select-membro').value) {
                 areaDet.style.display = 'none'; areaDet.style.opacity = '0';
             } else { renderMemberDetails(); }
             
             processarPodio(); 
             
-            // Checa premiações para esconder de novo se for o caso
             db.collection("sistema").doc("config_metas").get().then((d) => {
                 if(d.exists) {
-                    document.getElementById('img-premio-hc').style.display = d.data().mostrarHC ? 'block' : 'none';
-                    document.getElementById('img-premio-moedas').style.display = d.data().mostrarMoedas ? 'block' : 'none';
+                    let hcelem = document.getElementById('img-premio-hc');
+                    let mcelem = document.getElementById('img-premio-moedas');
+                    if(hcelem) hcelem.style.display = d.data().mostrarHC ? 'block' : 'none';
+                    if(mcelem) mcelem.style.display = d.data().mostrarMoedas ? 'block' : 'none';
                 }
             });
         }
@@ -639,88 +658,121 @@
         });
     }
 
-    // Função Robust de Drag and Resize (Bloqueia scroll da página)
-    function makeDraggableAndResizable(elmnt, idKey) {
-        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        elmnt.ondragstart = function() { return false; }; 
+    function makeDraggableAndResizable(el, idKey) {
+        if (el.dataset.dragInitialized) return; // Evita dupla adição de eventos
+        el.dataset.dragInitialized = "true";
 
-        elmnt.onwheel = function(e) {
-            if(!isEditMode) return;
-            e.preventDefault(); e.stopPropagation();
-            let currentWidth = elmnt.offsetWidth || elmnt.clientWidth;
-            if(e.deltaY < 0) currentWidth += 5; // pra cima cresce
+        el.ondragstart = function() { return false; }; 
+
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        el.addEventListener('mousedown', function(e) {
+            if (!isEditMode) return;
+            e.preventDefault(); 
+            e.stopPropagation();
+            
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            // Garante captura correta da posição mesmo se display:none tiver bugado o offset do navegador
+            let currentLeftStr = el.style.left || (layoutConfig[idKey] && layoutConfig[idKey].left) || "0px";
+            let currentTopStr = el.style.top || (layoutConfig[idKey] && layoutConfig[idKey].top) || "0px";
+            initialLeft = parseFloat(currentLeftStr) || 0;
+            initialTop = parseFloat(currentTopStr) || 0;
+
+            function onMouseMove(moveEvent) {
+                if (!isDragging) return;
+                moveEvent.preventDefault();
+                let dx = moveEvent.clientX - startX;
+                let dy = moveEvent.clientY - startY;
+                
+                el.style.left = (initialLeft + dx) + "px";
+                el.style.top = (initialTop + dy) + "px";
+            }
+
+            function onMouseUp() {
+                isDragging = false;
+                layoutConfig[idKey] = layoutConfig[idKey] || {};
+                layoutConfig[idKey].left = el.style.left;
+                layoutConfig[idKey].top = el.style.top;
+                
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        el.addEventListener('wheel', function(e) {
+            if (!isEditMode) return;
+            e.preventDefault(); 
+            e.stopPropagation();
+            
+            let currentWidth = parseFloat(el.style.width) || parseFloat(layoutConfig[idKey] && layoutConfig[idKey].width) || el.offsetWidth || 50;
+            if (e.deltaY < 0) currentWidth += 5; // pra cima cresce
             else currentWidth -= 5;             // pra baixo diminui
-            if(currentWidth < 20) currentWidth = 20;
-            elmnt.style.width = currentWidth + "px";
+            if (currentWidth < 10) currentWidth = 10;
+            
+            el.style.width = currentWidth + "px";
             layoutConfig[idKey] = layoutConfig[idKey] || {};
-            layoutConfig[idKey].width = elmnt.style.width;
-        };
-
-        elmnt.onmousedown = function(e) {
-            if(!isEditMode) return;
-            e.preventDefault(); e.stopPropagation();
-            pos3 = e.clientX; pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-        };
-
-        function elementDrag(e) {
-            e.preventDefault();
-            pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
-            pos3 = e.clientX; pos4 = e.clientY;
-            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-        }
-
-        function closeDragElement() {
-            document.onmouseup = null; document.onmousemove = null;
-            layoutConfig[idKey] = layoutConfig[idKey] || {};
-            layoutConfig[idKey].left = elmnt.style.left;
-            layoutConfig[idKey].top = elmnt.style.top;
-        }
+            layoutConfig[idKey].width = el.style.width;
+        }, { passive: false });
     }
 
-    function makeSponsorInnerDraggable(elmnt) {
-        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        elmnt.ondragstart = function() { return false; };
+    function makeSponsorInnerDraggable(el) {
+        if (el.dataset.dragInitialized) return;
+        el.dataset.dragInitialized = "true";
+        el.ondragstart = function() { return false; };
 
-        elmnt.onwheel = function(e) {
-            if(!isEditMode) return;
+        let isDragging = false;
+        let startX, startY, initX, initY;
+
+        el.addEventListener('mousedown', function(e) {
+            if (!isEditMode) return;
             e.preventDefault(); e.stopPropagation();
-            let currentWidth = elmnt.offsetWidth || elmnt.clientWidth;
-            if(e.deltaY < 0) currentWidth += 3;
-            else currentWidth -= 3;
-            if(currentWidth < 10) currentWidth = 10;
-            elmnt.style.width = currentWidth + "px";
-            layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
-            layoutConfig['sponsorInner'].width = elmnt.style.width;
-            aplicarSponsorInner();
-        };
-
-        elmnt.onmousedown = function(e) {
-            if(!isEditMode) return;
-            e.preventDefault(); e.stopPropagation();
-            pos3 = e.clientX; pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-        };
-
-        function elementDrag(e) {
-            e.preventDefault();
-            pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
-            pos3 = e.clientX; pos4 = e.clientY;
-            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
             
-            layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
-            layoutConfig['sponsorInner'].left = elmnt.style.left;
-            layoutConfig['sponsorInner'].top = elmnt.style.top;
-            aplicarSponsorInner(); 
-        }
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            initX = parseFloat(layoutConfig['sponsorInner'].left) || 0;
+            initY = parseFloat(layoutConfig['sponsorInner'].top) || -10;
 
-        function closeDragElement() {
-            document.onmouseup = null; document.onmousemove = null;
-        }
+            function onMouseMove(moveEvent) {
+                if (!isDragging) return;
+                moveEvent.preventDefault();
+                let dx = moveEvent.clientX - startX;
+                let dy = moveEvent.clientY - startY;
+                
+                layoutConfig['sponsorInner'].left = (initX + dx) + "px";
+                layoutConfig['sponsorInner'].top = (initY + dy) + "px";
+                aplicarSponsorInner();
+            }
+
+            function onMouseUp() {
+                isDragging = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        el.addEventListener('wheel', function(e) {
+            if (!isEditMode) return;
+            e.preventDefault(); e.stopPropagation();
+            let currentWidth = parseFloat(layoutConfig['sponsorInner'].width) || 60;
+            if (e.deltaY < 0) currentWidth += 3;
+            else currentWidth -= 3;
+            if (currentWidth < 10) currentWidth = 10;
+            
+            layoutConfig['sponsorInner'].width = currentWidth + "px";
+            aplicarSponsorInner();
+        }, { passive: false });
     }
 
     // ==========================================
