@@ -77,6 +77,7 @@
     .admin-table { width: 100%; border-collapse: collapse; text-align: left; }
     .admin-table th { color: var(--text-sub); background: rgba(0,0,0,0.4); padding: 18px 15px; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid rgba(251, 191, 36, 0.2); white-space: nowrap; }
     .admin-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; transition: background 0.3s; }
+    .admin-table tr:hover td { background: rgba(251, 191, 36, 0.03); }
     .admin-input { width: 100%; background: transparent; border: 1px solid transparent; color: #fff; font-family: var(--font-ui); font-size: 15px; padding: 8px 12px; border-radius: 6px; outline: none; transition: all 0.3s; font-weight: 500; }
     .admin-input[readonly] { opacity: 0.6; cursor: default; }
     .admin-input:not([readonly]) { background: rgba(0,0,0,0.6); border: 1px solid var(--dynamic-neon); }
@@ -127,8 +128,9 @@
     .sponsor-avatar img { position: absolute; pointer-events: none; } 
     .sponsor-text { font-size: 13px; color: var(--text-sub); line-height: 1.5; font-style: italic; background: rgba(251,191,36,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid var(--sup-neon); margin-top: auto;}
 
-    /* Editáveis com Força Máxima (!important) para garantir o clique e o visual */
+    /* Classes Infalíveis para a Edição */
     .draggable-item { position: absolute; z-index: 5; image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
+    
     .draggable-item.edit-mode { 
         cursor: move !important; 
         outline: 2px dashed #ff2a2a !important; 
@@ -136,6 +138,7 @@
         z-index: 9999 !important; 
         background: rgba(255,42,42,0.1) !important; 
         pointer-events: auto !important; 
+        display: block !important; 
     }
     
     .sponsor-edit.edit-mode { 
@@ -146,7 +149,7 @@
         pointer-events: auto !important; 
     }
 
-    .medal-float.edit-mode { animation: none !important; } /* Pausa a animação ao editar */
+    .medal-float.edit-mode { animation: none !important; transform: none !important; }
 
     @keyframes floatMedal { 0% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } 50% { transform: translateY(-8px); filter: drop-shadow(0 0 15px rgba(255,255,255,1)); } 100% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } }
     .medal-float { animation: floatMedal 2.5s infinite ease-in-out; }
@@ -410,7 +413,7 @@
     let usuarioLogadoEmail = ''; let nivelUsuarioGlobal = 'COMUM'; let acessosData = [];
     let membrosDataArray = []; let eventoAtivo = false; let eventoMult = 1;
     
-    // Posições Padrão Iniciais
+    // Posições Padrão
     let layoutConfig = {
         'img-podio-base': { left: '100px', top: '150px', width: 'auto' },
         'avatar-1': { left: '175px', top: '50px', width: 'auto' },
@@ -551,7 +554,7 @@
     }
 
     // ==========================================
-    // SISTEMA NATIVO DE ARRASTAR E REDIMENSIONAR (CORRIGIDO)
+    // SISTEMA NATIVO DE ARRASTAR E REDIMENSIONAR INFALÍVEL
     // ==========================================
     function aplicarPosicoes() {
         for(let id in layoutConfig) {
@@ -598,10 +601,10 @@
             btn.style.borderColor = '#ef4444'; btn.style.color = '#ef4444';
             dica.style.display = 'inline';
             
-            // Força a exibição da área de membro para edição
+            // 1. Força as caixas a aparecerem para criar as dimensões físicas no navegador
             areaDet.style.display = 'flex'; areaDet.style.opacity = '1';
 
-            // Avatares provisórios (Placeholder) garantem que a imagem não fique invisível na edição
+            // 2. Coloca avatares provisórios (Placeholder) para não clicar no vento
             let fallbacks = [
                 {id: 'avatar-1', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
                 {id: 'avatar-2', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
@@ -613,9 +616,10 @@
                 if(!img.src || img.src.endsWith('=')) img.src = f.src;
             });
 
-            // Adiciona as classes que criam a borda vermelha e liberam o pointer
+            // 3. Adiciona classes que forçam bloqueio de ponteiro e visualização
             elsDrag.forEach(e => { 
                 e.classList.add('edit-mode'); 
+                // Evita que o script sobreponha o display flex de divs
                 if(e.tagName === 'IMG' || e.tagName === 'DIV') e.style.display = 'block'; 
             }); 
             
@@ -632,13 +636,14 @@
             elsDrag.forEach(e => { e.classList.remove('edit-mode'); });
             elsSponImg.forEach(img => { img.classList.remove('sponsor-edit', 'edit-mode'); });
             
-            // Retorna a área do membro ao estado normal (esconde se estiver vazia)
+            // Retorna ao estado normal, ocultando se necessário
             if(!document.getElementById('select-membro').value) {
                 areaDet.style.display = 'none'; areaDet.style.opacity = '0';
             } else { renderMemberDetails(); }
             
             processarPodio(); 
             
+            // Reseta prêmios se estiverem desativados
             db.collection("sistema").doc("config_metas").get().then((d) => {
                 if(d.exists) {
                     let hcelem = document.getElementById('img-premio-hc');
@@ -658,121 +663,92 @@
         });
     }
 
+    // Motor de Arrasto Baseado na Posição Renderizada Real (offsetLeft/Top)
     function makeDraggableAndResizable(el, idKey) {
-        if (el.dataset.dragInitialized) return; // Evita dupla adição de eventos
-        el.dataset.dragInitialized = "true";
-
-        el.ondragstart = function() { return false; }; 
-
-        let isDragging = false;
-        let startX, startY, initialLeft, initialTop;
-
-        el.addEventListener('mousedown', function(e) {
+        // Previne chamadas duplas
+        el.onmousedown = function(e) {
             if (!isEditMode) return;
             e.preventDefault(); 
-            e.stopPropagation();
             
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
+            var startX = e.clientX;
+            var startY = e.clientY;
             
-            // Garante captura correta da posição mesmo se display:none tiver bugado o offset do navegador
-            let currentLeftStr = el.style.left || (layoutConfig[idKey] && layoutConfig[idKey].left) || "0px";
-            let currentTopStr = el.style.top || (layoutConfig[idKey] && layoutConfig[idKey].top) || "0px";
-            initialLeft = parseFloat(currentLeftStr) || 0;
-            initialTop = parseFloat(currentTopStr) || 0;
+            // Lê exatamente a coordenada do pixel em que a imagem está gerada
+            var initialLeft = el.offsetLeft;
+            var initialTop = el.offsetTop;
 
-            function onMouseMove(moveEvent) {
-                if (!isDragging) return;
-                moveEvent.preventDefault();
-                let dx = moveEvent.clientX - startX;
-                let dy = moveEvent.clientY - startY;
-                
+            document.onmousemove = function(moveEvent) {
+                var dx = moveEvent.clientX - startX;
+                var dy = moveEvent.clientY - startY;
                 el.style.left = (initialLeft + dx) + "px";
                 el.style.top = (initialTop + dy) + "px";
-            }
+            };
 
-            function onMouseUp() {
-                isDragging = false;
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
                 layoutConfig[idKey] = layoutConfig[idKey] || {};
                 layoutConfig[idKey].left = el.style.left;
                 layoutConfig[idKey].top = el.style.top;
-                
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            }
+            };
+        };
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-
-        el.addEventListener('wheel', function(e) {
+        el.onwheel = function(e) {
             if (!isEditMode) return;
             e.preventDefault(); 
-            e.stopPropagation();
+            var currentWidth = el.offsetWidth;
             
-            let currentWidth = parseFloat(el.style.width) || parseFloat(layoutConfig[idKey] && layoutConfig[idKey].width) || el.offsetWidth || 50;
-            if (e.deltaY < 0) currentWidth += 5; // pra cima cresce
-            else currentWidth -= 5;             // pra baixo diminui
-            if (currentWidth < 10) currentWidth = 10;
+            if (e.deltaY < 0) currentWidth += 5; // scroll pra cima aumenta
+            else currentWidth -= 5;              // scroll pra baixo diminui
             
+            if (currentWidth < 15) currentWidth = 15;
             el.style.width = currentWidth + "px";
+            
             layoutConfig[idKey] = layoutConfig[idKey] || {};
             layoutConfig[idKey].width = el.style.width;
-        }, { passive: false });
+        };
     }
 
+    // Motor Isolado só para a foto interna dos patrocinadores
     function makeSponsorInnerDraggable(el) {
-        if (el.dataset.dragInitialized) return;
-        el.dataset.dragInitialized = "true";
-        el.ondragstart = function() { return false; };
-
-        let isDragging = false;
-        let startX, startY, initX, initY;
-
-        el.addEventListener('mousedown', function(e) {
+        el.onmousedown = function(e) {
             if (!isEditMode) return;
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault(); 
             
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            
-            initX = parseFloat(layoutConfig['sponsorInner'].left) || 0;
-            initY = parseFloat(layoutConfig['sponsorInner'].top) || -10;
+            var startX = e.clientX;
+            var startY = e.clientY;
+            var initialLeft = el.offsetLeft;
+            var initialTop = el.offsetTop;
 
-            function onMouseMove(moveEvent) {
-                if (!isDragging) return;
-                moveEvent.preventDefault();
-                let dx = moveEvent.clientX - startX;
-                let dy = moveEvent.clientY - startY;
+            document.onmousemove = function(moveEvent) {
+                var dx = moveEvent.clientX - startX;
+                var dy = moveEvent.clientY - startY;
                 
-                layoutConfig['sponsorInner'].left = (initX + dx) + "px";
-                layoutConfig['sponsorInner'].top = (initY + dy) + "px";
+                layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
+                layoutConfig['sponsorInner'].left = (initialLeft + dx) + "px";
+                layoutConfig['sponsorInner'].top = (initialTop + dy) + "px";
                 aplicarSponsorInner();
-            }
+            };
 
-            function onMouseUp() {
-                isDragging = false;
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            }
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            };
+        };
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-
-        el.addEventListener('wheel', function(e) {
+        el.onwheel = function(e) {
             if (!isEditMode) return;
-            e.preventDefault(); e.stopPropagation();
-            let currentWidth = parseFloat(layoutConfig['sponsorInner'].width) || 60;
+            e.preventDefault(); 
+            var currentWidth = el.offsetWidth;
+            
             if (e.deltaY < 0) currentWidth += 3;
             else currentWidth -= 3;
-            if (currentWidth < 10) currentWidth = 10;
             
+            if (currentWidth < 10) currentWidth = 10;
+            layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
             layoutConfig['sponsorInner'].width = currentWidth + "px";
             aplicarSponsorInner();
-        }, { passive: false });
+        };
     }
 
     // ==========================================
