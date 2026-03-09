@@ -178,7 +178,7 @@
     <div class="login-card" id="loginCard">
       <img src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" alt="Logo Supervisores">
       <h2>Central de Sistemas</h2>
-      <p>Acesso restrito à Liderança dos Supervisores</p>
+      <p>Acesso restrito à equipe dos Supervisores</p>
       <button onclick="loginGoogle()" class="btn-tech" style="width:100%; font-size:16px;">
         <i class="fab fa-google"></i> Entrar com o Google
       </button>
@@ -198,10 +198,10 @@
 
     <header>
       <div class="header-frame">
-        <img src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" alt="Logo" class="logo-dic">
+        <img src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" alt="Logo">
         <div class="title-area">
           <h1>Central de Sistemas</h1>
-          <h2>Liderança dos Supervisores</h2>
+          <h2>Equipe dos Supervisores</h2>
         </div>
       </div>
     </header>
@@ -210,9 +210,10 @@
       
       <div class="admin-sidebar">
         <div class="admin-sidebar-header">Módulos do Sistema</div>
-        <button class="btn-sidebar active" onclick="switchSection('modulo-avais', this)"><i class="fas fa-calculator"></i> Cálculo de Avais</button>
-        <button class="btn-sidebar" onclick="switchSection('modulo-feedbacks', this)"><i class="fas fa-comments"></i> Painel de Feedbacks</button>
-        <button class="btn-sidebar" onclick="switchSection('modulo-futuro', this)"><i class="fas fa-cogs"></i> Sistema Futuro</button>
+        <button class="btn-sidebar active" id="menu-avais" onclick="switchSection('modulo-avais', this)"><i class="fas fa-calculator"></i> Cálculo de Avais</button>
+        <button class="btn-sidebar" id="menu-metas" onclick="switchSection('modulo-metas', this)"><i class="fas fa-bullseye"></i> Consulta de Metas</button>
+        <button class="btn-sidebar" id="menu-feedbacks" onclick="switchSection('modulo-feedbacks', this)"><i class="fas fa-comments"></i> Painel de Feedbacks</button>
+        <button class="btn-sidebar" id="menu-futuro" onclick="switchSection('modulo-futuro', this)"><i class="fas fa-cogs"></i> Sistema Futuro</button>
         <button class="btn-sidebar" id="btnAdminAcessos" style="display: none;" onclick="switchSection('modulo-acessos', this)"><i class="fas fa-users-cog"></i> Acessos</button>
       </div>
 
@@ -252,11 +253,30 @@
           </div>
         </div>
 
+        <div id="modulo-metas" class="admin-section">
+          <h3><i class="fas fa-bullseye"></i> Consulta de Metas</h3>
+          <p class="subtext">Acompanhamento da pontuação sincronizado automaticamente com a Liderança.</p>
+
+          <div class="input-block" style="max-width: 400px; margin-bottom: 20px;">
+            <i class="fas fa-search"></i>
+            <input type="text" id="busca-meta" placeholder="Buscar pelo nick do membro..." onkeyup="filtrarMetas()">
+          </div>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="tbMetas">
+              <thead></thead>
+              <tbody>
+                <tr><td style="text-align: center; color: var(--sup-neon);"><i class="fas fa-spinner fa-spin"></i> Sincronizando dados com o banco de forma segura...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div id="modulo-feedbacks" class="admin-section">
           <h3><i class="fas fa-comments"></i> Painel Global de Feedbacks</h3>
-          <p class="subtext">Este é apenas um atalho. Caso queira visualizar por inteiro, acesse o site do painel.</p>
+          <p class="subtext">Espelho do sistema original da DIC. Nenhuma funcionalidade original foi alterada.</p>
           <div style="width: 100%; height: 75vh; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.15); overflow: hidden;">
-            <iframe src="https://dichitech.github.io/feedback/" style="width: 100%; height: 100%; border: none;"></iframe>
+            <iframe src="COLE_O_LINK_DO_SEU_PAINEL_DE_FEEDBACKS_AQUI" style="width: 100%; height: 100%; border: none;"></iframe>
           </div>
         </div>
 
@@ -325,6 +345,7 @@
     
     // Variáveis Globais
     let usuarioLogadoEmail = '';
+    let nivelUsuarioGlobal = 'COMUM';
     let acessosData = [];
 
     // ==========================================
@@ -339,6 +360,9 @@
             document.getElementById('appWrapper').style.display = 'flex';
         }, 300);
         document.getElementById('data-consulta').valueAsDate = new Date();
+        
+        // Puxa as metas do Firebase (Em tempo real)
+        escutarMetasDoFirebase();
     }
 
     auth.onAuthStateChanged((user) => {
@@ -370,7 +394,7 @@
             }
 
             let autorizado = false;
-            let nivelUsuario = 'COMUM';
+            nivelUsuarioGlobal = 'COMUM';
             acessosData = [];
 
             snap.forEach((doc) => {
@@ -378,14 +402,26 @@
                 acessosData.push({ id: doc.id, email: d.email, nick: d.nick || '', nivel: d.nivel || 'COMUM' });
                 if (d.email === email) {
                     autorizado = true;
-                    nivelUsuario = d.nivel;
+                    nivelUsuarioGlobal = d.nivel;
                 }
             });
 
             if (autorizado) {
-                if (nivelUsuario === 'ADMIN') {
+                if (nivelUsuarioGlobal === 'ADMIN') {
                     document.getElementById('btnAdminAcessos').style.display = 'flex';
                     renderTabelaAcessos();
+                }
+                
+                // Controle de visualização para o nível MEMBRO
+                if (nivelUsuarioGlobal === 'MEMBRO') {
+                    document.getElementById('menu-avais').style.display = 'none';
+                    document.getElementById('menu-feedbacks').style.display = 'none';
+                    document.getElementById('menu-futuro').style.display = 'none';
+                    switchSection('modulo-metas', document.getElementById('menu-metas'));
+                } else {
+                    document.getElementById('menu-avais').style.display = 'flex';
+                    document.getElementById('menu-feedbacks').style.display = 'flex';
+                    document.getElementById('menu-futuro').style.display = 'flex';
                 }
                 liberarPainel();
             } else {
@@ -486,7 +522,65 @@
     }
 
     // ==========================================
-    // MÓDULO DE GERENCIAMENTO (ADMIN)
+    // MÓDULO DE METAS (LENDO DO FIREBASE)
+    // ==========================================
+    function escutarMetasDoFirebase() {
+        db.collection("sistema").doc("metas").onSnapshot((doc) => {
+            const documentTbody = document.querySelector('#tbMetas tbody');
+            const documentThead = document.querySelector('#tbMetas thead');
+            
+            if (doc.exists && doc.data().dados) {
+                let rows = [];
+                try {
+                    rows = JSON.parse(doc.data().dados);
+                } catch(e) { console.error("Erro ao ler JSON: ", e); }
+
+                documentThead.innerHTML = '';
+                documentTbody.innerHTML = '';
+                
+                if(rows.length > 0) {
+                    const trHead = document.createElement('tr');
+                    rows[0].forEach(header => {
+                        const th = document.createElement('th'); th.innerText = header; trHead.appendChild(th);
+                    });
+                    documentThead.appendChild(trHead);
+
+                    for(let i = 1; i < rows.length; i++) {
+                        if(rows[i].every(cell => cell === "" || cell === null)) continue; 
+                        const tr = document.createElement('tr');
+                        rows[i].forEach(cell => {
+                            const td = document.createElement('td'); td.innerText = cell;
+                            if(typeof cell === 'string') {
+                                let txtLower = cell.toLowerCase().trim();
+                                if(txtLower === 'não cumprida' || txtLower === 'nao cumprida') { td.style.color = '#ef4444'; td.style.fontWeight = 'bold'; }
+                                else if(txtLower === 'cumprida') { td.style.color = '#4caf50'; td.style.fontWeight = 'bold'; }
+                            }
+                            tr.appendChild(td);
+                        });
+                        documentTbody.appendChild(tr);
+                    }
+                }
+            } else {
+                documentTbody.innerHTML = '<tr><td colspan="10" style="text-align:center; color: var(--text-sub);">Aguardando a primeira sincronização da planilha...</td></tr>';
+            }
+        }, (error) => {
+            console.error("Erro ao ler metas: ", error);
+        });
+    }
+
+    function filtrarMetas() {
+        var input = document.getElementById("busca-meta").value.toUpperCase();
+        var tr = document.getElementById("tbMetas").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        for (var i = 0; i < tr.length; i++) {
+            var td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                tr[i].style.display = (td.textContent || td.innerText).toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+    }
+
+    // ==========================================
+    // MÓDULO DE ACESSOS (ADMIN)
     // ==========================================
     function renderTabelaAcessos() {
         var tbody = document.querySelector('#tbAcessos tbody');
@@ -502,14 +596,14 @@
         tr.innerHTML = 
             `<td><input type="text" class="admin-input inp-email" value="${item.email || ''}" readonly placeholder="exemplo@gmail.com"></td>` +
             `<td><input type="text" class="admin-input inp-nick" value="${item.nick || ''}" placeholder="Nick no Habbo..." readonly></td>` +
-            `<td><input type="text" class="admin-input inp-nivel" value="${item.nivel || 'COMUM'}" placeholder="ADMIN ou COMUM" readonly></td>` +
+            `<td><input type="text" class="admin-input inp-nivel" value="${item.nivel || 'COMUM'}" placeholder="ADMIN, COMUM ou MEMBRO" readonly></td>` +
             `<td class="action-cell">${btnAcoes}</td>`;
         return tr;
     }
 
     function addLinhaAcesso() {
         var tbody = document.querySelector('#tbAcessos tbody');
-        var tr = criarRowAcesso({ email: '', nick: '', nivel: 'COMUM' });
+        var tr = criarRowAcesso({ email: '', nick: '', nivel: 'MEMBRO' });
         tbody.appendChild(tr);
         toggleEditRow(tr.querySelector('.btn-admin-edit'));
     }
@@ -534,15 +628,12 @@
         var rows = document.querySelectorAll('#tbAcessos tbody tr');
         const batch = db.batch();
         
-        // Exclui todos do cache antigo
         acessosData.forEach(ac => { batch.delete(db.collection("acessos").doc(ac.email)); });
 
-        // Salva as linhas que estão na tabela agora
         rows.forEach(r => {
             var email = r.querySelector('.inp-email').value.trim().toLowerCase();
             if(email) {
-                var ref = db.collection("acessos").doc(email); 
-                batch.set(ref, { 
+                batch.set(db.collection("acessos").doc(email), { 
                     email: email, 
                     nick: r.querySelector('.inp-nick').value.trim(),
                     nivel: r.querySelector('.inp-nivel').value.trim().toUpperCase()
