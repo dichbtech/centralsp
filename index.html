@@ -2,39 +2,28 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Central de Sistemas - Supervisores</title>
+  <title>Central de Sistemas - Liderança</title>
   <link rel="icon" type="image/gif" href="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
-      --bg-deep: #070602;
-      --bg-panel: #121008;
-      --sup-neon: #fbbf24;
-      --sup-glow: rgba(251, 191, 36, 0.4);
-      --admin-neon: #f59e0b;
-      --admin-glow: rgba(245, 158, 11, 0.4);
-      --admin-panel: rgba(20, 15, 0, 0.4);
-      --dynamic-neon: var(--sup-neon);
-      --dynamic-glow: var(--sup-glow);
-      --text-main: #f4f4f4;
-      --text-sub: #c9b98b;
-      --font-ui: 'Rajdhani', sans-serif;
+      --bg-deep: #070602; --bg-panel: #121008; --sup-neon: #fbbf24; --sup-glow: rgba(251, 191, 36, 0.4);
+      --admin-neon: #f59e0b; --admin-glow: rgba(245, 158, 11, 0.4); --admin-panel: rgba(20, 15, 0, 0.4);
+      --dynamic-neon: var(--sup-neon); --dynamic-glow: var(--sup-glow);
+      --text-main: #f4f4f4; --text-sub: #c9b98b; --font-ui: 'Rajdhani', sans-serif;
       --border-tech: 1px solid rgba(251, 191, 36, 0.3);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: var(--font-ui); background-color: var(--bg-deep); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
     body::before { content: ''; position: fixed; top: 50%; left: 50%; width: 150vw; height: 150vh; transform: translate(-50%, -50%); background: radial-gradient(circle at center, rgba(251, 191, 36, 0.05) 0%, transparent 60%); pointer-events: none; z-index: -1; }
 
-    /* Login */
     #loginScreen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 99999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.3s; }
     .login-card { background: var(--bg-panel); border: 1px solid var(--sup-neon); padding: 50px 40px; border-radius: 12px; text-align: center; box-shadow: 0 0 40px var(--sup-glow); max-width: 400px; width: 90%; }
     .login-card img { width: 90px; filter: drop-shadow(0 0 10px var(--sup-neon)); margin-bottom: 25px; }
     .login-card h2 { color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-size: 24px; }
     .login-card p { color: var(--text-sub); margin-bottom: 35px; font-size: 15px; font-weight: 500; }
 
-    /* Header e Controles */
     .top-controls { position: absolute; right: 30px; top: 30px; display: flex; gap: 15px; z-index: 100; }
     .btn-top { background: transparent; border: none; font-size: 24px; cursor: pointer; transition: all 0.3s; filter: drop-shadow(0 0 5px var(--sup-neon)); color: var(--text-sub); }
     .btn-top:hover { transform: scale(1.1); color: #fff; filter: drop-shadow(0 0 10px #fff); }
@@ -50,7 +39,6 @@
     .container { flex: 1; max-width: 1400px; margin: 20px auto 50px auto; padding: 0 20px; width: 100%; }
     #mainLayout { display: flex; gap: 30px; align-items: flex-start; } 
 
-    /* Menu Lateral */
     .admin-sidebar { background: var(--admin-panel); backdrop-filter: blur(15px); border: 1px solid rgba(251, 191, 36, 0.15); border-radius: 16px; padding: 25px 20px; width: 260px; flex-shrink: 0; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 10px; position: sticky; top: 20px; z-index: 20; }
     .admin-sidebar-header { color: var(--text-sub); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; padding-left: 10px; }
     .btn-sidebar { background: transparent; border: none; color: var(--text-main); padding: 14px 15px; border-radius: 8px; font-family: var(--font-ui); font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.3s; text-align: left; }
@@ -62,8 +50,8 @@
     .admin-section { background: var(--admin-panel); backdrop-filter: blur(15px); border: 1px solid rgba(251, 191, 36, 0.15); border-radius: 16px; padding: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); display: none; }
     .admin-section.active { display: block; }
     .admin-section h3 { color: var(--dynamic-neon); font-size: 20px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 3px; display: flex; align-items: center; gap: 12px; font-weight: 700; }
+    .admin-section p.subtext { color: var(--text-sub); margin-top: -15px; margin-bottom: 25px; font-size: 15px; }
 
-    /* Inputs */
     .input-block { position: relative; width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(251, 191, 36, 0.1); border-radius: 6px; display: flex; align-items: center; padding: 0 15px; transition: all 0.3s; margin-bottom: 15px; }
     .input-block:focus-within { border-color: var(--dynamic-neon); box-shadow: 0 0 12px var(--dynamic-glow); }
     .input-block i { color: var(--dynamic-neon); font-size: 16px; }
@@ -72,7 +60,6 @@
     label.tech-label { display: block; color: var(--text-sub); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
     .row { display: flex; gap: 15px; } .row .form-group { flex: 1; }
 
-    /* Tabelas e Botões */
     .admin-table-wrapper { width: 100%; overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
     .admin-table { width: 100%; border-collapse: collapse; text-align: left; }
     .admin-table th { color: var(--text-sub); background: rgba(0,0,0,0.4); padding: 18px 15px; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid rgba(251, 191, 36, 0.2); }
@@ -80,22 +67,24 @@
     .admin-input { width: 100%; background: transparent; border: 1px solid transparent; color: #fff; font-family: var(--font-ui); font-size: 15px; padding: 8px 12px; border-radius: 6px; outline: none; transition: all 0.3s; font-weight: 500; }
     .admin-input:not([readonly]) { background: rgba(0,0,0,0.6); border: 1px solid var(--dynamic-neon); }
     
+    .action-cell { display: flex; gap: 8px; justify-content: flex-start; align-items: center; }
     .btn-admin-icon { width: 36px; height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid transparent; background: rgba(255,255,255,0.05); color: var(--text-sub); transition: all 0.3s; }
     .btn-admin-icon:hover { background: rgba(251, 191, 36, 0.15); color: var(--dynamic-neon); border-color: rgba(251, 191, 36, 0.3); }
     .btn-admin-del:hover { background: rgba(255,42,42,0.15) !important; color: #ef4444 !important; border-color: rgba(239,68,68,0.3) !important; }
-
+    
     .btn-tech { background: rgba(251, 191, 36, 0.05); border: 1px solid var(--dynamic-neon); border-color: rgba(251, 191, 36, 0.5); color: var(--text-main); padding: 12px 24px; border-radius: 6px; font-family: var(--font-ui); font-size: 15px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
     .btn-tech:hover { background: var(--dynamic-neon); border-color: var(--dynamic-neon); color: #000; box-shadow: 0 0 15px var(--dynamic-glow); }
+    .admin-controls-bottom { display: flex; gap: 15px; margin-top: 25px; align-items: center; justify-content: flex-end; }
+    .btn-add { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--dynamic-neon); }
+    .btn-add:hover { background: rgba(251, 191, 36, 0.2); border-color: var(--dynamic-neon); }
     .btn-save { background: var(--dynamic-neon); color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
     .btn-save:hover { background: #f59e0b; transform: translateY(-2px); }
 
-    /* Modais */
     .modal { display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background-color: var(--bg-panel); border: 1px solid var(--sup-neon); border-radius: 12px; width: 100%; max-width: 700px; position: relative; box-shadow: 0 0 40px var(--sup-glow); padding: 35px; overflow-y: auto; max-height: 90vh; }
     .close-btn { position: absolute; right: 20px; top: 20px; width: 35px; height: 35px; background: rgba(255,42,42,0.1); border-radius: 50%; color: #ef4444; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
     .close-btn:hover { background: #ef4444; color: #fff; transform: rotate(90deg); }
 
-    /* Switch */
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; margin-right: 10px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 24px; }
@@ -103,7 +92,6 @@
     input:checked + .slider { background-color: var(--sup-neon); }
     input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
 
-    /* Rich Text Editor */
     .editor-toolbar { display: flex; gap: 5px; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 6px 6px 0 0; border: 1px solid rgba(251,191,36,0.3); border-bottom: none; flex-wrap: wrap;}
     .editor-toolbar button { background: transparent; border: none; color: #fff; cursor: pointer; padding: 5px 10px; border-radius: 4px; font-size: 14px; transition: 0.2s;}
     .editor-toolbar button:hover { background: rgba(251,191,36,0.2); color: var(--sup-neon); }
@@ -114,7 +102,6 @@
     .admin-evento-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 20px; position: relative; }
     #evento-banner { display:none; background: linear-gradient(90deg, rgba(251,191,36,0.15), transparent); border-left: 4px solid var(--sup-neon); padding: 12px 20px; margin-bottom: 25px; border-radius: 4px; color: #fff; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; justify-content: space-between; }
     
-    /* Layout Pódio / Eventos */
     .metas-top-layout { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; align-items: stretch; }
     .podium-box { flex: 1; min-width: 350px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-tech); border-radius: 12px; position: relative; height: 380px; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,0,0,0.8); }
     .podium-glow { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 250px; height: 150px; background: var(--sup-neon); filter: blur(70px); opacity: 0.35; z-index: 1; border-radius: 50%; pointer-events: none; }
@@ -128,14 +115,13 @@
     .sponsor-avatar img { position: absolute; pointer-events: none; } 
     .sponsor-text { font-size: 13px; color: var(--text-sub); line-height: 1.5; font-style: italic; background: rgba(251,191,36,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid var(--sup-neon); margin-top: auto;}
 
-    /* Editáveis com Força Máxima */
     .draggable-item { position: absolute; z-index: 5; image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
     .draggable-item.edit-mode { cursor: move !important; outline: 2px dashed #ff2a2a !important; filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; z-index: 9999 !important; background: rgba(255,42,42,0.1) !important; pointer-events: auto !important; display: block !important; }
     .sponsor-edit.edit-mode { cursor: move !important; outline: 2px dashed #ff2a2a !important; filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; z-index: 9999 !important; pointer-events: auto !important; }
     .resizable-prize { transition: filter 0.3s; filter: drop-shadow(0 0 10px rgba(251,191,36,0.5)); }
     .resizable-prize.edit-mode { cursor: ns-resize !important; outline: 2px dashed #ff2a2a !important; filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; z-index: 9999 !important; pointer-events: auto !important; display: block !important; }
-    .medal-float.edit-mode { animation: none !important; transform: none !important; }
 
+    .medal-float.edit-mode { animation: none !important; transform: none !important; }
     @keyframes floatMedal { 0% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } 50% { transform: translateY(-8px); filter: drop-shadow(0 0 15px rgba(255,255,255,1)); } 100% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } }
     .medal-float { animation: floatMedal 2.5s infinite ease-in-out; }
     .empate-text { position: absolute; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px var(--sup-neon), 0 0 5px #000; letter-spacing: 2px; z-index: 6; text-align: center; }
@@ -160,12 +146,12 @@
 
   <div id="loginScreen">
     <div id="loginLoader" style="display: none; text-align: center; color: var(--sup-neon); font-size: 16px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
-      <div class="spinner-ring" style="margin: 0 auto 20px auto;"></div> Autenticando Sessão...
+      <div class="spinner-ring" style="margin: 0 auto 20px auto;"></div> Autenticando...
     </div>
     <div class="login-card" id="loginCard">
       <img src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" alt="Logo">
       <h2>Central de Sistemas</h2>
-      <p>Acesso restrito à equipe dos Supervisores</p>
+      <p>Acesso restrito à Liderança e Supervisores</p>
       <button onclick="loginGoogle()" class="btn-tech" style="width:100%; font-size:16px;"><i class="fab fa-google"></i> Entrar com o Google</button>
       <p id="login-error" style="color: #ff2a2a; font-size: 14px; margin-top: 15px; display: none; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Erro ao logar.</p>
     </div>
@@ -204,7 +190,7 @@
         <div id="dash-eventos-container"></div>
 
         <label class="tech-label" style="margin-top: 15px;">Frase de Patrocínio Padrão</label>
-        <input type="text" id="dash-txt-patrocinio" class="admin-input" style="margin-bottom:20px;" placeholder="Deseja patrocinar algum dos eventos e ajudar...">
+        <input type="text" id="dash-txt-patrocinio" class="admin-input" style="margin-bottom:20px;" placeholder="Deseja patrocinar algum dos eventos...">
 
         <button class="btn-tech btn-save" onclick="salvarDashboard()" style="width: 100%; margin-top: 10px; padding: 15px; font-size: 16px;"><i class="fas fa-save"></i> Salvar e Atualizar Painel</button>
      </div>
@@ -218,7 +204,7 @@
           <div style="display:flex; gap:15px; align-items:center; margin-bottom: 25px;">
               <div class="input-block" style="flex:2; margin:0;">
                  <i class="fas fa-user"></i>
-                 <select id="pe-select-membro"><option value="" disabled selected>Selecione um membro...</option></select>
+                 <select id="pe-select-membro"><option value="" disabled selected>Selecione...</option></select>
               </div>
               <div class="input-block" style="flex:1; margin:0;">
                  <i class="fas fa-plus"></i>
@@ -226,10 +212,10 @@
               </div>
               <button class="btn-tech btn-save" onclick="salvarPontoExtra()"><i class="fas fa-check"></i> Atribuir</button>
           </div>
-          <h4 style="color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Membros com Pontos Extras</h4>
+          <h4 style="color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Membros com Extras</h4>
           <div class="admin-table-wrapper" style="max-height: 250px; overflow-y:auto;">
               <table class="admin-table" id="tb-pontos-extras">
-                  <thead><tr><th>Membro</th><th style="text-align:center;">Pontos Extras</th><th style="text-align:right;">Ação</th></tr></thead>
+                  <thead><tr><th>Membro</th><th style="text-align:center;">Pontos</th><th style="text-align:right;">Ação</th></tr></thead>
                   <tbody></tbody>
               </table>
           </div>
@@ -256,14 +242,17 @@
         <button class="btn-sidebar" id="menu-feedbacks" onclick="switchSection('modulo-feedbacks', this)"><i class="fas fa-comments"></i> Painel de Feedbacks</button>
         <button class="btn-sidebar" id="menu-estrelas" onclick="switchSection('modulo-estrelas', this)"><i class="fas fa-star"></i> Estrelas Promocionais</button>
         
-        <button class="btn-sidebar" id="btnAdminAcessos" style="display: none;" onclick="switchSection('modulo-acessos', this)"><i class="fas fa-users-cog"></i> Acessos</button>
-        <button class="btn-sidebar" id="btnAdminPrivacidade" style="display: none;" onclick="switchSection('modulo-privacidade', this)"><i class="fas fa-shield-alt"></i> Editar Privacidade</button>
+        <div id="admin-only-menus" style="display: none; flex-direction: column; gap: 10px;">
+            <div class="admin-sidebar-header" style="margin-top:15px; color:#f59e0b;">Gestão Liderança</div>
+            <button class="btn-sidebar" onclick="switchSection('modulo-logs', this)"><i class="fas fa-history"></i> Logs de Estrelas</button>
+            <button class="btn-sidebar" onclick="switchSection('modulo-acessos', this)"><i class="fas fa-users-cog"></i> Gerenciar Acessos</button>
+            <button class="btn-sidebar" onclick="switchSection('modulo-privacidade', this)"><i class="fas fa-shield-alt"></i> Privacidade</button>
+        </div>
       </div>
 
       <div class="admin-main-content">
         
         <div id="modulo-metas" class="admin-section active">
-          
           <div id="evento-banner">
               <span><i class="fas fa-star" style="color: var(--sup-neon); font-size: 20px;"></i> <span id="evento-banner-txt">EVENTO ATIVO</span></span>
               <span style="font-size: 13px; color: var(--sup-neon);"><i class="fas fa-info-circle"></i> Bônus Multiplicador Ativado</span>
@@ -272,7 +261,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
             <h3 style="margin:0;"><i class="fas fa-bullseye"></i> Consulta de Metas - <span id="meta-week-title" style="color:#fff;">Carregando...</span></h3>
             <div id="admin-drag-controls" style="display: none; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <span id="dica-resize" style="display:none; color:var(--text-sub); font-size:12px; margin-right:10px;"><i class="fas fa-mouse"></i> Arraste e use Scroll para redimensionar</span>
+                <span id="dica-resize" style="display:none; color:var(--text-sub); font-size:12px; margin-right:10px;"><i class="fas fa-mouse"></i> Arraste e use Scroll para tamanho</span>
                 <button class="btn-tech" onclick="abrirModalPontosExtras()" style="padding: 8px 15px; font-size: 13px; border-color: #4caf50; color: #4caf50;"><i class="fas fa-star"></i> Pontos Extras</button>
                 <button class="btn-tech" onclick="abrirDashboard()" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
                 <button class="btn-tech" onclick="toggleEditMode()" id="btn-edit-pos" style="padding: 8px 15px; font-size: 13px;"><i class="fas fa-arrows-alt"></i> Editar Posições</button>
@@ -304,21 +293,14 @@
                    <span><i class="fas fa-calendar-alt"></i> MURAL DE EVENTOS</span>
                    <span id="mes-atual" style="color:#fff; font-size:14px;"></span>
                 </div>
-                
-                <div id="ui-lista-eventos" style="flex:1;">
-                   <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;">
-                      <div style="color: #fff; font-size: 14px;">Fique atento aos anúncios no grupo!</div>
-                   </div>
-                </div>
-
+                <div id="ui-lista-eventos" style="flex:1;"></div>
                 <div class="events-title" style="font-size: 15px; margin-top:10px;"><i class="fas fa-star"></i> Patrocinadores Oficiais</div>
                 <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px; position:relative;">
                    <img src="https://www.habbo.com.br/habbo-imaging/badge/b09134s12017s55012t12014s4301414a5c32c3d12825df4b3496e1fb8ba98.gif" alt="Badge" style="width: 50px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); pointer-events: none;">
                    <div id="sponsors-container" class="sponsor-list"></div>
                 </div>
-                
                 <div class="sponsor-text">
-                   "<span id="ui-txt-patrocinio">Deseja patrocinar algum dos eventos e ajudar ainda mais a divisão? Procure a Liderança!</span>"<br><br>
+                   "<span id="ui-txt-patrocinio">Deseja patrocinar algum dos eventos e ajudar a divisão? Procure a Liderança!</span>"<br><br>
                    <span style="color: var(--sup-neon); font-weight:bold;">Supervisor por amor, gestor por essência. #SAGE</span>
                 </div>
              </div>
@@ -327,9 +309,7 @@
           <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
               <div class="input-block" style="max-width: 300px; margin:0;">
                  <i class="fas fa-search"></i>
-                 <select id="select-membro" onchange="renderMemberDetails()">
-                    <option value="" disabled selected>Selecione um membro...</option>
-                 </select>
+                 <select id="select-membro" onchange="renderMemberDetails()"><option value="" disabled selected>Selecione um membro...</option></select>
               </div>
           </div>
 
@@ -341,17 +321,10 @@
                 <img id="img-emblema-sup" src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" draggable="false" class="draggable-item" style="z-index: 4;">
                 <img id="avatar-selecionado" src="" draggable="false" class="draggable-item" style="z-index: 5;">
              </div>
-
              <div class="stats-grid-box">
                 <div class="stat-total">
-                   <div>
-                      <h4 style="color:var(--text-sub); margin-bottom:0;">Total de Pontos</h4>
-                      <div class="val" id="det-total" style="display:flex; align-items:baseline; gap:10px;">-</div>
-                   </div>
-                   <div style="text-align: right;">
-                      <h4 style="color:var(--text-sub); margin-bottom:0;">Status da Meta</h4>
-                      <div id="det-status" style="font-size: 20px; font-weight: 700; text-transform: uppercase; margin-top:5px;">-</div>
-                   </div>
+                   <div><h4 style="color:var(--text-sub); margin-bottom:0;">Total de Pontos</h4><div class="val" id="det-total" style="display:flex; align-items:baseline; gap:10px;">-</div></div>
+                   <div style="text-align: right;"><h4 style="color:var(--text-sub); margin-bottom:0;">Status da Meta</h4><div id="det-status" style="font-size: 20px; font-weight: 700; text-transform: uppercase; margin-top:5px;">-</div></div>
                 </div>
                 <div class="stat-card"><h4>Convites</h4><div class="val" id="det-convite">-</div></div>
                 <div class="stat-card"><h4>PPP</h4><div class="val" id="det-ppp">-</div></div>
@@ -364,67 +337,69 @@
 
         <div id="modulo-estrelas" class="admin-section">
             <h3><i class="fas fa-star"></i> Gerenciamento de Estrelas Promocionais</h3>
-            <p class="subtext">Controle de promoções e sanções do sistema de estrelas (Art. 4º ao 9º).</p>
-
+            <p class="subtext">Controle de promoções e sanções do sistema de estrelas.</p>
             <div class="row" style="gap: 20px; align-items: flex-start;">
+                
                 <div style="flex: 2; min-width: 300px;">
-                    <h4 style="color:var(--sup-neon); margin-bottom:15px; font-size:16px;"><i class="fas fa-list"></i> Tabela Atual de Militares</h4>
+                    <h4 style="color:var(--sup-neon); margin-bottom:15px; font-size:16px;"><i class="fas fa-list"></i> Ranking e Status Atual</h4>
                     <div class="admin-table-wrapper" style="max-height: 400px; overflow-y: auto;">
                         <table class="admin-table" id="tb-militares-estrelas">
-                            <thead>
-                                <tr>
-                                    <th>Policial</th>
-                                    <th>Promoções (Ciclo)</th>
-                                    <th>Estrelas</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Policial</th><th>Promoções (Ciclo)</th><th>Estrelas</th><th>Status</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
                 </div>
 
                 <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+                    
                     <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 8px; border: 1px solid rgba(251,191,36,0.2);">
                         <h4 style="color:var(--sup-neon); margin-bottom:10px; font-size:15px;"><i class="fas fa-medal"></i> Registrar Promoção</h4>
                         <p style="color:var(--text-sub); font-size:12px; margin-bottom:15px;">A cada 3 promoções, 1 estrela é concedida.</p>
                         
-                        <div style="display:flex; gap:10px; margin-bottom:15px;">
-                            <input type="text" id="novo-militar-nome" class="admin-input" placeholder="Nick do novo policial...">
-                            <button class="btn-tech btn-add" onclick="adicionarMilitarEstrela()" style="padding: 8px 12px;"><i class="fas fa-plus"></i> Add</button>
-                        </div>
+                        <div class="input-block"><i class="fas fa-search"></i><input type="text" id="input-busca-nick-pro" placeholder="Nick do Policial..."></div>
+                        <button class="btn-tech" id="btn-verificar-pro" onclick="verificarNickPro()" style="width: 100%; margin-bottom: 15px;"><i class="fas fa-search"></i> Verificar Nick</button>
 
-                        <label class="tech-label">Selecionar Policial</label>
-                        <div class="input-block">
-                            <i class="fas fa-user"></i>
-                            <select id="sel-militar-promocao"><option value="">Carregando...</option></select>
+                        <div id="area-acao-pro" style="display:none; padding-top:15px; border-top:1px dashed rgba(251,191,36,0.2);">
+                            <div style="color:#fff; margin-bottom:10px; font-size:14px;">Policial: <strong id="lbl-nick-pro" style="color:var(--sup-neon);"></strong></div>
+                            <div class="input-block"><i class="fas fa-hashtag"></i><input type="text" id="input-id-promocao" placeholder="ID da Promoção (System DIC)"></div>
+                            <button class="btn-tech btn-save" onclick="registrarPromocao()" style="width: 100%;"><i class="fas fa-check"></i> Registrar Promoção / +1 Ciclo</button>
                         </div>
-                        <button class="btn-tech btn-save" onclick="registrarPromocao()" style="width: 100%;"><i class="fas fa-check"></i> Confirmar Promoção</button>
                     </div>
 
                     <div id="area-comando-estrelas" style="background: rgba(255,42,42,0.1); padding: 20px; border-radius: 8px; border: 1px dashed rgba(255,42,42,0.3); display: none;">
                         <h4 style="color:#ff2a2a; margin-bottom:10px; font-size:15px;"><i class="fas fa-gavel"></i> Área do Comando (Sanções)</h4>
                         
-                        <label class="tech-label" style="color:#ff2a2a;">Selecionar Policial</label>
-                        <div class="input-block" style="border-color: rgba(255,42,42,0.3);">
-                            <i class="fas fa-user" style="color:#ff2a2a;"></i>
-                            <select id="sel-militar-sancao"><option value="">Carregando...</option></select>
-                        </div>
+                        <div class="input-block" style="border-color:rgba(255,42,42,0.3);"><i class="fas fa-search" style="color:#ff2a2a;"></i><input type="text" id="input-busca-nick-san" placeholder="Nick do Policial..."></div>
+                        <button class="btn-tech" id="btn-verificar-san" onclick="verificarNickSan()" style="width: 100%; margin-bottom: 15px; border-color:#ff2a2a; color:#ff2a2a;"><i class="fas fa-search"></i> Verificar Nick</button>
 
-                        <label class="tech-label" style="color:#ff2a2a;">Tipo de Sanção</label>
-                        <div class="input-block" style="border-color: rgba(255,42,42,0.3);">
-                            <i class="fas fa-exclamation-circle" style="color:#ff2a2a;"></i>
-                            <select id="sel-tipo-sancao">
-                                <option value="deduzir_1">Deduzir 1 Estrela</option>
-                                <option value="cassar_todas">Cassar Todas as Estrelas (Zerar)</option>
-                                <option value="suspender">Suspender Temporariamente</option>
-                                <option value="reativar">Reativar Policial</option>
-                            </select>
+                        <div id="area-acao-san" style="display:none; padding-top:15px; border-top:1px dashed rgba(255,42,42,0.3);">
+                            <div style="color:#fff; margin-bottom:10px; font-size:14px;">Policial: <strong id="lbl-nick-san" style="color:#ff2a2a;"></strong></div>
+                            <div class="input-block" style="border-color:rgba(255,42,42,0.3);"><i class="fas fa-exclamation-circle" style="color:#ff2a2a;"></i>
+                                <select id="sel-tipo-sancao" onchange="mudarTipoSancao()">
+                                    <option value="deduzir">Deduzir Estrelas</option>
+                                    <option value="cassar_todas">Cassar Todas as Estrelas (Zerar)</option>
+                                    <option value="suspender">Suspender Temporariamente</option>
+                                    <option value="reativar">Reativar Policial</option>
+                                </select>
+                            </div>
+                            <div class="input-block" id="box-qtd-san" style="border-color:rgba(255,42,42,0.3);"><i class="fas fa-minus" style="color:#ff2a2a;"></i><input type="number" id="input-qtd-san" placeholder="Qtd. de estrelas a deduzir"></div>
+                            
+                            <button class="btn-tech" onclick="aplicarSancao()" style="width: 100%; background: #ff2a2a; color: #fff; border:none;"><i class="fas fa-ban"></i> Aplicar Sanção</button>
                         </div>
-                        <button class="btn-tech" onclick="aplicarSancao()" style="width: 100%; background: #ff2a2a; color: #fff; border:none;"><i class="fas fa-ban"></i> Aplicar Sanção</button>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div id="modulo-logs" class="admin-section">
+          <h3><i class="fas fa-history"></i> Logs de Auditoria (Estrelas)</h3>
+          <p class="subtext">Acompanhamento das promoções e sanções registradas pelos sub-líderes e comando.</p>
+          <div class="admin-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+            <table class="admin-table" id="tb-logs">
+              <thead><tr><th>Data/Hora</th><th>Autor</th><th>Beneficiado</th><th>Ação</th><th>ID/Detalhes</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
 
         <div id="modulo-avais" class="admin-section">
@@ -459,7 +434,7 @@
           <h3><i class="fas fa-users-cog"></i> Gerenciar Acessos</h3>
           <div class="admin-table-wrapper">
             <table class="admin-table" id="tbAcessos">
-              <thead><tr><th style="width:40%">E-mail Google</th><th style="width:30%">Nick no Habbo</th><th style="width:15%">Nível</th><th style="width:15%">Ações</th></tr></thead>
+              <thead><tr><th style="width:35%">E-mail Google</th><th style="width:25%">Nick no Habbo</th><th style="width:25%">Nível de Acesso</th><th style="width:15%">Ações</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -473,7 +448,7 @@
     </div>
   </div>
 
-  <footer>Desenvolvido com <i class="fa-solid fa-heart" style="color: #808080;"></i> por MegaMetall</footer>
+  <footer>Desenvolvido com <i class="fa-solid fa-heart" style="color: #808080;"></i> centralizado por MegaMetall</footer>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -492,10 +467,10 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     
-    let usuarioLogadoEmail = ''; let nivelUsuarioGlobal = 'COMUM'; let acessosData = [];
-    let membrosDataArray = []; let dashboardEventosData = []; 
-    let pontosExtrasMap = {}; 
+    let usuarioLogadoEmail = ''; let usuarioLogadoNick = ''; let nivelUsuarioGlobal = 'SUPERVISOR'; 
+    let acessosData = []; let membrosDataArray = []; let dashboardEventosData = []; let pontosExtrasMap = {}; 
     let eventoAtivo = false; let eventoMult = 1;
+    let militarVerificadoPro = null; let militarVerificadoSan = null;
     
     let layoutConfig = {
         'img-podio-base': { left: '100px', top: '150px', width: 'auto' },
@@ -518,34 +493,28 @@
     let isEditMode = false;
 
     function buildEditorHTML(id, content = '') {
-        return `
-        <div class="editor-toolbar">
-            <button type="button" onmousedown="applyStyle('bold')"><i class="fas fa-bold"></i></button>
-            <button type="button" onmousedown="applyStyle('italic')"><i class="fas fa-italic"></i></button>
-            <button type="button" onmousedown="applyStyle('underline')"><i class="fas fa-underline"></i></button>
-            <button type="button" onmousedown="insertLink()"><i class="fas fa-link"></i></button>
-            <input type="color" title="Cor do texto" onchange="applyStyle('foreColor', this.value)" style="margin-left:5px;">
-        </div>
-        <div class="rich-editor admin-input ev-desc" contenteditable="true" id="${id}">${content}</div>`;
+        return `<div class="editor-toolbar"><button type="button" onmousedown="applyStyle('bold')"><i class="fas fa-bold"></i></button><button type="button" onmousedown="applyStyle('italic')"><i class="fas fa-italic"></i></button><button type="button" onmousedown="applyStyle('underline')"><i class="fas fa-underline"></i></button><button type="button" onmousedown="insertLink()"><i class="fas fa-link"></i></button><input type="color" title="Cor" onchange="applyStyle('foreColor', this.value)" style="margin-left:5px;"></div><div class="rich-editor admin-input ev-desc" contenteditable="true" id="${id}">${content}</div>`;
     }
     function applyStyle(cmd, val) { event.preventDefault(); document.execCommand(cmd, false, val); }
     function insertLink() { event.preventDefault(); let url = prompt("Cole o link aqui:"); if(url) document.execCommand("createLink", false, url); }
 
     function liberarPainel() {
-        document.getElementById('loginCard').style.display = 'none';
-        document.getElementById('loginLoader').style.display = 'none';
-        document.getElementById('loginScreen').style.opacity = '0';
+        document.getElementById('loginCard').style.display = 'none'; document.getElementById('loginLoader').style.display = 'none'; document.getElementById('loginScreen').style.opacity = '0';
         setTimeout(() => { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appWrapper').style.display = 'flex'; }, 300);
         document.getElementById('data-consulta').valueAsDate = new Date();
         const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         document.getElementById('mes-atual').innerText = meses[new Date().getMonth()] + " de " + new Date().getFullYear();
         
-        carregarLayoutConfig();
-        escutarConfigDashboard(); 
-        escutarMetasDoFirebase();
-        escutarMilitaresEstrelas(); // Novo DB
+        carregarLayoutConfig(); escutarConfigDashboard(); escutarMetasDoFirebase(); 
+        
+        if (nivelUsuarioGlobal !== 'SUPERVISOR') {
+            escutarMilitaresEstrelas(); 
+        }
+        if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
+            carregarPrivacidade();
+            escutarLogsEstrelas();
+        }
         setupAllDraggables(); 
-        if(nivelUsuarioGlobal === 'ADMIN') carregarPrivacidade();
     }
 
     auth.onAuthStateChanged((user) => {
@@ -555,23 +524,22 @@
 
     function verificarAcessoBD(email) {
         db.collection("acessos").get().then((snap) => {
-            if (snap.empty) { db.collection("acessos").doc(email).set({ email: email, nick: '', nivel: "ADMIN" }).then(() => window.location.reload()); return; }
-            let autorizado = false; nivelUsuarioGlobal = 'COMUM'; acessosData = [];
+            if (snap.empty) { db.collection("acessos").doc(email).set({ email: email, nick: 'Admin', nivel: "LIDER" }).then(() => window.location.reload()); return; }
+            let autorizado = false; nivelUsuarioGlobal = 'SUPERVISOR'; acessosData = [];
             snap.forEach((doc) => {
-                let d = doc.data(); acessosData.push({ id: doc.id, email: d.email, nick: d.nick || '', nivel: d.nivel || 'COMUM' });
-                if (d.email === email) { autorizado = true; nivelUsuarioGlobal = d.nivel; }
+                let d = doc.data(); acessosData.push({ id: doc.id, email: d.email, nick: d.nick || '', nivel: d.nivel || 'SUPERVISOR' });
+                if (d.email === email) { autorizado = true; nivelUsuarioGlobal = d.nivel; usuarioLogadoNick = d.nick || 'Desconhecido'; }
             });
             if (autorizado) {
-                if (nivelUsuarioGlobal === 'ADMIN') {
-                    document.getElementById('btnAdminAcessos').style.display = 'flex';
-                    document.getElementById('btnAdminPrivacidade').style.display = 'flex';
+                if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
+                    document.getElementById('admin-only-menus').style.display = 'flex';
                     document.getElementById('admin-drag-controls').style.display = 'flex';
                     document.getElementById('area-comando-estrelas').style.display = 'block';
                     renderTabelaAcessos();
                     document.getElementById('box-editor-privacidade').innerHTML = buildEditorHTML('editor-privacidade', 'Carregando...');
                 }
                 
-                if (nivelUsuarioGlobal === 'MEMBRO') {
+                if (nivelUsuarioGlobal === 'SUPERVISOR') {
                     document.getElementById('menu-avais').style.display = 'none'; 
                     document.getElementById('menu-feedbacks').style.display = 'none';
                     document.getElementById('menu-estrelas').style.display = 'none';
@@ -601,109 +569,159 @@
     }
 
     // ==========================================
-    // SISTEMA DE ESTRELAS 
+    // SISTEMA ESTRELAS (VERIFICAÇÃO DE NICK + LOGS)
     // ==========================================
     function escutarMilitaresEstrelas() {
         db.collection("militares").onSnapshot((snapshot) => {
             let tbody = document.querySelector('#tb-militares-estrelas tbody');
-            let selPro = document.getElementById('sel-militar-promocao');
-            let selSan = document.getElementById('sel-militar-sancao');
-            
             tbody.innerHTML = '';
-            selPro.innerHTML = '<option value="" disabled selected>Selecione...</option>';
-            selSan.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+            let lista = [];
+            snapshot.forEach((docSnap) => { lista.push({ id: docSnap.id, ...docSnap.data() }); });
+            
+            lista.sort((a,b) => (b.estrelas||0) - (a.estrelas||0) || (b.promocoes_realizadas||0) - (a.promocoes_realizadas||0));
 
-            snapshot.forEach((docSnap) => {
-                const dados = docSnap.data();
-                const id = docSnap.id;
-
-                let estrelasStr = '★'.repeat(dados.estrelas || 0);
-                let estrelasHtml = `<span style="color:var(--sup-neon); font-size:16px;">${estrelasStr}</span> (${dados.estrelas || 0})`;
-                let statusHtml = dados.status === 'Suspenso' ? '<span style="color:#ff2a2a; font-weight:bold;">Suspenso</span>' : '<span style="color:#4caf50;">Ativo</span>';
-                let nomeHtml = `${dados.nome} ${dados.premios_acumulados > 0 ? '🎖️' : ''}`;
-
+            lista.forEach(dados => {
+                let str = '★'.repeat(dados.estrelas || 0); let eHtml = `<span style="color:var(--sup-neon); font-size:14px;">${str}</span> (${dados.estrelas || 0})`;
+                let sHtml = dados.status === 'Suspenso' ? '<span style="color:#ff2a2a; font-weight:bold;">Suspenso</span>' : '<span style="color:#4caf50;">Ativo</span>';
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${nomeHtml}</td><td>${dados.promocoes_realizadas || 0} / 3</td><td>${estrelasHtml}</td><td>${statusHtml}</td>`;
+                tr.innerHTML = `<td>${dados.nome} ${dados.premios_acumulados > 0 ? '🎖️' : ''}</td><td style="text-align:center; font-weight:bold;">${dados.promocoes_realizadas || 0} / 3</td><td>${eHtml}</td><td>${sHtml}</td>`;
                 tbody.appendChild(tr);
-
-                if(dados.status !== 'Suspenso') { selPro.innerHTML += `<option value="${id}">${dados.nome}</option>`; }
-                selSan.innerHTML += `<option value="${id}">${dados.nome}</option>`;
             });
         });
     }
 
-    window.adicionarMilitarEstrela = function() {
-        let nome = document.getElementById('novo-militar-nome').value.trim();
-        if(!nome) return;
-        db.collection("militares").doc(nome).set({
-            nome: nome, promocoes_realizadas: 0, estrelas: 0, premios_acumulados: 0, status: 'Ativo'
-        }).then(() => {
-            document.getElementById('novo-militar-nome').value = '';
-            mostrarToastAdmin("Policial cadastrado com sucesso!");
+    async function verificarNickPro() {
+        let nick = document.getElementById('input-busca-nick-pro').value.trim();
+        let btn = document.getElementById('btn-verificar-pro');
+        let divAcao = document.getElementById('area-acao-pro');
+        if(!nick) return;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        
+        let docSnap = await db.collection("militares").doc(nick).get();
+        if(docSnap.exists && docSnap.data().status !== 'Suspenso') {
+            militarVerificadoPro = { id: docSnap.id, ...docSnap.data() };
+            document.getElementById('lbl-nick-pro').innerText = militarVerificadoPro.nome;
+            divAcao.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-search"></i> Verificar Nick';
+        } else {
+            // Se nao achar, pergunta se quer criar (facilita pro sub)
+            let cria = confirm(`O policial "${nick}" não foi encontrado. Deseja cadastrá--lo agora no sistema?`);
+            if(cria) {
+                await db.collection("militares").doc(nick).set({ nome: nick, promocoes_realizadas: 0, estrelas: 0, premios_acumulados: 0, status: 'Ativo' });
+                militarVerificadoPro = { id: nick, nome: nick, promocoes_realizadas: 0, estrelas: 0, premios_acumulados: 0, status: 'Ativo' };
+                document.getElementById('lbl-nick-pro').innerText = nick;
+                divAcao.style.display = 'block';
+            } else {
+                divAcao.style.display = 'none'; militarVerificadoPro = null;
+            }
+            btn.innerHTML = '<i class="fas fa-search"></i> Verificar Nick';
+        }
+    }
+
+    async function verificarNickSan() {
+        let nick = document.getElementById('input-busca-nick-san').value.trim();
+        let btn = document.getElementById('btn-verificar-san');
+        let divAcao = document.getElementById('area-acao-san');
+        if(!nick) return;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        let docSnap = await db.collection("militares").doc(nick).get();
+        if(docSnap.exists) {
+            militarVerificadoSan = { id: docSnap.id, ...docSnap.data() };
+            document.getElementById('lbl-nick-san').innerText = militarVerificadoSan.nome;
+            divAcao.style.display = 'block';
+        } else {
+            alert("Policial não encontrado."); divAcao.style.display = 'none'; militarVerificadoSan = null;
+        }
+        btn.innerHTML = '<i class="fas fa-search"></i> Verificar Nick';
+    }
+
+    function mudarTipoSancao() {
+        let v = document.getElementById('sel-tipo-sancao').value;
+        document.getElementById('box-qtd-san').style.display = v === 'deduzir' ? 'flex' : 'none';
+    }
+
+    function registrarLogEstrela(bene, acao, idProm, detalhes) {
+        db.collection("logs_estrelas").add({
+            timestamp: new Date().getTime(),
+            data_hora: new Date().toLocaleString('pt-BR'),
+            autor: usuarioLogadoNick,
+            beneficiado: bene,
+            acao: acao,
+            id_promocao: idProm || '-',
+            detalhes: detalhes
         });
     }
 
-    window.registrarPromocao = function() {
-        const militarId = document.getElementById('sel-militar-promocao').value;
-        if(!militarId) return alert("Selecione um policial.");
+    function registrarPromocao() {
+        if(!militarVerificadoPro) return;
+        let idProm = document.getElementById('input-id-promocao').value.trim();
+        if(!idProm) return alert("Insira o ID da promoção do System!");
 
-        const ref = db.collection("militares").doc(militarId);
-        ref.get().then((snap) => {
-            if (snap.exists) {
-                let dados = snap.data();
-                let novasPromocoes = (dados.promocoes_realizadas || 0) + 1;
-                let novasEstrelas = dados.estrelas || 0;
-                let novosPremios = dados.premios_acumulados || 0;
+        let ref = db.collection("militares").doc(militarVerificadoPro.id);
+        let dados = militarVerificadoPro;
+        let p = (dados.promocoes_realizadas || 0) + 1;
+        let e = dados.estrelas || 0;
+        let pr = dados.premios_acumulados || 0;
+        let detail = "+1 na contagem do ciclo.";
 
-                if (novasPromocoes >= 3) {
-                    novasPromocoes = 0; novasEstrelas += 1;
-                }
+        if (p >= 3) { p = 0; e += 1; detail = "Estrela Concedida! (Ciclo fechou)."; }
+        if (e >= 10) { alert(`🏅 ATENÇÃO! O policial ${dados.nome} atingiu 10 estrelas!\nPremiação: Insígnia, 1 HC, 1 Mês VIP Ouro.`); e = 0; pr += 1; detail += " 10 Estrelas atingidas. Premiado e zerado."; }
 
-                if (novasEstrelas >= 10) {
-                    alert(`🏅 ATENÇÃO! O policial ${dados.nome} atingiu 10 estrelas!\n\nPremiação a ser concedida (Art. 6º):\nI. Insígnia de Reconhecimento\nII. 01 HC\nIII. 01 Mês VIP Ouro.\n\nAs estrelas deste militar serão zeradas para um novo ciclo.`);
-                    novasEstrelas = 0; novosPremios += 1;
-                }
-
-                ref.update({ promocoes_realizadas: novasPromocoes, estrelas: novasEstrelas, premios_acumulados: novosPremios })
-                   .then(() => mostrarToastAdmin(`Promoção registrada para ${dados.nome}.`));
-            }
+        ref.update({ promocoes_realizadas: p, estrelas: e, premios_acumulados: pr }).then(() => {
+            registrarLogEstrela(dados.nome, "Promoção", idProm, detail);
+            mostrarToastAdmin("Promoção registrada com sucesso!");
+            document.getElementById('area-acao-pro').style.display = 'none';
+            document.getElementById('input-id-promocao').value = '';
+            document.getElementById('input-busca-nick-pro').value = '';
+            militarVerificadoPro = null;
         });
     }
 
-    window.aplicarSancao = function() {
-        const militarId = document.getElementById('sel-militar-sancao').value;
-        const sancao = document.getElementById('sel-tipo-sancao').value;
-        if(!militarId) return alert("Selecione um policial.");
+    function aplicarSancao() {
+        if(!militarVerificadoSan) return;
+        let sancao = document.getElementById('sel-tipo-sancao').value;
+        let ref = db.collection("militares").doc(militarVerificadoSan.id);
+        let dados = militarVerificadoSan;
+        let att = {}; let acaoLog = ""; let detailLog = "";
 
-        const ref = db.collection("militares").doc(militarId);
-        ref.get().then((snap) => {
-            if(snap.exists) {
-                let dados = snap.data();
-                let atualizacao = {};
+        if(sancao === 'deduzir') {
+            let qtd = parseInt(document.getElementById('input-qtd-san').value);
+            if(isNaN(qtd) || qtd <= 0) return alert("Informe a quantidade para deduzir.");
+            if(dados.estrelas < qtd) return alert(`O militar possui apenas ${dados.estrelas} estrelas.`);
+            att.estrelas = dados.estrelas - qtd;
+            acaoLog = "Dedução"; detailLog = `-${qtd} estrela(s).`;
+        } else if(sancao === 'cassar_todas') {
+            att.estrelas = 0; att.promocoes_realizadas = 0;
+            acaoLog = "Cassação"; detailLog = "Estrelas e ciclo zerados.";
+        } else if(sancao === 'suspender') {
+            att.status = 'Suspenso'; acaoLog = "Suspensão"; detailLog = "Status alterado para Suspenso.";
+        } else if(sancao === 'reativar') {
+            att.status = 'Ativo'; acaoLog = "Reativação"; detailLog = "Status alterado para Ativo.";
+        }
 
-                switch(sancao) {
-                    case 'deduzir_1':
-                        if(dados.estrelas > 0) { atualizacao.estrelas = dados.estrelas - 1; } 
-                        else { return alert('O militar já possui 0 estrelas.'); }
-                        break;
-                    case 'cassar_todas':
-                        atualizacao.estrelas = 0;
-                        atualizacao.promocoes_realizadas = 0;
-                        break;
-                    case 'suspender':
-                        atualizacao.status = 'Suspenso';
-                        break;
-                    case 'reativar':
-                        atualizacao.status = 'Ativo';
-                        break;
-                }
-                ref.update(atualizacao).then(() => mostrarToastAdmin(`Sanção aplicada com sucesso.`));
-            }
+        ref.update(att).then(() => {
+            registrarLogEstrela(dados.nome, acaoLog, '-', detailLog);
+            mostrarToastAdmin("Sanção aplicada!");
+            document.getElementById('area-acao-san').style.display = 'none';
+            document.getElementById('input-busca-nick-san').value = '';
+            militarVerificadoSan = null;
+        });
+    }
+
+    function escutarLogsEstrelas() {
+        db.collection("logs_estrelas").orderBy("timestamp", "desc").limit(50).onSnapshot(snap => {
+            let tbody = document.querySelector('#tb-logs tbody');
+            tbody.innerHTML = '';
+            snap.forEach(doc => {
+                let d = doc.data();
+                let cor = d.acao.includes("Promoção") ? "color:#4caf50;" : "color:#ff2a2a;";
+                tbody.innerHTML += `<tr><td style="font-size:12px;">${d.data_hora}</td><td><strong>${d.autor}</strong></td><td>${d.beneficiado}</td><td style="${cor} font-weight:bold;">${d.acao}</td><td style="font-size:13px; color:var(--text-sub);">ID: ${d.id_promocao} <br> ${d.detalhes}</td></tr>`;
+            });
         });
     }
 
     // ==========================================
-    // DASHBOARD & EVENTOS
+    // DASHBOARD & MULTI-EVENTOS
     // ==========================================
     function abrirDashboard() { document.getElementById('modal-dashboard').style.display = 'flex'; renderAdminEventosList(); }
     function fecharDashboard() { document.getElementById('modal-dashboard').style.display = 'none'; }
@@ -713,11 +731,7 @@
     function removerEventoBox(index) { dashboardEventosData.splice(index, 1); renderAdminEventosList(); }
 
     function renderAdminEventosList() {
-        let container = document.getElementById('dash-eventos-container');
-        container.innerHTML = '';
-        if(dashboardEventosData.length === 0) {
-            container.innerHTML = '<p style="color:var(--text-sub); font-style:italic; font-size:14px; margin-bottom:20px;">Nenhum evento criado. Clique em "Adicionar Evento".</p>';
-        }
+        let container = document.getElementById('dash-eventos-container'); container.innerHTML = '';
         dashboardEventosData.forEach((ev, i) => {
             let html = `
             <div class="admin-evento-item">
@@ -731,10 +745,10 @@
                 <label class="tech-label">Regras e Descrição</label>
                 ${buildEditorHTML(`ev-desc-${i}`, ev.descricao)}
                 <label class="tech-label">Texto da Premiação</label>
-                <input type="text" class="admin-input ev-premios-txt" style="margin-bottom:10px;" placeholder="Ex: 4 HCs para o 1º lugar e 50c para o 2º" value="${ev.premiosTexto || ''}">
+                <input type="text" class="admin-input ev-premios-txt" style="margin-bottom:10px;" placeholder="Ex: 4 HCs para o 1º lugar..." value="${ev.premiosTexto || ''}">
                 <div style="display:flex; gap:20px; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                   <label style="color:#fff; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" class="ev-hc" style="width:16px; height:16px;" ${ev.hc ? 'checked' : ''}> Ícone HC</label>
-                   <label style="color:#fff; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" class="ev-moedas" style="width:16px; height:16px;" ${ev.moedas ? 'checked' : ''}> Ícone Moedas</label>
+                   <label style="color:#fff; cursor:pointer;"><input type="checkbox" class="ev-hc" ${ev.hc ? 'checked' : ''}> HC</label>
+                   <label style="color:#fff; cursor:pointer;"><input type="checkbox" class="ev-moedas" ${ev.moedas ? 'checked' : ''}> Moedas</label>
                 </div>
             </div>`;
             container.insertAdjacentHTML('beforeend', html);
@@ -742,141 +756,86 @@
     }
 
     function salvarDashboard() {
-        let eventosParaSalvar = [];
-        let blocos = document.querySelectorAll('.admin-evento-item');
-        blocos.forEach(el => {
-            eventosParaSalvar.push({
-                nome: el.querySelector('.ev-nome').value,
-                dataInicio: el.querySelector('.ev-data-inicio').value,
-                dataFim: el.querySelector('.ev-data-fim').value,
-                descricao: el.querySelector('.ev-desc').innerHTML,
-                premiosTexto: el.querySelector('.ev-premios-txt').value,
-                hc: el.querySelector('.ev-hc').checked,
-                moedas: el.querySelector('.ev-moedas').checked
+        let evs = []; document.querySelectorAll('.admin-evento-item').forEach(el => {
+            evs.push({
+                nome: el.querySelector('.ev-nome').value, dataInicio: el.querySelector('.ev-data-inicio').value, dataFim: el.querySelector('.ev-data-fim').value,
+                descricao: el.querySelector('.ev-desc').innerHTML, premiosTexto: el.querySelector('.ev-premios-txt').value,
+                hc: el.querySelector('.ev-hc').checked, moedas: el.querySelector('.ev-moedas').checked
             });
         });
-
-        let dados = {
-            eventoAtivo: document.getElementById('dash-toggle-evento').checked,
-            eventoMult: parseInt(document.getElementById('dash-mult-evento').value) || 1,
-            textoPatrocinio: document.getElementById('dash-txt-patrocinio').value,
-            eventos: eventosParaSalvar
-        };
-        db.collection("sistema").doc("config_metas").set(dados, {merge:true}).then(() => {
-            mostrarToastAdmin("Painel Atualizado com Sucesso!"); fecharDashboard();
-        });
+        db.collection("sistema").doc("config_metas").set({
+            eventoAtivo: document.getElementById('dash-toggle-evento').checked, eventoMult: parseInt(document.getElementById('dash-mult-evento').value) || 1,
+            textoPatrocinio: document.getElementById('dash-txt-patrocinio').value, eventos: evs
+        }, {merge:true}).then(() => { mostrarToastAdmin("Painel Atualizado!"); fecharDashboard(); });
     }
 
     function escutarConfigDashboard() {
         db.collection("sistema").doc("config_metas").onSnapshot((doc) => {
             if (doc.exists) {
-                let d = doc.data();
-                eventoAtivo = d.eventoAtivo || false;
-                eventoMult = parseInt(d.eventoMult) || 1;
-                pontosExtrasMap = d.pontosExtras || {};
-                dashboardEventosData = d.eventos || [];
+                let d = doc.data(); eventoAtivo = d.eventoAtivo || false; eventoMult = parseInt(d.eventoMult) || 1;
+                pontosExtrasMap = d.pontosExtras || {}; dashboardEventosData = d.eventos || [];
                 
-                if(nivelUsuarioGlobal === 'ADMIN') {
-                    document.getElementById('dash-toggle-evento').checked = eventoAtivo;
-                    document.getElementById('dash-mult-evento').value = eventoMult;
-                    document.getElementById('dash-txt-patrocinio').value = d.textoPatrocinio || '';
+                if(nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
+                    let tg = document.getElementById('dash-toggle-evento'); if(tg) tg.checked = eventoAtivo;
+                    let ml = document.getElementById('dash-mult-evento'); if(ml) ml.value = eventoMult;
+                    let pr = document.getElementById('dash-txt-patrocinio'); if(pr) pr.value = d.textoPatrocinio || '';
                 }
 
                 let banner = document.getElementById('evento-banner');
                 if(eventoAtivo && eventoMult > 1) { banner.style.display = 'flex'; } else { banner.style.display = 'none'; eventoMult = 1; }
-
                 document.getElementById('ui-txt-patrocinio').innerText = d.textoPatrocinio || 'Deseja patrocinar algum dos eventos e ajudar ainda mais a divisão? Procure a Liderança!';
 
-                let uiLista = document.getElementById('ui-lista-eventos');
-                uiLista.innerHTML = '';
-                if(dashboardEventosData.length === 0) {
-                    uiLista.innerHTML = `<div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;"><div style="color: #fff; font-size: 14px;">Fique atento aos anúncios no grupo!</div></div>`;
-                } else {
+                let uiLista = document.getElementById('ui-lista-eventos'); uiLista.innerHTML = '';
+                if(dashboardEventosData.length === 0) uiLista.innerHTML = `<div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;"><div style="color: #fff; font-size: 14px;">Fique atento aos anúncios no grupo!</div></div>`;
+                else {
                     dashboardEventosData.forEach((ev, i) => {
-                        let dtTxt = '';
-                        if(ev.dataInicio && ev.dataFim) dtTxt = `${formatarDataBR(ev.dataInicio)} a ${formatarDataBR(ev.dataFim)}`;
-                        else if(ev.dataInicio) dtTxt = `A partir de ${formatarDataBR(ev.dataInicio)}`;
-                        
-                        let premiosUI = '';
+                        let dtTxt = ''; if(ev.dataInicio && ev.dataFim) dtTxt = `${formatarDataBR(ev.dataInicio)} a ${formatarDataBR(ev.dataFim)}`; else if(ev.dataInicio) dtTxt = `A partir de ${formatarDataBR(ev.dataInicio)}`;
+                        let pUI = '';
                         if(ev.premiosTexto || ev.hc || ev.moedas) {
-                            premiosUI = `<div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(251,191,36,0.2);">`;
-                            if(ev.premiosTexto) premiosUI += `<div style="color:var(--sup-neon); font-size:13px; margin-bottom:10px; font-weight:600;">${ev.premiosTexto}</div>`;
+                            pUI = `<div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(251,191,36,0.2);">`;
+                            if(ev.premiosTexto) pUI += `<div style="color:var(--sup-neon); font-size:13px; margin-bottom:10px; font-weight:600;">${ev.premiosTexto}</div>`;
                             if(ev.hc || ev.moedas) {
                                 let wHC = layoutConfig[`img-premio-hc-${i}`] ? layoutConfig[`img-premio-hc-${i}`].width : '40px';
                                 let wM = layoutConfig[`img-premio-moedas-${i}`] ? layoutConfig[`img-premio-moedas-${i}`].width : '40px';
-                                
-                                premiosUI += `<div style="display:flex; gap:15px; align-items:center;">`;
-                                if(ev.hc) premiosUI += `<img id="img-premio-hc-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirfXmN9g_cDNpjq8o7oXeKFIRwJLgI-w2FEisZ3iJdxqblDlMM858H3fDrWh-PpDE12pNyMmPBdxX8TRgBU95PXO8nd24V9Gny1nFTkhqsGKUKfMmtK-AEoIAvFTsJBjsNV2gk2oUkTTpf/s1600/HC31.gif" class="resizable-prize" draggable="false" style="display:block; width:${wHC};">`;
-                                if(ev.moedas) premiosUI += `<img id="img-premio-moedas-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjDZ6AWqYyPxpnw-heLbJ-k1qoyj_EZN8_wWWotWVW5MzTQZKPQEY-L3zuPCYIK-ExBKbQFBxyfS_c_F4xY6pPUAgRoHiJvC9HgpWYj6iVUCp4eXDF7M-ilisPyCQ6KBpGfdqgwjpmvWrsi/s1600/15c6908117fc3.gif" class="resizable-prize" draggable="false" style="display:block; width:${wM};">`;
-                                premiosUI += `</div>`;
+                                pUI += `<div style="display:flex; gap:15px; align-items:center;">`;
+                                if(ev.hc) pUI += `<img id="img-premio-hc-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirfXmN9g_cDNpjq8o7oXeKFIRwJLgI-w2FEisZ3iJdxqblDlMM858H3fDrWh-PpDE12pNyMmPBdxX8TRgBU95PXO8nd24V9Gny1nFTkhqsGKUKfMmtK-AEoIAvFTsJBjsNV2gk2oUkTTpf/s1600/HC31.gif" class="resizable-prize" draggable="false" style="display:block; width:${wHC};">`;
+                                if(ev.moedas) pUI += `<img id="img-premio-moedas-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjDZ6AWqYyPxpnw-heLbJ-k1qoyj_EZN8_wWWotWVW5MzTQZKPQEY-L3zuPCYIK-ExBKbQFBxyfS_c_F4xY6pPUAgRoHiJvC9HgpWYj6iVUCp4eXDF7M-ilisPyCQ6KBpGfdqgwjpmvWrsi/s1600/15c6908117fc3.gif" class="resizable-prize" draggable="false" style="display:block; width:${wM};">`;
+                                pUI += `</div>`;
                             }
-                            premiosUI += `</div>`;
+                            pUI += `</div>`;
                         }
-
-                        let evCard = `
-                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;">
-                           <h4 style="color:var(--sup-neon); margin-bottom: 5px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;">${ev.nome || 'Evento'}</h4>
-                           ${dtTxt ? `<div style="color: var(--text-sub); font-size: 13px; margin-bottom: 10px; display:flex; align-items:center; gap:5px; font-weight:600;"><i class="far fa-calendar-day"></i> <span>${dtTxt}</span></div>` : ''}
-                           <div style="color: #fff; font-size: 14px; line-height: 1.5;">${ev.descricao || ''}</div>
-                           ${premiosUI}
-                        </div>`;
-                        uiLista.insertAdjacentHTML('beforeend', evCard);
+                        uiLista.insertAdjacentHTML('beforeend', `<div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;"><h4 style="color:var(--sup-neon); margin-bottom: 5px; font-size: 18px; text-transform: uppercase;">${ev.nome || 'Evento'}</h4>${dtTxt ? `<div style="color: var(--text-sub); font-size: 13px; margin-bottom: 10px; display:flex; align-items:center; gap:5px; font-weight:600;"><i class="far fa-calendar-day"></i> <span>${dtTxt}</span></div>` : ''}<div style="color: #fff; font-size: 14px; line-height: 1.5;">${ev.descricao || ''}</div>${pUI}</div>`);
                     });
                 }
                 
                 setupPrizesResizable(); 
-
-                if(membrosDataArray.length > 0) {
-                    processarPodio();
-                    if(document.getElementById('select-membro').value) renderMemberDetails();
-                    renderTabelaPontosExtras(); 
-                }
+                if(membrosDataArray.length > 0) { processarPodio(); if(document.getElementById('select-membro').value) renderMemberDetails(); renderTabelaPontosExtras(); }
             }
         });
     }
 
-    // ==========================================
-    // PONTOS EXTRAS (ADMIN)
-    // ==========================================
     function abrirModalPontosExtras() {
         document.getElementById('modal-pontos-extras').style.display = 'flex';
-        let sel = document.getElementById('pe-select-membro');
-        sel.innerHTML = '<option value="" disabled selected>Selecione um membro...</option>';
-        let sorted = [...membrosDataArray].sort((a,b) => a.nick.localeCompare(b.nick));
-        sorted.forEach(m => { sel.innerHTML += `<option value="${m.nick}">${m.nick}</option>`; });
+        let sel = document.getElementById('pe-select-membro'); sel.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+        [...membrosDataArray].sort((a,b) => a.nick.localeCompare(b.nick)).forEach(m => { sel.innerHTML += `<option value="${m.nick}">${m.nick}</option>`; });
         renderTabelaPontosExtras();
     }
     function fecharModalPontosExtras() { document.getElementById('modal-pontos-extras').style.display = 'none'; }
-
     function salvarPontoExtra() {
-        let nick = document.getElementById('pe-select-membro').value;
-        let pts = parseInt(document.getElementById('pe-input-pontos').value);
+        let nick = document.getElementById('pe-select-membro').value; let pts = parseInt(document.getElementById('pe-input-pontos').value);
         if(!nick || isNaN(pts)) return alert("Selecione um membro e digite a pontuação.");
-        
         pontosExtrasMap[nick] = pts;
-        db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, {merge:true}).then(() => {
-            document.getElementById('pe-input-pontos').value = '';
-            mostrarToastAdmin(`+${pts} pontos atribuídos a ${nick}`);
-        });
+        db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, {merge:true}).then(() => { document.getElementById('pe-input-pontos').value = ''; mostrarToastAdmin(`+${pts} pontos para ${nick}`); });
     }
-
-    function removerPontoExtra(nick) {
-        delete pontosExtrasMap[nick];
-        db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, {merge:true});
-    }
-
+    function removerPontoExtra(nick) { delete pontosExtrasMap[nick]; db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, {merge:true}); }
     function renderTabelaPontosExtras() {
-        let tbody = document.querySelector('#tb-pontos-extras tbody');
-        tbody.innerHTML = '';
-        for(let nick in pontosExtrasMap) {
-            tbody.innerHTML += `<tr><td>${nick}</td><td style="text-align:center; color:var(--sup-neon); font-weight:bold;">+${pontosExtrasMap[nick]}</td><td style="text-align:right;"><button class="btn-admin-icon btn-admin-del" onclick="removerPontoExtra('${nick}')"><i class="fas fa-trash"></i></button></td></tr>`;
-        }
-        if(Object.keys(pontosExtrasMap).length === 0) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-sub);">Nenhum ponto extra atribuído.</td></tr>';
+        let tbody = document.querySelector('#tb-pontos-extras tbody'); tbody.innerHTML = '';
+        for(let n in pontosExtrasMap) { tbody.innerHTML += `<tr><td>${n}</td><td style="text-align:center; color:var(--sup-neon); font-weight:bold;">+${pontosExtrasMap[n]}</td><td style="text-align:right;"><button class="btn-admin-icon btn-admin-del" onclick="removerPontoExtra('${n}')"><i class="fas fa-trash"></i></button></td></tr>`; }
+        if(Object.keys(pontosExtrasMap).length === 0) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-sub);">Nenhum ponto extra.</td></tr>';
     }
-
 
     // ==========================================
-    // SISTEMA DE ARRASTAR E REDIMENSIONAR INFALÍVEL
+    // SISTEMA ARRASTAR E REDIMENSIONAR
     // ==========================================
     function aplicarPosicoes() {
         for(let id in layoutConfig) {
@@ -890,231 +849,119 @@
         }
         aplicarSponsorInner();
     }
-
     function aplicarSponsorInner() {
         let conf = layoutConfig['sponsorInner'] || {width: '60px', left: '0px', top: '-10px'};
         document.querySelectorAll('.sponsor-avatar img').forEach(img => {
-            if(conf.left) img.style.left = conf.left; 
-            if(conf.top) img.style.top = conf.top; 
-            if(conf.width) img.style.width = conf.width;
+            if(conf.left) img.style.left = conf.left; if(conf.top) img.style.top = conf.top; if(conf.width) img.style.width = conf.width;
         });
     }
-
     function carregarLayoutConfig() {
         db.collection("sistema").doc("config_layout").get().then((doc) => {
-            if(doc.exists && doc.data().posicoes) {
-                let loaded = doc.data().posicoes;
-                for(let k in loaded) { layoutConfig[k] = { ...layoutConfig[k], ...loaded[k] }; }
-            }
+            if(doc.exists && doc.data().posicoes) { let loaded = doc.data().posicoes; for(let k in loaded) { layoutConfig[k] = { ...layoutConfig[k], ...loaded[k] }; } }
             aplicarPosicoes();
         });
     }
-
     function savePositions() {
-        if(nivelUsuarioGlobal !== 'ADMIN') return;
-        db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }).then(() => {
-            mostrarToastAdmin("Posições e Tamanhos salvos!");
-            if(isEditMode) toggleEditMode();
-        });
+        db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, {merge: true}).then(() => { mostrarToastAdmin("Posições salvas!"); if(isEditMode) toggleEditMode(); });
     }
 
     function toggleEditMode() {
         isEditMode = !isEditMode;
-        let btn = document.getElementById('btn-edit-pos');
-        let dica = document.getElementById('dica-resize');
-        let elsDrag = document.querySelectorAll('.draggable-item');
-        let elsSponImg = document.querySelectorAll('.sponsor-avatar img');
-        let elsPrize = document.querySelectorAll('.resizable-prize');
-        let areaDet = document.getElementById('area-detalhes-membro');
+        let btn = document.getElementById('btn-edit-pos'); let dica = document.getElementById('dica-resize');
+        let elsDrag = document.querySelectorAll('.draggable-item'); let elsSponImg = document.querySelectorAll('.sponsor-avatar img');
+        let elsPrize = document.querySelectorAll('.resizable-prize'); let areaDet = document.getElementById('area-detalhes-membro');
 
         if(isEditMode) {
-            btn.innerHTML = '<i class="fas fa-times"></i> Concluir Edição';
-            btn.style.borderColor = '#ef4444'; btn.style.color = '#ef4444';
-            dica.style.display = 'inline';
-            
+            btn.innerHTML = '<i class="fas fa-times"></i> Concluir Edição'; btn.style.borderColor = '#ef4444'; btn.style.color = '#ef4444'; dica.style.display = 'inline';
             areaDet.style.display = 'flex'; areaDet.style.opacity = '1';
 
-            let fallbacks = [
-                {id: 'avatar-1', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
-                {id: 'avatar-2', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
-                {id: 'avatar-selecionado', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
-                {id: 'avatar-empate-1', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b'},
-                {id: 'avatar-empate-2', src: 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b'}
-            ];
-            fallbacks.forEach(f => {
-                let img = document.getElementById(f.id);
-                if(img && (!img.src || img.src.endsWith('='))) img.src = f.src;
-            });
+            let fbacks = [ {id:'avatar-1'}, {id:'avatar-2'}, {id:'avatar-selecionado'}, {id:'avatar-empate-1'}, {id:'avatar-empate-2'} ];
+            fbacks.forEach(f => { let img = document.getElementById(f.id); if(img && (!img.src || img.src.endsWith('='))) img.src = 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b'; });
             
             document.getElementById('nick-1').innerText = "NICK 1"; document.getElementById('nick-1').style.display = "block";
             document.getElementById('nick-2').innerText = "NICK 2"; document.getElementById('nick-2').style.display = "block";
 
-            elsDrag.forEach(e => { 
-                e.classList.add('edit-mode'); 
-                if(e.tagName === 'IMG' || e.tagName === 'DIV') e.style.display = 'block'; 
-            }); 
-            
+            elsDrag.forEach(e => { e.classList.add('edit-mode'); if(e.tagName === 'IMG' || e.tagName === 'DIV') e.style.display = 'block'; }); 
             elsSponImg.forEach(img => { img.classList.add('sponsor-edit', 'edit-mode'); });
             elsPrize.forEach(img => { img.classList.add('edit-mode'); });
-            
         } else {
-            btn.innerHTML = '<i class="fas fa-arrows-alt"></i> Editar Posições';
-            btn.style.borderColor = ''; btn.style.color = '';
-            dica.style.display = 'none';
-            
-            elsDrag.forEach(e => { e.classList.remove('edit-mode'); });
-            elsSponImg.forEach(img => { img.classList.remove('sponsor-edit', 'edit-mode'); });
-            elsPrize.forEach(img => { img.classList.remove('edit-mode'); });
-            
-            if(!document.getElementById('select-membro').value) {
-                areaDet.style.display = 'none'; areaDet.style.opacity = '0';
-            } else { renderMemberDetails(); }
-            
+            btn.innerHTML = '<i class="fas fa-arrows-alt"></i> Editar Posições'; btn.style.borderColor = ''; btn.style.color = ''; dica.style.display = 'none';
+            elsDrag.forEach(e => { e.classList.remove('edit-mode'); }); elsSponImg.forEach(img => { img.classList.remove('sponsor-edit', 'edit-mode'); }); elsPrize.forEach(img => { img.classList.remove('edit-mode'); });
+            if(!document.getElementById('select-membro').value) { areaDet.style.display = 'none'; areaDet.style.opacity = '0'; } else { renderMemberDetails(); }
             processarPodio(); 
         }
     }
 
     function setupPrizesResizable() {
         document.querySelectorAll('.resizable-prize').forEach(img => {
-            if(img.dataset.dragReady) return;
-            img.dataset.dragReady = "true";
-            img.ondragstart = () => false;
+            if(img.dataset.dragReady) return; img.dataset.dragReady = "true"; img.ondragstart = () => false;
             img.addEventListener('wheel', (e) => {
-                if(!isEditMode) return;
-                e.preventDefault(); e.stopPropagation();
-                let styleW = window.getComputedStyle(img).width;
-                let w = parseFloat(styleW) || img.offsetWidth;
-                w += e.deltaY < 0 ? 5 : -5;
-                if(w < 20) w = 20;
-                img.style.width = w + 'px';
-                layoutConfig[img.id] = layoutConfig[img.id] || {};
-                layoutConfig[img.id].width = w + 'px';
+                if(!isEditMode) return; e.preventDefault(); e.stopPropagation();
+                let w = parseFloat(img.style.width) || img.offsetWidth; w += e.deltaY < 0 ? 5 : -5; if(w < 15) w = 15;
+                img.style.width = w + 'px'; layoutConfig[img.id] = layoutConfig[img.id] || {}; layoutConfig[img.id].width = w + 'px';
             }, { passive: false });
         });
     }
 
     function setupAllDraggables() {
         document.querySelectorAll('.draggable-item').forEach(el => {
-            if(el.dataset.dragReady) return;
-            el.dataset.dragReady = "true";
-            el.ondragstart = () => false;
-
+            if(el.dataset.dragReady) return; el.dataset.dragReady = "true"; el.ondragstart = () => false;
             el.addEventListener('mousedown', (e) => {
-                if(!isEditMode) return;
-                e.preventDefault(); e.stopPropagation();
-
-                let startX = e.clientX; let startY = e.clientY;
-                let startLeft = el.offsetLeft; let startTop = el.offsetTop;
-
-                const onMouseMove = (moveEvent) => {
-                    moveEvent.preventDefault();
-                    let dx = moveEvent.clientX - startX; let dy = moveEvent.clientY - startY;
-                    el.style.left = (startLeft + dx) + 'px'; el.style.top = (startTop + dy) + 'px';
-                };
-
-                const onMouseUp = () => {
-                    document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp);
-                    let idKey = el.id;
-                    if(idKey) { layoutConfig[idKey] = layoutConfig[idKey] || {}; layoutConfig[idKey].left = el.style.left; layoutConfig[idKey].top = el.style.top; }
-                };
-
+                if(!isEditMode) return; e.preventDefault(); e.stopPropagation();
+                let startX = e.clientX; let startY = e.clientY; let startLeft = el.offsetLeft; let startTop = el.offsetTop;
+                const onMouseMove = (mEv) => { mEv.preventDefault(); el.style.left = (startLeft + (mEv.clientX - startX)) + 'px'; el.style.top = (startTop + (mEv.clientY - startY)) + 'px'; };
+                const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); layoutConfig[el.id] = layoutConfig[el.id] || {}; layoutConfig[el.id].left = el.style.left; layoutConfig[el.id].top = el.style.top; };
                 document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
             });
-
             el.addEventListener('wheel', (e) => {
-                if(!isEditMode) return;
-                e.preventDefault(); e.stopPropagation();
-                let currentWidth = parseFloat(window.getComputedStyle(el).width) || el.offsetWidth;
-                currentWidth += e.deltaY < 0 ? 5 : -5;
-                if(currentWidth < 15) currentWidth = 15;
-                el.style.width = currentWidth + 'px';
-
-                let idKey = el.id;
-                if(idKey) { layoutConfig[idKey] = layoutConfig[idKey] || {}; layoutConfig[idKey].width = el.style.width; }
+                if(!isEditMode) return; e.preventDefault(); e.stopPropagation();
+                let w = parseFloat(window.getComputedStyle(el).width) || el.offsetWidth; w += e.deltaY < 0 ? 5 : -5; if(w < 15) w = 15;
+                el.style.width = w + 'px'; layoutConfig[el.id] = layoutConfig[el.id] || {}; layoutConfig[el.id].width = el.style.width;
             }, { passive: false });
         });
     }
 
     // ==========================================
-    // LÓGICA DE METAS E PÓDIO
+    // METAS E PÓDIO
     // ==========================================
     function escutarMetasDoFirebase() {
         db.collection("sistema").doc("metas").onSnapshot((doc) => {
             if (doc.exists && doc.data().dados) {
                 let rows = []; try { rows = JSON.parse(doc.data().dados); } catch(e) { return; }
                 if(rows.length > 17 && rows[17][1]) document.getElementById('meta-week-title').innerText = rows[17][1];
-
                 membrosDataArray = []; let sponsorsList = [];
-
-                for(let i = 3; i < rows.length; i++) {
-                    if(rows[i][15]) sponsorsList.push(rows[i][15]);
-                    if(rows[i][16]) sponsorsList.push(rows[i][16]);
-                    if(rows[i][17]) sponsorsList.push(rows[i][17]);
-                }
+                for(let i = 3; i < rows.length; i++) { if(rows[i][15]) sponsorsList.push(rows[i][15]); if(rows[i][16]) sponsorsList.push(rows[i][16]); if(rows[i][17]) sponsorsList.push(rows[i][17]); }
                 renderSponsors(sponsorsList);
-
                 for(let i = 20; i < rows.length; i++) {
                     if(!rows[i][3]) continue;
                     membrosDataArray.push({
-                        cargo: rows[i][2] || '', nick: rows[i][3].trim(),
-                        convite: parseInt(rows[i][5]) || 0, ppp: parseInt(rows[i][6]) || 0,
-                        rels: parseInt(rows[i][7]) || 0, relcg: parseInt(rows[i][9]) || 0,
-                        avisos: parseInt(rows[i][10]) || 0, total_base: parseInt(rows[i][11]) || 0,
-                        status_base: (rows[i][12] || '').toString().trim()
+                        cargo: rows[i][2] || '', nick: rows[i][3].trim(), convite: parseInt(rows[i][5]) || 0, ppp: parseInt(rows[i][6]) || 0, rels: parseInt(rows[i][7]) || 0,
+                        relcg: parseInt(rows[i][9]) || 0, avisos: parseInt(rows[i][10]) || 0, total_base: parseInt(rows[i][11]) || 0, status_base: (rows[i][12] || '').toString().trim()
                     });
                 }
                 popularSelectMembros(); processarPodio();
-                if(document.getElementById('select-membro').value) renderMemberDetails();
             }
         });
     }
 
     function renderSponsors(lista) {
-        let unique = [...new Set(lista.filter(n => n.trim() !== ''))];
-        let container = document.getElementById('sponsors-container');
-        container.innerHTML = '';
-        unique.forEach(nick => {
-            let limpo = nick.trim();
-            container.innerHTML += `<div class="sponsor-avatar" title="${limpo}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${limpo}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div>`;
-        });
+        let unique = [...new Set(lista.filter(n => n.trim() !== ''))]; let container = document.getElementById('sponsors-container'); container.innerHTML = '';
+        unique.forEach(nick => { container.innerHTML += `<div class="sponsor-avatar" title="${nick.trim()}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick.trim()}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div>`; });
         aplicarSponsorInner();
-        
         document.querySelectorAll('.sponsor-avatar img').forEach(img => {
-            if (img.dataset.dragReady) return;
-            img.dataset.dragReady = "true";
-            img.ondragstart = () => false;
-
+            if (img.dataset.dragReady) return; img.dataset.dragReady = "true"; img.ondragstart = () => false;
             img.addEventListener('mousedown', (e) => {
-                if(!isEditMode) return;
-                e.preventDefault(); e.stopPropagation();
-
-                let startX = e.clientX; let startY = e.clientY;
-                let startLeft = img.offsetLeft; let startTop = img.offsetTop;
-
-                const onMouseMove = (moveEvent) => {
-                    moveEvent.preventDefault();
-                    let dx = moveEvent.clientX - startX; let dy = moveEvent.clientY - startY;
-                    layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
-                    layoutConfig['sponsorInner'].left = (startLeft + dx) + 'px';
-                    layoutConfig['sponsorInner'].top = (startTop + dy) + 'px';
-                    aplicarSponsorInner();
-                };
-                const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
-                document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
+                if(!isEditMode) return; e.preventDefault(); e.stopPropagation();
+                let sX = e.clientX; let sY = e.clientY; let sL = img.offsetLeft; let sT = img.offsetTop;
+                const onMv = (mEv) => { mEv.preventDefault(); layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {}; layoutConfig['sponsorInner'].left = (sL + (mEv.clientX - sX)) + 'px'; layoutConfig['sponsorInner'].top = (sT + (mEv.clientY - sY)) + 'px'; aplicarSponsorInner(); };
+                const onUp = () => { document.removeEventListener('mousemove', onMv); document.removeEventListener('mouseup', onUp); };
+                document.addEventListener('mousemove', onMv); document.addEventListener('mouseup', onUp);
             });
-
             img.addEventListener('wheel', (e) => {
-                if(!isEditMode) return;
-                e.preventDefault(); e.stopPropagation();
-                let currentWidth = parseFloat(window.getComputedStyle(img).width) || img.offsetWidth;
-                currentWidth += e.deltaY < 0 ? 3 : -3;
-                if(currentWidth < 10) currentWidth = 10;
-                
-                layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
-                layoutConfig['sponsorInner'].width = currentWidth + 'px';
-                aplicarSponsorInner();
+                if(!isEditMode) return; e.preventDefault(); e.stopPropagation();
+                let w = parseFloat(window.getComputedStyle(img).width) || img.offsetWidth; w += e.deltaY < 0 ? 3 : -3; if(w < 10) w = 10;
+                layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {}; layoutConfig['sponsorInner'].width = w + 'px'; aplicarSponsorInner();
             }, { passive: false });
-            
             if(isEditMode) img.classList.add('sponsor-edit', 'edit-mode');
         });
     }
@@ -1127,75 +974,47 @@
         if(valAtual) sel.value = valAtual;
     }
 
-    function getPontuacaoFinal(m) {
-        let ptsExtra = pontosExtrasMap[m.nick] || 0;
-        return (m.total_base * eventoMult) + ptsExtra;
-    }
+    function getPontuacaoFinal(m) { return (m.total_base * eventoMult) + (pontosExtrasMap[m.nick] || 0); }
 
     function processarPodio() {
         if(isEditMode) return; 
-        let av1 = document.getElementById('avatar-1'); let m1 = document.getElementById('medal-1'); let n1 = document.getElementById('nick-1');
-        let av2 = document.getElementById('avatar-2'); let m2 = document.getElementById('medal-2'); let n2 = document.getElementById('nick-2');
-        let ave1 = document.getElementById('avatar-empate-1'); let txte1 = document.getElementById('txt-empate-1');
-        let ave2 = document.getElementById('avatar-empate-2'); let txte2 = document.getElementById('txt-empate-2');
+        let a1 = document.getElementById('avatar-1'); let m1 = document.getElementById('medal-1'); let n1 = document.getElementById('nick-1');
+        let a2 = document.getElementById('avatar-2'); let m2 = document.getElementById('medal-2'); let n2 = document.getElementById('nick-2');
+        let ae1 = document.getElementById('avatar-empate-1'); let te1 = document.getElementById('txt-empate-1');
+        let ae2 = document.getElementById('avatar-empate-2'); let te2 = document.getElementById('txt-empate-2');
         
-        av1.style.display = 'none'; m1.style.display = 'none'; n1.style.display = 'none';
-        av2.style.display = 'none'; m2.style.display = 'none'; n2.style.display = 'none';
-        ave1.style.display = 'none'; txte1.style.display = 'none';
-        ave2.style.display = 'none'; txte2.style.display = 'none';
-
+        [a1,m1,n1,a2,m2,n2,ae1,te1,ae2,te2].forEach(el => el.style.display = 'none');
         if(membrosDataArray.length === 0) return;
 
         let top = [...membrosDataArray].sort((a,b) => getPontuacaoFinal(b) - getPontuacaoFinal(a));
         let p1 = getPontuacaoFinal(top[0]); let p2 = (top.length > 1) ? getPontuacaoFinal(top[1]) : 0;
 
         if(top.length >= 2 && p1 > 0 && p1 === p2) {
-            ave1.src = "https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b";
-            ave2.src = "https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b";
-            ave1.style.display = 'block'; txte1.style.display = 'block';
-            ave2.style.display = 'block'; txte2.style.display = 'block';
+            ae1.src = ae2.src = "https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b";
+            [ae1,te1,ae2,te2].forEach(el => el.style.display = 'block');
         } else if(top.length > 0 && p1 > 0) {
-            av1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
-            n1.innerText = top[0].nick;
-            av1.style.display = 'block'; m1.style.display = 'block'; n1.style.display = 'block';
+            a1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; n1.innerText = top[0].nick;
+            [a1,m1,n1].forEach(el => el.style.display = 'block');
             if(top.length > 1 && p2 > 0) {
-                av2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
-                n2.innerText = top[1].nick;
-                av2.style.display = 'block'; m2.style.display = 'block'; n2.style.display = 'block';
+                a2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; n2.innerText = top[1].nick;
+                [a2,m2,n2].forEach(el => el.style.display = 'block');
             }
         }
     }
 
     function renderMemberDetails() {
-        let nick = document.getElementById('select-membro').value;
-        let m = membrosDataArray.find(x => x.nick === nick);
-        if(!m) return;
+        let nick = document.getElementById('select-membro').value; let m = membrosDataArray.find(x => x.nick === nick); if(!m) return;
+        document.getElementById('area-detalhes-membro').style.display = 'flex'; setTimeout(() => { document.getElementById('area-detalhes-membro').style.opacity = '1'; }, 50);
 
-        let area = document.getElementById('area-detalhes-membro');
-        area.style.display = 'flex'; setTimeout(() => { area.style.opacity = '1'; }, 50);
-
-        let tCalc = getPontuacaoFinal(m);
-        let ptsExtra = pontosExtrasMap[m.nick] || 0;
-        
+        let tCalc = getPontuacaoFinal(m); let ptsExtra = pontosExtrasMap[m.nick] || 0;
         document.getElementById('avatar-selecionado').src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${m.nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
+        document.getElementById('det-total').innerHTML = `<span>${tCalc}</span>` + (ptsExtra > 0 ? `<span style="font-size:16px; color:#4caf50; font-weight:normal;">(+${ptsExtra} bônus)</span>` : '');
         
-        let htmlTotal = `<span>${tCalc}</span>`;
-        if(ptsExtra > 0) htmlTotal += `<span style="font-size:16px; color:#4caf50; font-weight:normal;">(+${ptsExtra} bônus)</span>`;
-        document.getElementById('det-total').innerHTML = htmlTotal;
-        
-        document.getElementById('det-convite').innerText = m.convite * eventoMult;
-        document.getElementById('det-ppp').innerText = m.ppp * eventoMult;
-        document.getElementById('det-rels').innerText = m.rels * eventoMult;
-        document.getElementById('det-relcg').innerText = m.relcg * eventoMult;
-        document.getElementById('det-avisos').innerText = m.avisos * eventoMult;
+        document.getElementById('det-convite').innerText = m.convite * eventoMult; document.getElementById('det-ppp').innerText = m.ppp * eventoMult;
+        document.getElementById('det-rels').innerText = m.rels * eventoMult; document.getElementById('det-relcg').innerText = m.relcg * eventoMult; document.getElementById('det-avisos').innerText = m.avisos * eventoMult;
 
-        let stEl = document.getElementById('det-status');
-        let sFinal = m.status_base; if(tCalc >= 5) sFinal = "CUMPRIDA";
-        stEl.innerText = sFinal;
-        let sTxt = sFinal.toLowerCase();
-        if(sTxt.includes('não') || sTxt.includes('nao')) { stEl.style.color = '#ef4444'; }
-        else if(sTxt.includes('cumprida')) { stEl.style.color = '#4caf50'; }
-        else { stEl.style.color = '#fff'; }
+        let stEl = document.getElementById('det-status'); let sFinal = m.status_base; if(tCalc >= 5) sFinal = "CUMPRIDA";
+        stEl.innerText = sFinal; stEl.style.color = sFinal.toLowerCase().includes('não') ? '#ef4444' : '#4caf50';
     }
 
     // ==========================================
@@ -1203,17 +1022,12 @@
     // ==========================================
     function carregarPrivacidade() {
         db.collection("sistema").doc("config_geral").get().then((doc) => {
-            let htmlPadrao = `<p>Escreva aqui a Política de Privacidade.</p>`;
             if (doc.exists && doc.data().textoPrivacidade) document.getElementById('editor-privacidade').innerHTML = doc.data().textoPrivacidade;
-            else document.getElementById('editor-privacidade').innerHTML = htmlPadrao;
         });
     }
-
     function salvarPrivacidade() {
-        let html = document.getElementById('editor-privacidade').innerHTML;
-        db.collection("sistema").doc("config_geral").set({ textoPrivacidade: html }, { merge: true }).then(() => mostrarToastAdmin("Política de Privacidade salva!"));
+        db.collection("sistema").doc("config_geral").set({ textoPrivacidade: document.getElementById('editor-privacidade').innerHTML }, { merge: true }).then(() => mostrarToastAdmin("Política de Privacidade salva!"));
     }
-
     function processarCalculo() {
         const d1 = document.getElementById('data-login').value; const d2 = document.getElementById('data-aval').value;
         const dAval = parseInt(document.getElementById('dias-aval').value); const d3 = document.getElementById('data-consulta').value;
@@ -1237,19 +1051,32 @@
     }
     function criarRowAcesso(item) {
         var tr = document.createElement('tr');
-        tr.innerHTML = `<td><input type="text" class="admin-input inp-email" value="${item.email || ''}" readonly></td><td><input type="text" class="admin-input inp-nick" value="${item.nick || ''}" readonly></td><td><input type="text" class="admin-input inp-nivel" value="${item.nivel || 'COMUM'}" readonly></td><td class="action-cell"><button class="btn-admin-icon btn-admin-edit" onclick="toggleEditRow(this)" title="Editar"><i class="fas fa-pencil-alt"></i></button><button class="btn-admin-icon btn-admin-del" onclick="this.closest('tr').remove()" title="Excluir"><i class="fas fa-trash"></i></button></td>`;
+        let selLider = item.nivel === 'LIDER' ? 'selected' : ''; let selVice = item.nivel === 'VICE-LIDER' ? 'selected' : '';
+        let selSub = item.nivel === 'SUB-LIDER' ? 'selected' : ''; let selSup = item.nivel === 'SUPERVISOR' ? 'selected' : '';
+        
+        let hideAcoes = (nivelUsuarioGlobal === 'VICE-LIDER' && item.nivel === 'LIDER') ? 'display:none;' : '';
+
+        tr.innerHTML = `<td><input type="text" class="admin-input inp-email" value="${item.email || ''}" readonly></td>
+                        <td><input type="text" class="admin-input inp-nick" value="${item.nick || ''}" readonly></td>
+                        <td><select class="admin-input inp-nivel" disabled>
+                            <option value="LIDER" ${selLider}>Líder</option>
+                            <option value="VICE-LIDER" ${selVice}>Vice-Líder</option>
+                            <option value="SUB-LIDER" ${selSub}>Sub-Líder</option>
+                            <option value="SUPERVISOR" ${selSup}>Supervisor</option>
+                        </select></td>
+                        <td class="action-cell" style="${hideAcoes}"><button class="btn-admin-icon btn-admin-edit" onclick="toggleEditRow(this)" title="Editar"><i class="fas fa-pencil-alt"></i></button><button class="btn-admin-icon btn-admin-del" onclick="this.closest('tr').remove()" title="Excluir"><i class="fas fa-trash"></i></button></td>`;
         return tr;
     }
     function addLinhaAcesso() {
-        var tbody = document.querySelector('#tbAcessos tbody'); var tr = criarRowAcesso({ email: '', nick: '', nivel: 'MEMBRO' });
+        var tbody = document.querySelector('#tbAcessos tbody'); var tr = criarRowAcesso({ email: '', nick: '', nivel: 'SUPERVISOR' });
         tbody.appendChild(tr); toggleEditRow(tr.querySelector('.btn-admin-edit'));
     }
     function toggleEditRow(btn) {
-        var tr = btn.closest('tr'); tr.querySelectorAll('input').forEach(inp => inp.removeAttribute('readonly'));
+        var tr = btn.closest('tr'); tr.querySelectorAll('input, select').forEach(inp => inp.removeAttribute('disabled')); tr.querySelectorAll('input').forEach(inp => inp.removeAttribute('readonly'));
         btn.innerHTML = '<i class="fas fa-check"></i>'; btn.className = 'btn-admin-icon btn-admin-check'; btn.onclick = function() { confirmEditRow(btn); };
     }
     function confirmEditRow(btn) {
-        var tr = btn.closest('tr'); tr.querySelectorAll('input').forEach(inp => inp.setAttribute('readonly', true));
+        var tr = btn.closest('tr'); tr.querySelectorAll('input, select').forEach(inp => inp.setAttribute('disabled', true)); tr.querySelectorAll('input').forEach(inp => inp.setAttribute('readonly', true));
         btn.innerHTML = '<i class="fas fa-pencil-alt"></i>'; btn.className = 'btn-admin-icon btn-admin-edit'; btn.onclick = function() { toggleEditRow(btn); };
     }
     function salvarAcessos() {
@@ -1257,7 +1084,7 @@
         acessosData.forEach(ac => { batch.delete(db.collection("acessos").doc(ac.email)); });
         rows.forEach(r => {
             var email = r.querySelector('.inp-email').value.trim().toLowerCase();
-            if(email) { batch.set(db.collection("acessos").doc(email), { email: email, nick: r.querySelector('.inp-nick').value.trim(), nivel: r.querySelector('.inp-nivel').value.trim().toUpperCase() }); }
+            if(email) { batch.set(db.collection("acessos").doc(email), { email: email, nick: r.querySelector('.inp-nick').value.trim(), nivel: r.querySelector('.inp-nivel').value.toUpperCase() }); }
         });
         batch.commit().then(() => { mostrarToastAdmin("Acessos salvos!"); }).catch((e) => { alert("Erro: " + e.message); });
     }
