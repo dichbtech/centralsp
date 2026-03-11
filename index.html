@@ -63,7 +63,7 @@
     .admin-section.active { display: block; }
     .admin-section h3 { color: var(--dynamic-neon); font-size: 20px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 3px; display: flex; align-items: center; gap: 12px; font-weight: 700; }
 
-    /* Inputs e Genéricos */
+    /* Inputs */
     .input-block { position: relative; width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(251, 191, 36, 0.1); border-radius: 6px; display: flex; align-items: center; padding: 0 15px; transition: all 0.3s; margin-bottom: 15px; }
     .input-block:focus-within { border-color: var(--dynamic-neon); box-shadow: 0 0 12px var(--dynamic-glow); }
     .input-block i { color: var(--dynamic-neon); font-size: 16px; }
@@ -89,9 +89,7 @@
     .btn-save { background: var(--dynamic-neon); color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.3); }
     .btn-save:hover { background: #f59e0b; transform: translateY(-2px); }
 
-    /* =======================================
-       MODAIS (DASHBOARD E PONTOS EXTRAS)
-       ======================================= */
+    /* Modais */
     .modal { display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background-color: var(--bg-panel); border: 1px solid var(--sup-neon); border-radius: 12px; width: 100%; max-width: 700px; position: relative; box-shadow: 0 0 40px var(--sup-glow); padding: 35px; overflow-y: auto; max-height: 90vh; }
     .close-btn { position: absolute; right: 20px; top: 20px; width: 35px; height: 35px; background: rgba(255,42,42,0.1); border-radius: 50%; color: #ef4444; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; }
@@ -113,19 +111,15 @@
     .rich-editor { min-height: 80px; background: rgba(0,0,0,0.4); border: 1px solid rgba(251,191,36,0.3); border-radius: 0 0 6px 6px; padding: 15px; color: #fff; outline: none; font-family: var(--font-ui); line-height: 1.5; font-size: 15px; margin-bottom: 15px;}
     .rich-editor a { color: var(--sup-neon); text-decoration: underline; }
 
-    /* Admin Event Card */
     .admin-evento-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 20px; position: relative; }
-    
     #evento-banner { display:none; background: linear-gradient(90deg, rgba(251,191,36,0.15), transparent); border-left: 4px solid var(--sup-neon); padding: 12px 20px; margin-bottom: 25px; border-radius: 4px; color: #fff; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; justify-content: space-between; }
     
-    /* =======================================
-       ESTÉTICA HABBiana (DRAG & RESIZE)
-       ======================================= */
+    /* Layout Pódio / Eventos */
     .metas-top-layout { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; align-items: stretch; }
-    
     .podium-box { flex: 1; min-width: 350px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-tech); border-radius: 12px; position: relative; height: 380px; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,0,0,0.8); }
     .podium-glow { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 250px; height: 150px; background: var(--sup-neon); filter: blur(70px); opacity: 0.35; z-index: 1; border-radius: 50%; pointer-events: none; }
-    
+    .podium-nick { position: absolute; z-index: 6; color: #fff; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 8px var(--sup-neon), 0 0 15px var(--sup-neon); padding: 2px 8px; background: rgba(0,0,0,0.4); border-radius: 4px; border: 1px solid rgba(251, 191, 36, 0.3); white-space: nowrap; }
+
     .events-box { flex: 1; min-width: 350px; background: linear-gradient(135deg, rgba(20,15,0,0.8) 0%, rgba(0,0,0,0.9) 100%); border: 1px solid var(--border-tech); border-radius: 12px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; position: relative; }
     .events-title { color: var(--sup-neon); font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid rgba(251,191,36,0.2); padding-bottom: 5px; font-weight: 700; display: flex; justify-content: space-between; }
     
@@ -134,17 +128,14 @@
     .sponsor-avatar img { position: absolute; pointer-events: none; } 
     .sponsor-text { font-size: 13px; color: var(--text-sub); line-height: 1.5; font-style: italic; background: rgba(251,191,36,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid var(--sup-neon); margin-top: auto;}
 
-    /* Editáveis com Força Máxima (!important) para garantir o clique e o visual */
+    /* Editáveis com Força Máxima */
     .draggable-item { position: absolute; z-index: 5; image-rendering: pixelated; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
     .draggable-item.edit-mode { cursor: move !important; outline: 2px dashed #ff2a2a !important; filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; z-index: 9999 !important; background: rgba(255,42,42,0.1) !important; pointer-events: auto !important; display: block !important; }
-    
     .sponsor-edit.edit-mode { cursor: move !important; outline: 2px dashed #ff2a2a !important; filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; z-index: 9999 !important; pointer-events: auto !important; }
-
-    /* Prêmios Redimensionáveis (Não arrastam, só mudam de tamanho no scroll) */
     .resizable-prize { transition: filter 0.3s; filter: drop-shadow(0 0 10px rgba(251,191,36,0.5)); }
     .resizable-prize.edit-mode { cursor: ns-resize !important; outline: 2px dashed #ff2a2a !important; filter: drop-shadow(0 0 15px rgba(255,42,42,1)) !important; z-index: 9999 !important; pointer-events: auto !important; display: block !important; }
-
     .medal-float.edit-mode { animation: none !important; transform: none !important; }
+
     @keyframes floatMedal { 0% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } 50% { transform: translateY(-8px); filter: drop-shadow(0 0 15px rgba(255,255,255,1)); } 100% { transform: translateY(0); filter: drop-shadow(0 0 5px rgba(255,255,255,0.6)); } }
     .medal-float { animation: floatMedal 2.5s infinite ease-in-out; }
     .empate-text { position: absolute; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px var(--sup-neon), 0 0 5px #000; letter-spacing: 2px; z-index: 6; text-align: center; }
@@ -169,8 +160,7 @@
 
   <div id="loginScreen">
     <div id="loginLoader" style="display: none; text-align: center; color: var(--sup-neon); font-size: 16px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
-      <div class="spinner-ring" style="margin: 0 auto 20px auto;"></div>
-      Autenticando Sessão...
+      <div class="spinner-ring" style="margin: 0 auto 20px auto;"></div> Autenticando Sessão...
     </div>
     <div class="login-card" id="loginCard">
       <img src="https://www.habbo.com.br/habbo-imaging/badge/b10134s12017s43014t12104s170129cb6c41f26a37e0c3192016b851550a7.gif" alt="Logo">
@@ -211,8 +201,7 @@
             <button class="btn-tech" onclick="adicionarNovoEventoBox()" style="padding: 5px 10px; font-size: 12px;"><i class="fas fa-plus"></i> Adicionar Evento</button>
         </div>
 
-        <div id="dash-eventos-container">
-            </div>
+        <div id="dash-eventos-container"></div>
 
         <label class="tech-label" style="margin-top: 15px;">Frase de Patrocínio Padrão</label>
         <input type="text" id="dash-txt-patrocinio" class="admin-input" style="margin-bottom:20px;" placeholder="Deseja patrocinar algum dos eventos e ajudar...">
@@ -225,8 +214,7 @@
       <div class="modal-content" style="max-width: 500px;">
           <div class="close-btn" onclick="fecharModalPontosExtras()"><i class="fas fa-times"></i></div>
           <h3 style="color: var(--sup-neon); margin-bottom: 20px;"><i class="fas fa-star"></i> Gerenciar Pontos Extras</h3>
-          <p class="subtext">Atribua pontuações adicionais individualmente. Estes pontos são somados ao total final.</p>
-          
+          <p class="subtext">Atribua pontuações adicionais individualmente.</p>
           <div style="display:flex; gap:15px; align-items:center; margin-bottom: 25px;">
               <div class="input-block" style="flex:2; margin:0;">
                  <i class="fas fa-user"></i>
@@ -238,7 +226,6 @@
               </div>
               <button class="btn-tech btn-save" onclick="salvarPontoExtra()"><i class="fas fa-check"></i> Atribuir</button>
           </div>
-
           <h4 style="color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:5px;">Membros com Pontos Extras</h4>
           <div class="admin-table-wrapper" style="max-height: 250px; overflow-y:auto;">
               <table class="admin-table" id="tb-pontos-extras">
@@ -267,7 +254,10 @@
         <button class="btn-sidebar active" id="menu-metas" onclick="switchSection('modulo-metas', this)"><i class="fas fa-bullseye"></i> Consulta de Metas</button>
         <button class="btn-sidebar" id="menu-avais" onclick="switchSection('modulo-avais', this)"><i class="fas fa-calculator"></i> Cálculo de Avais</button>
         <button class="btn-sidebar" id="menu-feedbacks" onclick="switchSection('modulo-feedbacks', this)"><i class="fas fa-comments"></i> Painel de Feedbacks</button>
+        <button class="btn-sidebar" id="menu-estrelas" onclick="switchSection('modulo-estrelas', this)"><i class="fas fa-star"></i> Estrelas Promocionais</button>
+        
         <button class="btn-sidebar" id="btnAdminAcessos" style="display: none;" onclick="switchSection('modulo-acessos', this)"><i class="fas fa-users-cog"></i> Acessos</button>
+        <button class="btn-sidebar" id="btnAdminPrivacidade" style="display: none;" onclick="switchSection('modulo-privacidade', this)"><i class="fas fa-shield-alt"></i> Editar Privacidade</button>
       </div>
 
       <div class="admin-main-content">
@@ -297,9 +287,11 @@
                 
                 <img id="avatar-1" src="" draggable="false" class="draggable-item" style="z-index: 3; display:none;">
                 <img id="medal-1" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgk1prBqI84-KMlRtMxa_d7zVr-rqtK98qCwWnW_mFOZt_kDyhbSOKp6WgbwGyhuPR2Cej0BDvaFHTgOzWRb13qQ5glBYnTO-WLVmD2Mc7GBy5_eeycsqI1xeYIyZuqGK0IKmU-QUi0y8M/s1600/ITC21.gif" draggable="false" class="draggable-item medal-float" style="z-index: 4; display:none;">
+                <div id="nick-1" class="draggable-item podium-nick" style="z-index: 6; display:none;"></div>
                 
                 <img id="avatar-2" src="" draggable="false" class="draggable-item" style="z-index: 3; display:none;">
                 <img id="medal-2" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjuP4oSwMUvEeMDglW96CfvqrDASdaiQIHPsO6hx3CDFgBKZINyAX3dqlQrOJgGLsBDafGL_vVqS-9su5ijkKP87T-yQHM4YCe3zaHcYXPhBas5RjG12vh_6RPuoQemKimWHAhV-bQEVBc/s1600/ITC20.gif" draggable="false" class="draggable-item medal-float" style="z-index: 4; display:none;">
+                <div id="nick-2" class="draggable-item podium-nick" style="z-index: 6; display:none;"></div>
                 
                 <img id="avatar-empate-1" src="" draggable="false" class="draggable-item" style="z-index: 3; display:none;">
                 <div id="txt-empate-1" class="draggable-item empate-text" style="display:none;">EMPATE</div>
@@ -315,7 +307,6 @@
                 
                 <div id="ui-lista-eventos" style="flex:1;">
                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;">
-                      <h4 style="color:var(--sup-neon); margin-bottom: 5px; font-size: 16px; text-transform: uppercase;">Aguardando Eventos</h4>
                       <div style="color: #fff; font-size: 14px;">Fique atento aos anúncios no grupo!</div>
                    </div>
                 </div>
@@ -371,6 +362,71 @@
           </div>
         </div>
 
+        <div id="modulo-estrelas" class="admin-section">
+            <h3><i class="fas fa-star"></i> Gerenciamento de Estrelas Promocionais</h3>
+            <p class="subtext">Controle de promoções e sanções do sistema de estrelas (Art. 4º ao 9º).</p>
+
+            <div class="row" style="gap: 20px; align-items: flex-start;">
+                <div style="flex: 2; min-width: 300px;">
+                    <h4 style="color:var(--sup-neon); margin-bottom:15px; font-size:16px;"><i class="fas fa-list"></i> Tabela Atual de Militares</h4>
+                    <div class="admin-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                        <table class="admin-table" id="tb-militares-estrelas">
+                            <thead>
+                                <tr>
+                                    <th>Policial</th>
+                                    <th>Promoções (Ciclo)</th>
+                                    <th>Estrelas</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+                    <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 8px; border: 1px solid rgba(251,191,36,0.2);">
+                        <h4 style="color:var(--sup-neon); margin-bottom:10px; font-size:15px;"><i class="fas fa-medal"></i> Registrar Promoção</h4>
+                        <p style="color:var(--text-sub); font-size:12px; margin-bottom:15px;">A cada 3 promoções, 1 estrela é concedida.</p>
+                        
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <input type="text" id="novo-militar-nome" class="admin-input" placeholder="Nick do novo policial...">
+                            <button class="btn-tech btn-add" onclick="adicionarMilitarEstrela()" style="padding: 8px 12px;"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+
+                        <label class="tech-label">Selecionar Policial</label>
+                        <div class="input-block">
+                            <i class="fas fa-user"></i>
+                            <select id="sel-militar-promocao"><option value="">Carregando...</option></select>
+                        </div>
+                        <button class="btn-tech btn-save" onclick="registrarPromocao()" style="width: 100%;"><i class="fas fa-check"></i> Confirmar Promoção</button>
+                    </div>
+
+                    <div id="area-comando-estrelas" style="background: rgba(255,42,42,0.1); padding: 20px; border-radius: 8px; border: 1px dashed rgba(255,42,42,0.3); display: none;">
+                        <h4 style="color:#ff2a2a; margin-bottom:10px; font-size:15px;"><i class="fas fa-gavel"></i> Área do Comando (Sanções)</h4>
+                        
+                        <label class="tech-label" style="color:#ff2a2a;">Selecionar Policial</label>
+                        <div class="input-block" style="border-color: rgba(255,42,42,0.3);">
+                            <i class="fas fa-user" style="color:#ff2a2a;"></i>
+                            <select id="sel-militar-sancao"><option value="">Carregando...</option></select>
+                        </div>
+
+                        <label class="tech-label" style="color:#ff2a2a;">Tipo de Sanção</label>
+                        <div class="input-block" style="border-color: rgba(255,42,42,0.3);">
+                            <i class="fas fa-exclamation-circle" style="color:#ff2a2a;"></i>
+                            <select id="sel-tipo-sancao">
+                                <option value="deduzir_1">Deduzir 1 Estrela</option>
+                                <option value="cassar_todas">Cassar Todas as Estrelas (Zerar)</option>
+                                <option value="suspender">Suspender Temporariamente</option>
+                                <option value="reativar">Reativar Policial</option>
+                            </select>
+                        </div>
+                        <button class="btn-tech" onclick="aplicarSancao()" style="width: 100%; background: #ff2a2a; color: #fff; border:none;"><i class="fas fa-ban"></i> Aplicar Sanção</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="modulo-avais" class="admin-section">
           <h3><i class="fas fa-calculator"></i> Cálculo Automático de Avais</h3>
           <div class="row">
@@ -390,6 +446,13 @@
           <div style="width: 100%; height: 75vh; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.15); overflow: hidden;">
             <iframe src="https://dichitech.github.io/feedback/" style="width: 100%; height: 100%; border: none;"></iframe>
           </div>
+        </div>
+
+        <div id="modulo-privacidade" class="admin-section">
+          <h3><i class="fas fa-shield-alt"></i> Editar Política de Privacidade</h3>
+          <p class="subtext">O texto abaixo é refletido instantaneamente na página pública de privacidade.</p>
+          <div style="margin-bottom: 20px;" id="box-editor-privacidade"></div>
+          <button class="btn-tech btn-save" onclick="salvarPrivacidade()"><i class="fas fa-save"></i> Salvar Política</button>
         </div>
 
         <div id="modulo-acessos" class="admin-section">
@@ -431,16 +494,17 @@
     
     let usuarioLogadoEmail = ''; let nivelUsuarioGlobal = 'COMUM'; let acessosData = [];
     let membrosDataArray = []; let dashboardEventosData = []; 
-    let pontosExtrasMap = {}; // Guardar os pontos extras do banco
+    let pontosExtrasMap = {}; 
     let eventoAtivo = false; let eventoMult = 1;
     
-    // Posições Padrão Iniciais
     let layoutConfig = {
         'img-podio-base': { left: '100px', top: '150px', width: 'auto' },
         'avatar-1': { left: '175px', top: '50px', width: 'auto' },
         'medal-1': { left: '175px', top: '0px', width: 'auto' },
+        'nick-1': { left: '160px', top: '120px', width: 'auto' },
         'avatar-2': { left: '80px', top: '100px', width: 'auto' },
         'medal-2': { left: '80px', top: '50px', width: 'auto' },
+        'nick-2': { left: '60px', top: '170px', width: 'auto' },
         'avatar-empate-1': { left: '175px', top: '50px', width: 'auto' },
         'txt-empate-1': { left: '175px', top: '20px', width: 'auto' },
         'avatar-empate-2': { left: '80px', top: '100px', width: 'auto' },
@@ -452,6 +516,20 @@
         'sponsorInner': { left: '0px', top: '-10px', width: '60px' } 
     };
     let isEditMode = false;
+
+    function buildEditorHTML(id, content = '') {
+        return `
+        <div class="editor-toolbar">
+            <button type="button" onmousedown="applyStyle('bold')"><i class="fas fa-bold"></i></button>
+            <button type="button" onmousedown="applyStyle('italic')"><i class="fas fa-italic"></i></button>
+            <button type="button" onmousedown="applyStyle('underline')"><i class="fas fa-underline"></i></button>
+            <button type="button" onmousedown="insertLink()"><i class="fas fa-link"></i></button>
+            <input type="color" title="Cor do texto" onchange="applyStyle('foreColor', this.value)" style="margin-left:5px;">
+        </div>
+        <div class="rich-editor admin-input ev-desc" contenteditable="true" id="${id}">${content}</div>`;
+    }
+    function applyStyle(cmd, val) { event.preventDefault(); document.execCommand(cmd, false, val); }
+    function insertLink() { event.preventDefault(); let url = prompt("Cole o link aqui:"); if(url) document.execCommand("createLink", false, url); }
 
     function liberarPainel() {
         document.getElementById('loginCard').style.display = 'none';
@@ -465,7 +543,9 @@
         carregarLayoutConfig();
         escutarConfigDashboard(); 
         escutarMetasDoFirebase();
+        escutarMilitaresEstrelas(); // Novo DB
         setupAllDraggables(); 
+        if(nivelUsuarioGlobal === 'ADMIN') carregarPrivacidade();
     }
 
     auth.onAuthStateChanged((user) => {
@@ -484,11 +564,17 @@
             if (autorizado) {
                 if (nivelUsuarioGlobal === 'ADMIN') {
                     document.getElementById('btnAdminAcessos').style.display = 'flex';
+                    document.getElementById('btnAdminPrivacidade').style.display = 'flex';
                     document.getElementById('admin-drag-controls').style.display = 'flex';
+                    document.getElementById('area-comando-estrelas').style.display = 'block';
                     renderTabelaAcessos();
+                    document.getElementById('box-editor-privacidade').innerHTML = buildEditorHTML('editor-privacidade', 'Carregando...');
                 }
+                
                 if (nivelUsuarioGlobal === 'MEMBRO') {
-                    document.getElementById('menu-avais').style.display = 'none'; document.getElementById('menu-feedbacks').style.display = 'none';
+                    document.getElementById('menu-avais').style.display = 'none'; 
+                    document.getElementById('menu-feedbacks').style.display = 'none';
+                    document.getElementById('menu-estrelas').style.display = 'none';
                 }
                 switchSection('modulo-metas', document.getElementById('menu-metas'));
                 liberarPainel();
@@ -502,6 +588,7 @@
         auth.signInWithPopup(provider).catch(() => { document.getElementById('loginLoader').style.display = 'none'; document.getElementById('loginCard').style.display = 'block'; document.getElementById('login-error').style.display = 'block'; });
     }
     function fazerLogout() { auth.signOut(); }
+    
     function switchSection(idModulo, btnElement) {
         document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.btn-sidebar').forEach(el => el.classList.remove('active'));
@@ -514,51 +601,116 @@
     }
 
     // ==========================================
-    // EDITOR RICH TEXT NATIVO
+    // SISTEMA DE ESTRELAS 
     // ==========================================
-    function applyStyle(cmd, val) {
-        event.preventDefault(); 
-        document.execCommand(cmd, false, val);
-    }
-    function insertLink() {
-        event.preventDefault();
-        let url = prompt("Cole o link aqui (ex: https://google.com):");
-        if(url) document.execCommand("createLink", false, url);
+    function escutarMilitaresEstrelas() {
+        db.collection("militares").onSnapshot((snapshot) => {
+            let tbody = document.querySelector('#tb-militares-estrelas tbody');
+            let selPro = document.getElementById('sel-militar-promocao');
+            let selSan = document.getElementById('sel-militar-sancao');
+            
+            tbody.innerHTML = '';
+            selPro.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+            selSan.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+
+            snapshot.forEach((docSnap) => {
+                const dados = docSnap.data();
+                const id = docSnap.id;
+
+                let estrelasStr = '★'.repeat(dados.estrelas || 0);
+                let estrelasHtml = `<span style="color:var(--sup-neon); font-size:16px;">${estrelasStr}</span> (${dados.estrelas || 0})`;
+                let statusHtml = dados.status === 'Suspenso' ? '<span style="color:#ff2a2a; font-weight:bold;">Suspenso</span>' : '<span style="color:#4caf50;">Ativo</span>';
+                let nomeHtml = `${dados.nome} ${dados.premios_acumulados > 0 ? '🎖️' : ''}`;
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `<td>${nomeHtml}</td><td>${dados.promocoes_realizadas || 0} / 3</td><td>${estrelasHtml}</td><td>${statusHtml}</td>`;
+                tbody.appendChild(tr);
+
+                if(dados.status !== 'Suspenso') { selPro.innerHTML += `<option value="${id}">${dados.nome}</option>`; }
+                selSan.innerHTML += `<option value="${id}">${dados.nome}</option>`;
+            });
+        });
     }
 
-    function buildEditorHTML(id, content = '') {
-        return `
-        <div class="editor-toolbar">
-            <button type="button" onmousedown="applyStyle('bold')"><i class="fas fa-bold"></i></button>
-            <button type="button" onmousedown="applyStyle('italic')"><i class="fas fa-italic"></i></button>
-            <button type="button" onmousedown="applyStyle('underline')"><i class="fas fa-underline"></i></button>
-            <button type="button" onmousedown="insertLink()"><i class="fas fa-link"></i></button>
-            <input type="color" title="Cor do texto" onchange="applyStyle('foreColor', this.value)" style="margin-left:5px;">
-        </div>
-        <div class="rich-editor admin-input ev-desc" contenteditable="true" id="${id}">${content}</div>
-        `;
+    window.adicionarMilitarEstrela = function() {
+        let nome = document.getElementById('novo-militar-nome').value.trim();
+        if(!nome) return;
+        db.collection("militares").doc(nome).set({
+            nome: nome, promocoes_realizadas: 0, estrelas: 0, premios_acumulados: 0, status: 'Ativo'
+        }).then(() => {
+            document.getElementById('novo-militar-nome').value = '';
+            mostrarToastAdmin("Policial cadastrado com sucesso!");
+        });
+    }
+
+    window.registrarPromocao = function() {
+        const militarId = document.getElementById('sel-militar-promocao').value;
+        if(!militarId) return alert("Selecione um policial.");
+
+        const ref = db.collection("militares").doc(militarId);
+        ref.get().then((snap) => {
+            if (snap.exists) {
+                let dados = snap.data();
+                let novasPromocoes = (dados.promocoes_realizadas || 0) + 1;
+                let novasEstrelas = dados.estrelas || 0;
+                let novosPremios = dados.premios_acumulados || 0;
+
+                if (novasPromocoes >= 3) {
+                    novasPromocoes = 0; novasEstrelas += 1;
+                }
+
+                if (novasEstrelas >= 10) {
+                    alert(`🏅 ATENÇÃO! O policial ${dados.nome} atingiu 10 estrelas!\n\nPremiação a ser concedida (Art. 6º):\nI. Insígnia de Reconhecimento\nII. 01 HC\nIII. 01 Mês VIP Ouro.\n\nAs estrelas deste militar serão zeradas para um novo ciclo.`);
+                    novasEstrelas = 0; novosPremios += 1;
+                }
+
+                ref.update({ promocoes_realizadas: novasPromocoes, estrelas: novasEstrelas, premios_acumulados: novosPremios })
+                   .then(() => mostrarToastAdmin(`Promoção registrada para ${dados.nome}.`));
+            }
+        });
+    }
+
+    window.aplicarSancao = function() {
+        const militarId = document.getElementById('sel-militar-sancao').value;
+        const sancao = document.getElementById('sel-tipo-sancao').value;
+        if(!militarId) return alert("Selecione um policial.");
+
+        const ref = db.collection("militares").doc(militarId);
+        ref.get().then((snap) => {
+            if(snap.exists) {
+                let dados = snap.data();
+                let atualizacao = {};
+
+                switch(sancao) {
+                    case 'deduzir_1':
+                        if(dados.estrelas > 0) { atualizacao.estrelas = dados.estrelas - 1; } 
+                        else { return alert('O militar já possui 0 estrelas.'); }
+                        break;
+                    case 'cassar_todas':
+                        atualizacao.estrelas = 0;
+                        atualizacao.promocoes_realizadas = 0;
+                        break;
+                    case 'suspender':
+                        atualizacao.status = 'Suspenso';
+                        break;
+                    case 'reativar':
+                        atualizacao.status = 'Ativo';
+                        break;
+                }
+                ref.update(atualizacao).then(() => mostrarToastAdmin(`Sanção aplicada com sucesso.`));
+            }
+        });
     }
 
     // ==========================================
-    // DASHBOARD DE MÚLTIPLOS EVENTOS
+    // DASHBOARD & EVENTOS
     // ==========================================
-    function abrirDashboard() { 
-        document.getElementById('modal-dashboard').style.display = 'flex'; 
-        renderAdminEventosList(); // Monta a lista de edicao
-    }
+    function abrirDashboard() { document.getElementById('modal-dashboard').style.display = 'flex'; renderAdminEventosList(); }
     function fecharDashboard() { document.getElementById('modal-dashboard').style.display = 'none'; }
-    function formatarDataBR(dataStr) {
-        if(!dataStr) return ""; let d = new Date(dataStr + "T00:00:00"); return d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'});
-    }
+    function formatarDataBR(dataStr) { if(!dataStr) return ""; let d = new Date(dataStr + "T00:00:00"); return d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}); }
 
-    function adicionarNovoEventoBox() {
-        dashboardEventosData.push({ nome: '', dataInicio: '', dataFim: '', descricao: '', premiosTexto: '', hc: false, moedas: false });
-        renderAdminEventosList();
-    }
-    function removerEventoBox(index) {
-        dashboardEventosData.splice(index, 1);
-        renderAdminEventosList();
-    }
+    function adicionarNovoEventoBox() { dashboardEventosData.push({ nome: '', dataInicio: '', dataFim: '', descricao: '', premiosTexto: '', hc: false, moedas: false }); renderAdminEventosList(); }
+    function removerEventoBox(index) { dashboardEventosData.splice(index, 1); renderAdminEventosList(); }
 
     function renderAdminEventosList() {
         let container = document.getElementById('dash-eventos-container');
@@ -566,41 +718,23 @@
         if(dashboardEventosData.length === 0) {
             container.innerHTML = '<p style="color:var(--text-sub); font-style:italic; font-size:14px; margin-bottom:20px;">Nenhum evento criado. Clique em "Adicionar Evento".</p>';
         }
-        
         dashboardEventosData.forEach((ev, i) => {
             let html = `
             <div class="admin-evento-item">
                 <button type="button" onclick="removerEventoBox(${i})" style="position:absolute; right:15px; top:15px; background:rgba(255,42,42,0.1); border:none; color:#ef4444; width:30px; height:30px; border-radius:50%; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                
                 <h4 style="color:#fff; margin-bottom:10px; font-size:13px; text-transform:uppercase;">Evento ${i+1}</h4>
-                <div class="input-block" style="margin-bottom:10px;">
-                    <input type="text" class="ev-nome" placeholder="Nome do Evento" value="${ev.nome}">
-                </div>
-                
+                <div class="input-block" style="margin-bottom:10px;"><input type="text" class="ev-nome" placeholder="Nome do Evento" value="${ev.nome}"></div>
                 <div style="display:flex; gap:15px; margin-bottom:10px;">
-                    <div style="flex:1;">
-                        <label class="tech-label">Início</label>
-                        <div class="input-block" style="margin:0;"><input type="date" class="ev-data-inicio" value="${ev.dataInicio}"></div>
-                    </div>
-                    <div style="flex:1;">
-                        <label class="tech-label">Fim</label>
-                        <div class="input-block" style="margin:0;"><input type="date" class="ev-data-fim" value="${ev.dataFim}"></div>
-                    </div>
+                    <div style="flex:1;"><label class="tech-label">Início</label><div class="input-block" style="margin:0;"><input type="date" class="ev-data-inicio" value="${ev.dataInicio}"></div></div>
+                    <div style="flex:1;"><label class="tech-label">Fim</label><div class="input-block" style="margin:0;"><input type="date" class="ev-data-fim" value="${ev.dataFim}"></div></div>
                 </div>
-
                 <label class="tech-label">Regras e Descrição</label>
                 ${buildEditorHTML(`ev-desc-${i}`, ev.descricao)}
-
                 <label class="tech-label">Texto da Premiação</label>
                 <input type="text" class="admin-input ev-premios-txt" style="margin-bottom:10px;" placeholder="Ex: 4 HCs para o 1º lugar e 50c para o 2º" value="${ev.premiosTexto || ''}">
-                
                 <div style="display:flex; gap:20px; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                   <label style="color:#fff; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                       <input type="checkbox" class="ev-hc" style="width:16px; height:16px;" ${ev.hc ? 'checked' : ''}> Ícone HC
-                   </label>
-                   <label style="color:#fff; cursor:pointer; display:flex; align-items:center; gap:8px;">
-                       <input type="checkbox" class="ev-moedas" style="width:16px; height:16px;" ${ev.moedas ? 'checked' : ''}> Ícone Moedas
-                   </label>
+                   <label style="color:#fff; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" class="ev-hc" style="width:16px; height:16px;" ${ev.hc ? 'checked' : ''}> Ícone HC</label>
+                   <label style="color:#fff; cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" class="ev-moedas" style="width:16px; height:16px;" ${ev.moedas ? 'checked' : ''}> Ícone Moedas</label>
                 </div>
             </div>`;
             container.insertAdjacentHTML('beforeend', html);
@@ -608,7 +742,6 @@
     }
 
     function salvarDashboard() {
-        // Coleta dados dos blocos visuais gerados
         let eventosParaSalvar = [];
         let blocos = document.querySelectorAll('.admin-evento-item');
         blocos.forEach(el => {
@@ -628,7 +761,6 @@
             eventoMult: parseInt(document.getElementById('dash-mult-evento').value) || 1,
             textoPatrocinio: document.getElementById('dash-txt-patrocinio').value,
             eventos: eventosParaSalvar
-            // pontosExtras são mantidos com {merge:true}
         };
         db.collection("sistema").doc("config_metas").set(dados, {merge:true}).then(() => {
             mostrarToastAdmin("Painel Atualizado com Sucesso!"); fecharDashboard();
@@ -650,15 +782,11 @@
                     document.getElementById('dash-txt-patrocinio').value = d.textoPatrocinio || '';
                 }
 
-                // Renderização da Interface (Banner Topo)
                 let banner = document.getElementById('evento-banner');
-                if(eventoAtivo && eventoMult > 1) {
-                    banner.style.display = 'flex';
-                } else { banner.style.display = 'none'; eventoMult = 1; }
+                if(eventoAtivo && eventoMult > 1) { banner.style.display = 'flex'; } else { banner.style.display = 'none'; eventoMult = 1; }
 
                 document.getElementById('ui-txt-patrocinio').innerText = d.textoPatrocinio || 'Deseja patrocinar algum dos eventos e ajudar ainda mais a divisão? Procure a Liderança!';
 
-                // Montar HTML da Lista de Eventos na Tela
                 let uiLista = document.getElementById('ui-lista-eventos');
                 uiLista.innerHTML = '';
                 if(dashboardEventosData.length === 0) {
@@ -674,9 +802,12 @@
                             premiosUI = `<div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(251,191,36,0.2);">`;
                             if(ev.premiosTexto) premiosUI += `<div style="color:var(--sup-neon); font-size:13px; margin-bottom:10px; font-weight:600;">${ev.premiosTexto}</div>`;
                             if(ev.hc || ev.moedas) {
+                                let wHC = layoutConfig[`img-premio-hc-${i}`] ? layoutConfig[`img-premio-hc-${i}`].width : '40px';
+                                let wM = layoutConfig[`img-premio-moedas-${i}`] ? layoutConfig[`img-premio-moedas-${i}`].width : '40px';
+                                
                                 premiosUI += `<div style="display:flex; gap:15px; align-items:center;">`;
-                                if(ev.hc) premiosUI += `<img id="img-premio-hc-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirfXmN9g_cDNpjq8o7oXeKFIRwJLgI-w2FEisZ3iJdxqblDlMM858H3fDrWh-PpDE12pNyMmPBdxX8TRgBU95PXO8nd24V9Gny1nFTkhqsGKUKfMmtK-AEoIAvFTsJBjsNV2gk2oUkTTpf/s1600/HC31.gif" class="resizable-prize" draggable="false" style="display:block;">`;
-                                if(ev.moedas) premiosUI += `<img id="img-premio-moedas-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjDZ6AWqYyPxpnw-heLbJ-k1qoyj_EZN8_wWWotWVW5MzTQZKPQEY-L3zuPCYIK-ExBKbQFBxyfS_c_F4xY6pPUAgRoHiJvC9HgpWYj6iVUCp4eXDF7M-ilisPyCQ6KBpGfdqgwjpmvWrsi/s1600/15c6908117fc3.gif" class="resizable-prize" draggable="false" style="display:block;">`;
+                                if(ev.hc) premiosUI += `<img id="img-premio-hc-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirfXmN9g_cDNpjq8o7oXeKFIRwJLgI-w2FEisZ3iJdxqblDlMM858H3fDrWh-PpDE12pNyMmPBdxX8TRgBU95PXO8nd24V9Gny1nFTkhqsGKUKfMmtK-AEoIAvFTsJBjsNV2gk2oUkTTpf/s1600/HC31.gif" class="resizable-prize" draggable="false" style="display:block; width:${wHC};">`;
+                                if(ev.moedas) premiosUI += `<img id="img-premio-moedas-${i}" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjDZ6AWqYyPxpnw-heLbJ-k1qoyj_EZN8_wWWotWVW5MzTQZKPQEY-L3zuPCYIK-ExBKbQFBxyfS_c_F4xY6pPUAgRoHiJvC9HgpWYj6iVUCp4eXDF7M-ilisPyCQ6KBpGfdqgwjpmvWrsi/s1600/15c6908117fc3.gif" class="resizable-prize" draggable="false" style="display:block; width:${wM};">`;
                                 premiosUI += `</div>`;
                             }
                             premiosUI += `</div>`;
@@ -692,15 +823,13 @@
                         uiLista.insertAdjacentHTML('beforeend', evCard);
                     });
                 }
-
-                // Reaplica tamanhos aos prêmios dinâmicos recém gerados
-                aplicarPosicoes();
-                setupPrizesResizable();
+                
+                setupPrizesResizable(); 
 
                 if(membrosDataArray.length > 0) {
                     processarPodio();
                     if(document.getElementById('select-membro').value) renderMemberDetails();
-                    renderTabelaPontosExtras(); // Refresh modal se estiver aberto
+                    renderTabelaPontosExtras(); 
                 }
             }
         });
@@ -747,7 +876,7 @@
 
 
     // ==========================================
-    // SISTEMA NATIVO DE ARRASTAR E REDIMENSIONAR INFALÍVEL
+    // SISTEMA DE ARRASTAR E REDIMENSIONAR INFALÍVEL
     // ==========================================
     function aplicarPosicoes() {
         for(let id in layoutConfig) {
@@ -783,7 +912,7 @@
 
     function savePositions() {
         if(nivelUsuarioGlobal !== 'ADMIN') return;
-        db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, {merge: true}).then(() => {
+        db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }).then(() => {
             mostrarToastAdmin("Posições e Tamanhos salvos!");
             if(isEditMode) toggleEditMode();
         });
@@ -814,8 +943,11 @@
             ];
             fallbacks.forEach(f => {
                 let img = document.getElementById(f.id);
-                if(!img.src || img.src.endsWith('=')) img.src = f.src;
+                if(img && (!img.src || img.src.endsWith('='))) img.src = f.src;
             });
+            
+            document.getElementById('nick-1').innerText = "NICK 1"; document.getElementById('nick-1').style.display = "block";
+            document.getElementById('nick-2').innerText = "NICK 2"; document.getElementById('nick-2').style.display = "block";
 
             elsDrag.forEach(e => { 
                 e.classList.add('edit-mode'); 
@@ -871,32 +1003,22 @@
                 if(!isEditMode) return;
                 e.preventDefault(); e.stopPropagation();
 
-                let startX = e.clientX;
-                let startY = e.clientY;
-                let startLeft = el.offsetLeft;
-                let startTop = el.offsetTop;
+                let startX = e.clientX; let startY = e.clientY;
+                let startLeft = el.offsetLeft; let startTop = el.offsetTop;
 
                 const onMouseMove = (moveEvent) => {
                     moveEvent.preventDefault();
-                    let dx = moveEvent.clientX - startX;
-                    let dy = moveEvent.clientY - startY;
-                    el.style.left = (startLeft + dx) + 'px';
-                    el.style.top = (startTop + dy) + 'px';
+                    let dx = moveEvent.clientX - startX; let dy = moveEvent.clientY - startY;
+                    el.style.left = (startLeft + dx) + 'px'; el.style.top = (startTop + dy) + 'px';
                 };
 
                 const onMouseUp = () => {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
+                    document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp);
                     let idKey = el.id;
-                    if(idKey) {
-                        layoutConfig[idKey] = layoutConfig[idKey] || {};
-                        layoutConfig[idKey].left = el.style.left;
-                        layoutConfig[idKey].top = el.style.top;
-                    }
+                    if(idKey) { layoutConfig[idKey] = layoutConfig[idKey] || {}; layoutConfig[idKey].left = el.style.left; layoutConfig[idKey].top = el.style.top; }
                 };
 
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
+                document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp);
             });
 
             el.addEventListener('wheel', (e) => {
@@ -908,15 +1030,55 @@
                 el.style.width = currentWidth + 'px';
 
                 let idKey = el.id;
-                if(idKey) {
-                    layoutConfig[idKey] = layoutConfig[idKey] || {};
-                    layoutConfig[idKey].width = el.style.width;
-                }
+                if(idKey) { layoutConfig[idKey] = layoutConfig[idKey] || {}; layoutConfig[idKey].width = el.style.width; }
             }, { passive: false });
         });
     }
 
-    function setupSponsorInnerDraggable() {
+    // ==========================================
+    // LÓGICA DE METAS E PÓDIO
+    // ==========================================
+    function escutarMetasDoFirebase() {
+        db.collection("sistema").doc("metas").onSnapshot((doc) => {
+            if (doc.exists && doc.data().dados) {
+                let rows = []; try { rows = JSON.parse(doc.data().dados); } catch(e) { return; }
+                if(rows.length > 17 && rows[17][1]) document.getElementById('meta-week-title').innerText = rows[17][1];
+
+                membrosDataArray = []; let sponsorsList = [];
+
+                for(let i = 3; i < rows.length; i++) {
+                    if(rows[i][15]) sponsorsList.push(rows[i][15]);
+                    if(rows[i][16]) sponsorsList.push(rows[i][16]);
+                    if(rows[i][17]) sponsorsList.push(rows[i][17]);
+                }
+                renderSponsors(sponsorsList);
+
+                for(let i = 20; i < rows.length; i++) {
+                    if(!rows[i][3]) continue;
+                    membrosDataArray.push({
+                        cargo: rows[i][2] || '', nick: rows[i][3].trim(),
+                        convite: parseInt(rows[i][5]) || 0, ppp: parseInt(rows[i][6]) || 0,
+                        rels: parseInt(rows[i][7]) || 0, relcg: parseInt(rows[i][9]) || 0,
+                        avisos: parseInt(rows[i][10]) || 0, total_base: parseInt(rows[i][11]) || 0,
+                        status_base: (rows[i][12] || '').toString().trim()
+                    });
+                }
+                popularSelectMembros(); processarPodio();
+                if(document.getElementById('select-membro').value) renderMemberDetails();
+            }
+        });
+    }
+
+    function renderSponsors(lista) {
+        let unique = [...new Set(lista.filter(n => n.trim() !== ''))];
+        let container = document.getElementById('sponsors-container');
+        container.innerHTML = '';
+        unique.forEach(nick => {
+            let limpo = nick.trim();
+            container.innerHTML += `<div class="sponsor-avatar" title="${limpo}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${limpo}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div>`;
+        });
+        aplicarSponsorInner();
+        
         document.querySelectorAll('.sponsor-avatar img').forEach(img => {
             if (img.dataset.dragReady) return;
             img.dataset.dragReady = "true";
@@ -952,62 +1114,9 @@
                 layoutConfig['sponsorInner'].width = currentWidth + 'px';
                 aplicarSponsorInner();
             }, { passive: false });
+            
+            if(isEditMode) img.classList.add('sponsor-edit', 'edit-mode');
         });
-    }
-
-    // ==========================================
-    // LÓGICA DE METAS (Com Pontos Extras somados)
-    // ==========================================
-    function escutarMetasDoFirebase() {
-        db.collection("sistema").doc("metas").onSnapshot((doc) => {
-            if (doc.exists && doc.data().dados) {
-                let rows = []; try { rows = JSON.parse(doc.data().dados); } catch(e) { return; }
-                if(rows.length > 17 && rows[17][1]) document.getElementById('meta-week-title').innerText = rows[17][1];
-
-                membrosDataArray = []; let sponsorsList = [];
-
-                for(let i = 3; i < rows.length; i++) {
-                    if(rows[i][15]) sponsorsList.push(rows[i][15]);
-                    if(rows[i][16]) sponsorsList.push(rows[i][16]);
-                    if(rows[i][17]) sponsorsList.push(rows[i][17]);
-                }
-                renderSponsors(sponsorsList);
-
-                for(let i = 20; i < rows.length; i++) {
-                    if(!rows[i][3]) continue;
-                    membrosDataArray.push({
-                        cargo: rows[i][2] || '',
-                        nick: rows[i][3].trim(),
-                        convite: parseInt(rows[i][5]) || 0,
-                        ppp: parseInt(rows[i][6]) || 0,
-                        rels: parseInt(rows[i][7]) || 0,
-                        relcg: parseInt(rows[i][9]) || 0,
-                        avisos: parseInt(rows[i][10]) || 0,
-                        total_base: parseInt(rows[i][11]) || 0,
-                        status_base: (rows[i][12] || '').toString().trim()
-                    });
-                }
-                popularSelectMembros(); processarPodio();
-                if(document.getElementById('select-membro').value) renderMemberDetails();
-            }
-        });
-    }
-
-    function renderSponsors(lista) {
-        let unique = [...new Set(lista.filter(n => n.trim() !== ''))];
-        let container = document.getElementById('sponsors-container');
-        container.innerHTML = '';
-        unique.forEach(nick => {
-            let limpo = nick.trim();
-            container.innerHTML += `<div class="sponsor-avatar" title="${limpo}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${limpo}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div>`;
-        });
-        aplicarSponsorInner();
-        setupSponsorInnerDraggable();
-        if(isEditMode) {
-            document.querySelectorAll('.sponsor-avatar img').forEach(img => { 
-                img.classList.add('sponsor-edit', 'edit-mode');
-            });
-        }
     }
 
     function popularSelectMembros() {
@@ -1025,19 +1134,18 @@
 
     function processarPodio() {
         if(isEditMode) return; 
-        let av1 = document.getElementById('avatar-1'); let m1 = document.getElementById('medal-1');
-        let av2 = document.getElementById('avatar-2'); let m2 = document.getElementById('medal-2');
+        let av1 = document.getElementById('avatar-1'); let m1 = document.getElementById('medal-1'); let n1 = document.getElementById('nick-1');
+        let av2 = document.getElementById('avatar-2'); let m2 = document.getElementById('medal-2'); let n2 = document.getElementById('nick-2');
         let ave1 = document.getElementById('avatar-empate-1'); let txte1 = document.getElementById('txt-empate-1');
         let ave2 = document.getElementById('avatar-empate-2'); let txte2 = document.getElementById('txt-empate-2');
         
-        av1.style.display = 'none'; m1.style.display = 'none';
-        av2.style.display = 'none'; m2.style.display = 'none';
+        av1.style.display = 'none'; m1.style.display = 'none'; n1.style.display = 'none';
+        av2.style.display = 'none'; m2.style.display = 'none'; n2.style.display = 'none';
         ave1.style.display = 'none'; txte1.style.display = 'none';
         ave2.style.display = 'none'; txte2.style.display = 'none';
 
         if(membrosDataArray.length === 0) return;
 
-        // Ordena usando a pontuacao final (Multiplicada + Extras)
         let top = [...membrosDataArray].sort((a,b) => getPontuacaoFinal(b) - getPontuacaoFinal(a));
         let p1 = getPontuacaoFinal(top[0]); let p2 = (top.length > 1) ? getPontuacaoFinal(top[1]) : 0;
 
@@ -1048,10 +1156,12 @@
             ave2.style.display = 'block'; txte2.style.display = 'block';
         } else if(top.length > 0 && p1 > 0) {
             av1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
-            av1.style.display = 'block'; m1.style.display = 'block';
+            n1.innerText = top[0].nick;
+            av1.style.display = 'block'; m1.style.display = 'block'; n1.style.display = 'block';
             if(top.length > 1 && p2 > 0) {
                 av2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
-                av2.style.display = 'block'; m2.style.display = 'block';
+                n2.innerText = top[1].nick;
+                av2.style.display = 'block'; m2.style.display = 'block'; n2.style.display = 'block';
             }
         }
     }
@@ -1080,9 +1190,7 @@
         document.getElementById('det-avisos').innerText = m.avisos * eventoMult;
 
         let stEl = document.getElementById('det-status');
-        let sFinal = m.status_base; 
-        if(tCalc >= 5) sFinal = "CUMPRIDA"; // Atualiza status se bateu a meta com ajuda do bônus
-        
+        let sFinal = m.status_base; if(tCalc >= 5) sFinal = "CUMPRIDA";
         stEl.innerText = sFinal;
         let sTxt = sFinal.toLowerCase();
         if(sTxt.includes('não') || sTxt.includes('nao')) { stEl.style.color = '#ef4444'; }
@@ -1091,8 +1199,21 @@
     }
 
     // ==========================================
-    // AVAIS E ACESSOS
+    // PRIVACIDADE, AVAIS E ACESSOS
     // ==========================================
+    function carregarPrivacidade() {
+        db.collection("sistema").doc("config_geral").get().then((doc) => {
+            let htmlPadrao = `<p>Escreva aqui a Política de Privacidade.</p>`;
+            if (doc.exists && doc.data().textoPrivacidade) document.getElementById('editor-privacidade').innerHTML = doc.data().textoPrivacidade;
+            else document.getElementById('editor-privacidade').innerHTML = htmlPadrao;
+        });
+    }
+
+    function salvarPrivacidade() {
+        let html = document.getElementById('editor-privacidade').innerHTML;
+        db.collection("sistema").doc("config_geral").set({ textoPrivacidade: html }, { merge: true }).then(() => mostrarToastAdmin("Política de Privacidade salva!"));
+    }
+
     function processarCalculo() {
         const d1 = document.getElementById('data-login').value; const d2 = document.getElementById('data-aval').value;
         const dAval = parseInt(document.getElementById('dias-aval').value); const d3 = document.getElementById('data-consulta').value;
