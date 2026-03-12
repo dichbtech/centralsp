@@ -30,7 +30,6 @@ let pontosExtrasMap = {};
 let eventoAtivo = false;
 let eventoMult = 1;
 let cargosMap = {};
-let isEditMode = false;
 
 let layoutConfig = {
     'img-podio-base': { left: '100px', top: '150px', width: 'auto' },
@@ -51,13 +50,14 @@ let layoutConfig = {
     'sponsorInner': { left: '0px', top: '-10px', width: '60px' }
 };
 
+let isEditMode = false;
+
 // ==========================================
-// UTILITÁRIOS VISUAIS E EDITOR
+// UTILITÁRIOS VISUAIS E MODAIS
 // ==========================================
-window.mostrarToast = function (msg, type = 'success') {
+window.mostrarToast = function(msg, type = 'success') {
     let container = document.getElementById('toastContainer');
     let toast = document.createElement('div');
-    
     let icon = type === 'success' ? '<i class="fas fa-check-circle" style="color: #4caf50; font-size: 20px;"></i>' : '<i class="fas fa-exclamation-triangle" style="color: #ff2a2a; font-size: 20px;"></i>';
     let bc = type === 'success' ? 'var(--sup-neon)' : '#ff2a2a';
     let sc = type === 'success' ? 'rgba(251, 191, 36, 0.3)' : 'rgba(255, 42, 42, 0.3)';
@@ -73,14 +73,16 @@ window.mostrarToast = function (msg, type = 'success') {
     }, 3500);
 }
 
-window.customAlert = function (msg, title = "Aviso") {
+window.customAlert = function(msg, title = "Aviso") {
     document.getElementById('custom-alert-title').innerHTML = `<i class="fas fa-exclamation-circle"></i> ${title}`;
     document.getElementById('custom-alert-msg').innerHTML = msg;
     document.getElementById('custom-alert-modal').style.display = 'flex';
 }
 
+// EDITOR DE TEXTO (RICH TEXT)
 let savedSelection = null;
-window.saveSelection = function () {
+
+window.saveSelection = function() {
     if (window.getSelection) {
         let sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
@@ -89,7 +91,7 @@ window.saveSelection = function () {
     }
 }
 
-window.restoreSelection = function () {
+window.restoreSelection = function() {
     if (savedSelection) {
         if (window.getSelection) {
             let sel = window.getSelection();
@@ -99,12 +101,12 @@ window.restoreSelection = function () {
     }
 }
 
-window.applyStyle = function (cmd, val) {
+window.applyStyle = function(cmd, val) {
     event.preventDefault();
     document.execCommand(cmd, false, val);
 }
 
-window.abrirModalLink = function () {
+window.abrirModalLink = function() {
     event.preventDefault();
     window.saveSelection();
     document.getElementById('custom-prompt-modal').style.display = 'flex';
@@ -112,11 +114,11 @@ window.abrirModalLink = function () {
     document.getElementById('custom-prompt-input').focus();
 }
 
-window.fecharCustomPrompt = function () {
+window.fecharCustomPrompt = function() {
     document.getElementById('custom-prompt-modal').style.display = 'none';
 }
 
-window.confirmarCustomPrompt = function () {
+window.confirmarCustomPrompt = function() {
     let url = document.getElementById('custom-prompt-input').value.trim();
     window.fecharCustomPrompt();
     window.restoreSelection();
@@ -125,7 +127,7 @@ window.confirmarCustomPrompt = function () {
     }
 }
 
-window.buildEditorHTML = function (id, content = '') {
+window.buildEditorHTML = function(id, content = '') {
     return `
     <div class="editor-toolbar">
         <button type="button" onmousedown="window.applyStyle('bold')"><i class="fas fa-bold"></i></button>
@@ -138,9 +140,9 @@ window.buildEditorHTML = function (id, content = '') {
 }
 
 // ==========================================
-// SISTEMA DE LOGIN E AUTENTICAÇÃO
+// INICIALIZAÇÃO E AUTENTICAÇÃO
 // ==========================================
-window.liberarPainel = function () {
+window.liberarPainel = function() {
     document.getElementById('loginCard').style.display = 'none';
     document.getElementById('loginLoader').style.display = 'none';
     document.getElementById('loginScreen').style.opacity = '0';
@@ -155,7 +157,6 @@ window.liberarPainel = function () {
     const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     document.getElementById('mes-atual').innerText = meses[new Date().getMonth()] + " de " + new Date().getFullYear();
     
-    // Inicia ouvintes do banco
     carregarLayoutConfig();
     escutarCargos();
     escutarConfigDashboard();
@@ -164,6 +165,7 @@ window.liberarPainel = function () {
     if (nivelUsuarioGlobal !== 'SUPERVISOR') {
         escutarMilitaresEstrelas();
     }
+    
     if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
         carregarPrivacidade();
         escutarLogsEstrelas();
@@ -190,34 +192,28 @@ async function verificarAcessoBD(email) {
     try {
         let authEmail = email.toLowerCase().trim();
         
-        // Puxa acessos automáticos da planilha
         let planSnap = await db.collection("sistema").doc("acessos_planilha").get();
         if (planSnap.exists && planSnap.data().dados) {
             try {
                 planilhaAcessos = JSON.parse(planSnap.data().dados);
             } catch (e) {
-                console.error("Erro ao ler JSON da planilha de acessos", e);
+                console.error("Erro JSON", e);
             }
         }
         
-        // Puxa acessos manuais do Firebase
         let manualSnap = await db.collection("acessos").get();
         acessosData = [];
         manualSnap.forEach(doc => {
             acessosData.push({ id: doc.id, ...doc.data() });
         });
 
-        // Salva-vidas: Se não houver nenhum acesso, cria o primeiro admin
         if (acessosData.length === 0 && Object.keys(planilhaAcessos).length === 0) {
             await db.collection("acessos").doc(authEmail).set({ email: authEmail, nick: 'Admin', nivel: "LIDER" });
             window.location.reload();
             return;
         }
 
-        // Verifica o usuário nos manuais
         let userManual = acessosData.find(u => (u.email || '').toLowerCase().trim() === authEmail);
-        
-        // Verifica o usuário na planilha
         let userPlan = null;
         for (let key in planilhaAcessos) {
             if (key.toLowerCase().trim() === authEmail) {
@@ -228,7 +224,6 @@ async function verificarAcessoBD(email) {
 
         let autorizado = false;
 
-        // Prioridade de Liderança da Planilha, seguida pelos outros níveis
         if (userPlan && (userPlan.nivel.includes("LIDER") || userPlan.nivel.includes("VICE"))) {
             autorizado = true;
             nivelUsuarioGlobal = userPlan.nivel;
@@ -244,12 +239,10 @@ async function verificarAcessoBD(email) {
         }
 
         if (autorizado) {
-            // Normaliza o texto do cargo
             nivelUsuarioGlobal = nivelUsuarioGlobal.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             if (nivelUsuarioGlobal === 'VICELIDER') nivelUsuarioGlobal = 'VICE-LIDER';
             if (nivelUsuarioGlobal === 'SUBLIDER') nivelUsuarioGlobal = 'SUB-LIDER';
             
-            // Regra do Comando: Vai pro site público
             if (nivelUsuarioGlobal === 'COMANDO') {
                 window.customAlert("Acesso de Comando restrito ao Painel Público.", "Aviso");
                 setTimeout(() => {
@@ -259,24 +252,24 @@ async function verificarAcessoBD(email) {
                 return;
             }
             
-            // Libera módulos da Liderança
             if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
                 document.getElementById('admin-only-menus').style.display = 'flex';
                 document.getElementById('admin-drag-controls').style.display = 'flex';
                 renderTabelaAcessos();
                 
                 let boxPrivacidade = document.getElementById('box-editor-privacidade');
-                if(boxPrivacidade) {
+                if (boxPrivacidade) {
                     boxPrivacidade.innerHTML = window.buildEditorHTML('editor-privacidade', 'Carregando...');
                 }
             }
             
-            // Esconde módulos se for apenas Supervisor
             if (nivelUsuarioGlobal === 'SUPERVISOR') {
                 let menuAv = document.getElementById('menu-avais');
                 if (menuAv) menuAv.style.display = 'none';
+                
                 let menuFb = document.getElementById('menu-feedbacks');
                 if (menuFb) menuFb.style.display = 'none';
+                
                 let menuEs = document.getElementById('menu-estrelas');
                 if (menuEs) menuEs.style.display = 'none';
             }
@@ -284,7 +277,7 @@ async function verificarAcessoBD(email) {
             window.switchSection('modulo-metas', document.getElementById('menu-metas'));
             window.liberarPainel();
         } else {
-            window.customAlert(`ACESSO NEGADO.<br><br>O e-mail <b>${authEmail}</b> não foi encontrado com permissões ativas.<br>Caso o e-mail esteja correto, procure a liderança.`, "Falha de Permissão");
+            window.customAlert(`ACESSO NEGADO.<br><br>O e-mail <b>${authEmail}</b> não foi encontrado com permissões ativas.`, "Falha de Permissão");
             setTimeout(() => auth.signOut(), 5000);
         }
     } catch (err) {
@@ -292,10 +285,11 @@ async function verificarAcessoBD(email) {
     }
 }
 
-window.loginGoogle = function () {
+window.loginGoogle = function() {
     const provider = new firebase.auth.GoogleAuthProvider();
     document.getElementById('loginCard').style.display = 'none';
     document.getElementById('loginLoader').style.display = 'block';
+    
     auth.signInWithPopup(provider).catch(() => {
         document.getElementById('loginLoader').style.display = 'none';
         document.getElementById('loginCard').style.display = 'block';
@@ -303,11 +297,11 @@ window.loginGoogle = function () {
     });
 }
 
-window.fazerLogout = function () {
+window.fazerLogout = function() {
     auth.signOut();
 }
 
-window.switchSection = function (idModulo, btnElement) {
+window.switchSection = function(idModulo, btnElement) {
     document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.btn-sidebar').forEach(el => el.classList.remove('active'));
     document.getElementById(idModulo).classList.add('active');
@@ -315,7 +309,7 @@ window.switchSection = function (idModulo, btnElement) {
 }
 
 // ==========================================
-// MÓDULO ESTRELAS E VALIDAÇÃO EM LOTE
+// MÓDULO ESTRELAS E VALIDAÇÃO
 // ==========================================
 function escutarCargos() {
     db.collection("sistema").doc("cargos").onSnapshot((doc) => {
@@ -324,7 +318,7 @@ function escutarCargos() {
                 cargosMap = JSON.parse(doc.data().dados);
                 renderTabelaEstrelas();
             } catch (e) {
-                console.error("Erro no parse dos cargos");
+                console.error("Erro Cargos", e);
             }
         }
     });
@@ -360,11 +354,10 @@ function renderTabelaEstrelas() {
         
         let str = '★'.repeat(dados.estrelas || 0);
         let eHtml = `<span style="color:var(--sup-neon); font-size:14px; letter-spacing:2px; filter: drop-shadow(0 0 5px var(--sup-glow));">${str}</span> <span style="font-weight:bold; color:#fff; margin-left:5px;">(${dados.estrelas || 0})</span>`;
-        
         let sHtml = dados.status === 'Suspenso' ? '<span style="color:#ff2a2a; font-weight:bold; background:rgba(255,42,42,0.1); padding:4px 8px; border-radius:4px; font-size:12px;">SUSPENSO</span>' : '<span style="color:#4caf50; background:rgba(76,175,80,0.1); padding:4px 8px; border-radius:4px; font-size:12px;">ATIVO</span>';
-        let avatarUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${dados.nome}&action=std&direction=2&head_direction=2&gesture=sml&size=m`;
         
-        let premiosHtml = dados.premios_acumulados > 0 ? `<span title="${dados.premios_acumulados} Prêmio(s)">🎖️ x${dados.premios_acumulados}</span>` : '';
+        let ts = new Date().getTime();
+        let avatarUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${dados.nome}&action=std&direction=2&head_direction=2&gesture=sml&size=m&time=${ts}`;
         
         let tr = document.createElement('tr');
         tr.innerHTML = `
@@ -372,7 +365,9 @@ function renderTabelaEstrelas() {
                 <div style="display:flex; align-items:center; gap:12px;">
                     <img src="${avatarUrl}" onerror="this.style.display='none'" style="width:45px; height:45px; border-radius:50%; background:rgba(0,0,0,0.8); border:2px solid var(--sup-neon); box-shadow:0 0 10px var(--sup-neon); object-fit:cover; object-position:center top;">
                     <div>
-                        <div style="font-weight:bold; color:#fff; font-size:15px;">${dados.nome} ${premiosHtml}</div>
+                        <div style="font-weight:bold; color:#fff; font-size:15px;">
+                            ${dados.nome} ${dados.premios_acumulados > 0 ? `<span title="${dados.premios_acumulados} Prêmio(s)">🎖️ x${dados.premios_acumulados}</span>` : ''}
+                        </div>
                         ${cargoHtml}
                     </div>
                 </div>
@@ -397,7 +392,7 @@ function registrarLogEstrela(bene, acao, idProm, detalhes) {
     });
 }
 
-window.buscarPromocoesLote = async function () {
+window.buscarPromocoesLote = async function() {
     let dateVal = document.getElementById('lote-data').value;
     if (!dateVal) return window.mostrarToast("Selecione uma data para a validação.", "error");
 
@@ -438,7 +433,7 @@ window.buscarPromocoesLote = async function () {
     document.getElementById('resultado-lote').style.display = 'block';
 }
 
-window.confirmarLote = async function (contagem, idsColetados) {
+window.confirmarLote = async function(contagem, idsColetados) {
     let idLoteStr = idsColetados.join(', ');
     if (idLoteStr.length > 50) idLoteStr = idLoteStr.substring(0, 47) + "...";
 
@@ -450,7 +445,10 @@ window.confirmarLote = async function (contagem, idsColetados) {
         let ref = db.collection("militares").doc(dbNick);
         let docM = await ref.get();
         
-        let p = 0; let e = 0; let pr = 0; let status = 'Ativo';
+        let p = 0;
+        let e = 0;
+        let pr = 0;
+        let status = 'Ativo';
         
         if (docM.exists) {
             let dados = docM.data();
@@ -470,7 +468,6 @@ window.confirmarLote = async function (contagem, idsColetados) {
         let detailLog = `Validou ${qtd} promoção(ões). `;
         if (estrelasGanhas > 0) detailLog += `Conquistou ${estrelasGanhas} estrela(s)! `;
 
-        // Aviso visual sem resetar a pontuação automaticamente
         let atingiuPremio = Math.floor(estrelasAntes / 10) < Math.floor(e / 10);
         if (atingiuPremio) {
             window.customAlert(`🏅 O policial ${dbNick} acaba de atingir ${e} estrelas no sistema!<br><br>Avise o Comando para realizar o pagamento oficial destas 10 estrelas.`, "Aguardando Pagamento!");
@@ -490,7 +487,7 @@ window.confirmarLote = async function (contagem, idsColetados) {
 function escutarLogsEstrelas() {
     db.collection("logs_estrelas").orderBy("timestamp", "desc").limit(50).onSnapshot(snap => {
         let tbody = document.querySelector('#tb-logs tbody');
-        if(!tbody) return;
+        if (!tbody) return;
         
         tbody.innerHTML = '';
         snap.forEach(doc => {
@@ -504,14 +501,14 @@ function escutarLogsEstrelas() {
 }
 
 // ==========================================
-// DASHBOARD & EVENTOS
+// DASHBOARD DE EVENTOS
 // ==========================================
-window.abrirDashboard = function () {
+window.abrirDashboard = function() {
     document.getElementById('modal-dashboard').style.display = 'flex';
     renderAdminEventosList();
 }
 
-window.fecharDashboard = function () {
+window.fecharDashboard = function() {
     document.getElementById('modal-dashboard').style.display = 'none';
 }
 
@@ -521,12 +518,12 @@ function formatarDataBR(dataStr) {
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
-window.adicionarNovoEventoBox = function () {
+window.adicionarNovoEventoBox = function() {
     dashboardEventosData.push({ nome: '', dataInicio: '', dataFim: '', descricao: '', premiosTexto: '', hc: false, moedas: false });
     renderAdminEventosList();
 }
 
-window.removerEventoBox = function (index) {
+window.removerEventoBox = function(index) {
     dashboardEventosData.splice(index, 1);
     renderAdminEventosList();
 }
@@ -534,6 +531,7 @@ window.removerEventoBox = function (index) {
 function renderAdminEventosList() {
     let container = document.getElementById('dash-eventos-container');
     container.innerHTML = '';
+    
     if (dashboardEventosData.length === 0) {
         container.innerHTML = '<p style="color:var(--text-sub); font-style:italic; font-size:14px; margin-bottom:20px;">Nenhum evento criado.</p>';
         return;
@@ -562,7 +560,7 @@ function renderAdminEventosList() {
     });
 }
 
-window.salvarDashboard = function () {
+window.salvarDashboard = function() {
     let evs = [];
     document.querySelectorAll('.admin-evento-item').forEach(el => {
         evs.push({
@@ -597,21 +595,31 @@ function escutarConfigDashboard() {
             dashboardEventosData = d.eventos || [];
             
             if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
-                let tg = document.getElementById('dash-toggle-evento'); if (tg) tg.checked = eventoAtivo;
-                let ml = document.getElementById('dash-mult-evento'); if (ml) ml.value = eventoMult;
-                let pr = document.getElementById('dash-txt-patrocinio'); if (pr) pr.value = d.textoPatrocinio || '';
+                let tg = document.getElementById('dash-toggle-evento');
+                if (tg) tg.checked = eventoAtivo;
+                let ml = document.getElementById('dash-mult-evento');
+                if (ml) ml.value = eventoMult;
+                let pr = document.getElementById('dash-txt-patrocinio');
+                if (pr) pr.value = d.textoPatrocinio || '';
             }
-
+            
             let btnPE = document.getElementById('btn-pontos-extras');
             if (btnPE && (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER')) {
                 btnPE.style.display = eventoAtivo ? 'inline-flex' : 'none';
             }
 
             let banner = document.getElementById('evento-banner');
-            if (eventoAtivo && eventoMult > 1) { banner.style.display = 'flex'; } else { banner.style.display = 'none'; eventoMult = 1; }
-            
+            if (eventoAtivo && eventoMult > 1) {
+                banner.style.display = 'flex';
+            } else {
+                banner.style.display = 'none';
+                eventoMult = 1;
+            }
+
             let tSpon = document.getElementById('ui-txt-patrocinio');
-            if (tSpon) tSpon.innerText = d.textoPatrocinio || 'Deseja patrocinar algum dos eventos e ajudar a divisão? Procure a Liderança!';
+            if (tSpon) {
+                tSpon.innerText = d.textoPatrocinio || 'Deseja patrocinar algum dos eventos e ajudar a divisão? Procure a Liderança!';
+            }
 
             let uiLista = document.getElementById('ui-lista-eventos');
             if (uiLista) {
@@ -621,8 +629,11 @@ function escutarConfigDashboard() {
                 } else {
                     dashboardEventosData.forEach((ev, i) => {
                         let dtTxt = '';
-                        if (ev.dataInicio && ev.dataFim) dtTxt = `${formatarDataBR(ev.dataInicio)} a ${formatarDataBR(ev.dataFim)}`;
-                        else if (ev.dataInicio) dtTxt = `A partir de ${formatarDataBR(ev.dataInicio)}`;
+                        if (ev.dataInicio && ev.dataFim) {
+                            dtTxt = `${formatarDataBR(ev.dataInicio)} a ${formatarDataBR(ev.dataFim)}`;
+                        } else if (ev.dataInicio) {
+                            dtTxt = `A partir de ${formatarDataBR(ev.dataInicio)}`;
+                        }
                         
                         let pUI = '';
                         if (ev.premiosTexto || ev.hc || ev.moedas) {
@@ -638,14 +649,26 @@ function escutarConfigDashboard() {
                             }
                             pUI += `</div>`;
                         }
-                        uiLista.insertAdjacentHTML('beforeend', `<div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;"><h4 style="color:var(--sup-neon); margin-bottom: 5px; font-size: 18px; text-transform: uppercase;">${ev.nome || 'Evento'}</h4>${dtTxt ? `<div style="color: var(--text-sub); font-size: 13px; margin-bottom: 10px; display:flex; align-items:center; gap:5px; font-weight:600;"><i class="far fa-calendar-day"></i> <span>${dtTxt}</span></div>` : ''}<div style="color: #fff; font-size: 14px; line-height: 1.5;">${ev.descricao || ''}</div>${pUI}</div>`);
+                        
+                        uiLista.insertAdjacentHTML('beforeend', `
+                            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--sup-neon); margin-bottom: 15px;">
+                                <h4 style="color:var(--sup-neon); margin-bottom: 5px; font-size: 18px; text-transform: uppercase;">${ev.nome || 'Evento'}</h4>
+                                ${dtTxt ? `<div style="color: var(--text-sub); font-size: 13px; margin-bottom: 10px; display:flex; align-items:center; gap:5px; font-weight:600;"><i class="far fa-calendar-day"></i> <span>${dtTxt}</span></div>` : ''}
+                                <div style="color: #fff; font-size: 14px; line-height: 1.5;">${ev.descricao || ''}</div>
+                                ${pUI}
+                            </div>
+                        `);
                     });
                 }
             }
+            
             setupPrizesResizable();
+            
             if (membrosDataArray.length > 0) {
                 processarPodio();
-                if (document.getElementById('select-membro').value) window.renderMemberDetails();
+                if (document.getElementById('select-membro').value) {
+                    window.renderMemberDetails();
+                }
                 renderTabelaPontosExtras();
             }
         }
@@ -655,32 +678,37 @@ function escutarConfigDashboard() {
 // ==========================================
 // PONTOS EXTRAS E ARRASTO
 // ==========================================
-window.abrirModalPontosExtras = function () {
+window.abrirModalPontosExtras = function() {
     document.getElementById('modal-pontos-extras').style.display = 'flex';
     let sel = document.getElementById('pe-select-membro');
     sel.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+    
     [...membrosDataArray].sort((a, b) => a.nick.localeCompare(b.nick)).forEach(m => {
         sel.innerHTML += `<option value="${m.nick}">${m.nick}</option>`;
     });
+    
     renderTabelaPontosExtras();
 }
 
-window.fecharModalPontosExtras = function () {
+window.fecharModalPontosExtras = function() {
     document.getElementById('modal-pontos-extras').style.display = 'none';
 }
 
-window.salvarPontoExtra = function () {
+window.salvarPontoExtra = function() {
     let nick = document.getElementById('pe-select-membro').value;
     let pts = parseInt(document.getElementById('pe-input-pontos').value);
+    
     if (!nick || isNaN(pts)) return window.mostrarToast("Selecione um membro e digite a pontuação.", "error");
+    
     pontosExtrasMap[nick] = pts;
+    
     db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, { merge: true }).then(() => {
         document.getElementById('pe-input-pontos').value = '';
         window.mostrarToast(`+${pts} pontos para ${nick}`, "success");
     });
 }
 
-window.removerPontoExtra = function (nick) {
+window.removerPontoExtra = function(nick) {
     delete pontosExtrasMap[nick];
     db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, { merge: true });
 }
@@ -688,9 +716,11 @@ window.removerPontoExtra = function (nick) {
 function renderTabelaPontosExtras() {
     let tbody = document.querySelector('#tb-pontos-extras tbody');
     tbody.innerHTML = '';
+    
     for (let n in pontosExtrasMap) {
         tbody.innerHTML += `<tr><td>${n}</td><td style="text-align:center; color:var(--sup-neon); font-weight:bold;">+${pontosExtrasMap[n]}</td><td style="text-align:right;"><button class="btn-admin-icon btn-admin-del" onclick="window.removerPontoExtra('${n}')"><i class="fas fa-trash"></i></button></td></tr>`;
     }
+    
     if (Object.keys(pontosExtrasMap).length === 0) {
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-sub);">Nenhum ponto extra.</td></tr>';
     }
@@ -730,14 +760,14 @@ function carregarLayoutConfig() {
     });
 }
 
-window.savePositions = function () {
+window.savePositions = function() {
     db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, { merge: true }).then(() => {
         window.mostrarToast("Posições salvas!", "success");
         if (isEditMode) window.toggleEditMode();
     }).catch((e) => window.mostrarToast("Erro ao salvar posições: " + e.message, "error"));
 }
 
-window.toggleEditMode = function () {
+window.toggleEditMode = function() {
     isEditMode = !isEditMode;
     let btn = document.getElementById('btn-edit-pos');
     let dica = document.getElementById('dica-resize');
@@ -754,10 +784,14 @@ window.toggleEditMode = function () {
         areaDet.style.display = 'flex';
         areaDet.style.opacity = '1';
         
+        let ts = new Date().getTime();
         let fbacks = [{ id: 'avatar-1' }, { id: 'avatar-2' }, { id: 'avatar-selecionado' }, { id: 'avatar-empate-1' }, { id: 'avatar-empate-2' }];
+        
         fbacks.forEach(f => {
             let img = document.getElementById(f.id);
-            if (img && (!img.src || img.src.endsWith('='))) img.src = 'https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b';
+            if (img && (!img.src || img.src.endsWith('='))) {
+                img.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=Admin&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}`;
+            }
         });
         
         document.getElementById('nick-1').innerText = "NICK 1";
@@ -769,8 +803,10 @@ window.toggleEditMode = function () {
             e.classList.add('edit-mode');
             if (e.tagName === 'IMG' || e.tagName === 'DIV') e.style.display = 'block';
         });
+        
         elsSponImg.forEach(img => { img.classList.add('sponsor-edit', 'edit-mode'); });
         elsPrize.forEach(img => { img.classList.add('edit-mode'); });
+        
     } else {
         btn.innerHTML = '<i class="fas fa-arrows-alt"></i> Editar Posições';
         btn.style.borderColor = '';
@@ -796,6 +832,7 @@ function setupPrizesResizable() {
         if (img.dataset.dragReady) return;
         img.dataset.dragReady = "true";
         img.ondragstart = () => false;
+        
         img.addEventListener('wheel', (e) => {
             if (!isEditMode) return;
             e.preventDefault();
@@ -815,19 +852,23 @@ function setupAllDraggables() {
         if (el.dataset.dragReady) return;
         el.dataset.dragReady = "true";
         el.ondragstart = () => false;
+        
         el.addEventListener('mousedown', (e) => {
             if (!isEditMode) return;
             e.preventDefault();
             e.stopPropagation();
+            
             let startX = e.clientX;
             let startY = e.clientY;
             let startLeft = el.offsetLeft;
             let startTop = el.offsetTop;
+            
             const onMouseMove = (mEv) => {
                 mEv.preventDefault();
                 el.style.left = (startLeft + (mEv.clientX - startX)) + 'px';
                 el.style.top = (startTop + (mEv.clientY - startY)) + 'px';
             };
+            
             const onMouseUp = () => {
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
@@ -835,9 +876,11 @@ function setupAllDraggables() {
                 layoutConfig[el.id].left = el.style.left;
                 layoutConfig[el.id].top = el.style.top;
             };
+            
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
+        
         el.addEventListener('wheel', (e) => {
             if (!isEditMode) return;
             e.preventDefault();
@@ -853,7 +896,7 @@ function setupAllDraggables() {
 }
 
 // ==========================================
-// METAS E PÓDIO
+// METAS, PÓDIO E PATROCINADORES
 // ==========================================
 function escutarMetasDoFirebase() {
     db.collection("sistema").doc("metas").onSnapshot((doc) => {
@@ -864,15 +907,22 @@ function escutarMetasDoFirebase() {
             } catch (e) {
                 return;
             }
-            if (rows.length > 17 && rows[17][1]) document.getElementById('meta-week-title').innerText = rows[17][1];
+            
+            if (rows.length > 17 && rows[17][1]) {
+                document.getElementById('meta-week-title').innerText = rows[17][1];
+            }
+            
             membrosDataArray = [];
             let sponsorsList = [];
+            
             for (let i = 3; i < rows.length; i++) {
                 if (rows[i][15]) sponsorsList.push(rows[i][15]);
                 if (rows[i][16]) sponsorsList.push(rows[i][16]);
                 if (rows[i][17]) sponsorsList.push(rows[i][17]);
             }
+            
             renderSponsors(sponsorsList);
+            
             for (let i = 20; i < rows.length; i++) {
                 if (!rows[i][3]) continue;
                 membrosDataArray.push({
@@ -887,6 +937,7 @@ function escutarMetasDoFirebase() {
                     status_base: (rows[i][12] || '').toString().trim()
                 });
             }
+            
             popularSelectMembros();
             processarPodio();
         }
@@ -899,8 +950,17 @@ function renderSponsors(lista) {
     if (!container) return;
     
     container.innerHTML = '';
+    let ts = new Date().getTime();
+    
+    // Inserindo o texto sem alterar a tag interna da imagem
     unique.forEach(nick => {
-        container.innerHTML += `<div class="sponsor-item" style="display:flex; flex-direction:column; align-items:center; gap:5px;"><div class="sponsor-avatar" title="${nick.trim()}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick.trim()}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div><span style="color:var(--sup-neon); font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">${nick.trim()}</span></div>`;
+        container.innerHTML += `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+            <div class="sponsor-avatar" title="${nick.trim()}">
+                <img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick.trim()}&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}" draggable="false">
+            </div>
+            <div style="color:var(--sup-neon); font-size:10px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; text-align:center;">${nick.trim()}</div>
+        </div>`;
     });
     
     aplicarSponsorInner();
@@ -909,6 +969,7 @@ function renderSponsors(lista) {
         if (img.dataset.dragReady) return;
         img.dataset.dragReady = "true";
         img.ondragstart = () => false;
+        
         img.addEventListener('mousedown', (e) => {
             if (!isEditMode) return;
             e.preventDefault();
@@ -917,6 +978,7 @@ function renderSponsors(lista) {
             let sY = e.clientY;
             let sL = img.offsetLeft;
             let sT = img.offsetTop;
+            
             const onMv = (mEv) => {
                 mEv.preventDefault();
                 layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {};
@@ -924,13 +986,16 @@ function renderSponsors(lista) {
                 layoutConfig['sponsorInner'].top = (sT + (mEv.clientY - sY)) + 'px';
                 aplicarSponsorInner();
             };
+            
             const onUp = () => {
                 document.removeEventListener('mousemove', onMv);
                 document.removeEventListener('mouseup', onUp);
             };
+            
             document.addEventListener('mousemove', onMv);
             document.addEventListener('mouseup', onUp);
         });
+        
         img.addEventListener('wheel', (e) => {
             if (!isEditMode) return;
             e.preventDefault();
@@ -942,6 +1007,7 @@ function renderSponsors(lista) {
             layoutConfig['sponsorInner'].width = w + 'px';
             aplicarSponsorInner();
         }, { passive: false });
+        
         if (isEditMode) img.classList.add('sponsor-edit', 'edit-mode');
     });
 }
@@ -952,9 +1018,11 @@ function popularSelectMembros() {
     let valAtual = sel.value;
     sel.innerHTML = '<option value="" disabled selected>Selecione um membro...</option>';
     let sorted = [...membrosDataArray].sort((a, b) => a.nick.localeCompare(b.nick));
+    
     sorted.forEach(m => {
         sel.innerHTML += `<option value="${m.nick}">${m.cargo} ${m.nick}</option>`;
     });
+    
     if (valAtual) sel.value = valAtual;
 }
 
@@ -964,6 +1032,7 @@ function getPontuacaoFinal(m) {
 
 function processarPodio() {
     if (isEditMode) return;
+    
     let a1 = document.getElementById('avatar-1');
     let m1 = document.getElementById('medal-1');
     let n1 = document.getElementById('nick-1');
@@ -985,35 +1054,42 @@ function processarPodio() {
     let p1 = getPontuacaoFinal(top[0]);
     let p2 = (top.length > 1) ? getPontuacaoFinal(top[1]) : 0;
     
+    let ts = new Date().getTime();
+    
     if (top.length >= 2 && p1 > 0 && p1 === p2) {
-        ae1.src = ae2.src = "https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b";
+        ae1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}`;
+        ae2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}`;
         [ae1, te1, ae2, te2].forEach(el => el.style.display = 'block');
     } else if (top.length > 0 && p1 > 0) {
-        a1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
+        a1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}`;
         n1.innerText = top[0].nick;
         [a1, m1, n1].forEach(el => el.style.display = 'block');
         
         if (top.length > 1 && p2 > 0) {
-            a2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
+            a2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}`;
             n2.innerText = top[1].nick;
             [a2, m2, n2].forEach(el => el.style.display = 'block');
         }
     }
 }
 
-window.renderMemberDetails = function () {
+window.renderMemberDetails = function() {
     let nick = document.getElementById('select-membro').value;
     let m = membrosDataArray.find(x => x.nick === nick);
     if (!m) return;
     
     document.getElementById('area-detalhes-membro').style.display = 'flex';
-    setTimeout(() => { document.getElementById('area-detalhes-membro').style.opacity = '1'; }, 50);
+    setTimeout(() => {
+        document.getElementById('area-detalhes-membro').style.opacity = '1';
+    }, 50);
     
     let tCalc = getPontuacaoFinal(m);
     let ptsExtra = pontosExtrasMap[m.nick] || 0;
+    let ts = new Date().getTime();
     
-    document.getElementById('avatar-selecionado').src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${m.nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
+    document.getElementById('avatar-selecionado').src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${m.nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b&time=${ts}`;
     document.getElementById('det-total').innerHTML = `<span>${tCalc}</span>` + (ptsExtra > 0 ? `<span style="font-size:16px; color:#4caf50; font-weight:normal;">(+${ptsExtra} bônus)</span>` : '');
+    
     document.getElementById('det-convite').innerText = m.convite * eventoMult;
     document.getElementById('det-ppp').innerText = m.ppp * eventoMult;
     document.getElementById('det-rels').innerText = m.rels * eventoMult;
@@ -1029,7 +1105,7 @@ window.renderMemberDetails = function () {
 }
 
 // ==========================================
-// PRIVACIDADE, AVAIS E GERENCIADOR DE ACESSOS
+// PRIVACIDADE E AVAIS
 // ==========================================
 function carregarPrivacidade() {
     db.collection("sistema").doc("config_geral").get().then((doc) => {
@@ -1042,11 +1118,11 @@ function carregarPrivacidade() {
     });
 }
 
-window.salvarPrivacidade = function () {
+window.salvarPrivacidade = function() {
     db.collection("sistema").doc("config_geral").set({ textoPrivacidade: document.getElementById('editor-privacidade').innerHTML }, { merge: true }).then(() => window.mostrarToast("Política de Privacidade salva!", "success"));
 }
 
-window.processarCalculo = function () {
+window.processarCalculo = function() {
     const d1 = document.getElementById('data-login').value;
     const d2 = document.getElementById('data-aval').value;
     const dAval = parseInt(document.getElementById('dias-aval').value);
@@ -1077,10 +1153,14 @@ window.processarCalculo = function () {
             m = `Militar em período de aval.<br>Ausência antes do aval: <strong>${a1} dia(s)</strong>.`;
         }
     }
+    
     document.getElementById('texto-resultado').innerHTML = m;
     document.getElementById('resultado-aval').style.display = 'block';
 }
 
+// ==========================================
+// GERENCIADOR DE ACESSOS
+// ==========================================
 function renderTabelaAcessos() {
     var tbody = document.querySelector('#tbAcessos tbody');
     if (!tbody) return;
@@ -1088,13 +1168,11 @@ function renderTabelaAcessos() {
     
     let rendered = new Set();
     
-    // Tabela com acessos Manuais
     acessosData.forEach(item => {
         tbody.appendChild(criarRowAcesso(item, 'manual'));
         rendered.add(item.email.toLowerCase());
     });
     
-    // Tabela com acessos da Planilha
     for (let email in planilhaAcessos) {
         if (!rendered.has(email.toLowerCase())) {
             let item = { email: email, nick: planilhaAcessos[email].nick, nivel: planilhaAcessos[email].nivel };
@@ -1105,16 +1183,15 @@ function renderTabelaAcessos() {
 
 function criarRowAcesso(item, origem) {
     var tr = document.createElement('tr');
+    
     let sL = item.nivel === 'LIDER' ? 'selected' : '';
     let sV = item.nivel === 'VICE-LIDER' ? 'selected' : '';
     let sS = item.nivel === 'SUB-LIDER' ? 'selected' : '';
     let sSup = item.nivel === 'SUPERVISOR' ? 'selected' : '';
-    let sC = item.nivel === 'COMANDO' ? 'selected' : '';
     
     let hideAcoes = (nivelUsuarioGlobal === 'VICE-LIDER' && item.nivel === 'LIDER') ? 'display:none;' : '';
     
     let tBadge = origem === 'planilha' ? '<span style="background:rgba(251,191,36,0.2); color:var(--sup-neon); padding:2px 6px; border-radius:4px; font-size:10px; margin-left:8px;">PLANILHA</span>' : '<span style="background:rgba(76,175,80,0.2); color:#4caf50; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:8px;">MANUAL</span>';
-    
     let acoes = origem === 'planilha' ? '<span style="color:#888; font-size:11px;">Via Planilha</span>' : `<button class="btn-admin-icon btn-admin-edit" onclick="window.toggleEditRow(this)" title="Editar"><i class="fas fa-pencil-alt"></i></button><button class="btn-admin-icon btn-admin-del" onclick="this.closest('tr').remove()" title="Excluir"><i class="fas fa-trash"></i></button>`;
     
     tr.innerHTML = `
@@ -1126,7 +1203,6 @@ function criarRowAcesso(item, origem) {
                 <option value="VICE-LIDER" ${sV}>Vice-Líder</option>
                 <option value="SUB-LIDER" ${sS}>Sub-Líder</option>
                 <option value="SUPERVISOR" ${sSup}>Supervisor</option>
-                <option value="COMANDO" ${sC}>Comando</option>
             </select>
         </td>
         <td class="action-cell" style="${hideAcoes}" data-origem="${origem}">${acoes}</td>
@@ -1134,36 +1210,35 @@ function criarRowAcesso(item, origem) {
     return tr;
 }
 
-window.addLinhaAcesso = function () {
+window.addLinhaAcesso = function() {
     var tbody = document.querySelector('#tbAcessos tbody');
     var tr = criarRowAcesso({ email: '', nick: '', nivel: 'SUPERVISOR' }, 'manual');
     tbody.appendChild(tr);
     window.toggleEditRow(tr.querySelector('.btn-admin-edit'));
 }
 
-window.toggleEditRow = function (btn) {
+window.toggleEditRow = function(btn) {
     var tr = btn.closest('tr');
     tr.querySelectorAll('input, select').forEach(inp => inp.removeAttribute('disabled'));
     tr.querySelectorAll('input').forEach(inp => inp.removeAttribute('readonly'));
     btn.innerHTML = '<i class="fas fa-check"></i>';
     btn.className = 'btn-admin-icon btn-admin-check';
-    btn.onclick = function () { window.confirmEditRow(btn); };
+    btn.onclick = function() { window.confirmEditRow(btn); };
 }
 
-window.confirmEditRow = function (btn) {
+window.confirmEditRow = function(btn) {
     var tr = btn.closest('tr');
     tr.querySelectorAll('input, select').forEach(inp => inp.setAttribute('disabled', true));
     tr.querySelectorAll('input').forEach(inp => inp.setAttribute('readonly', true));
     btn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
     btn.className = 'btn-admin-icon btn-admin-edit';
-    btn.onclick = function () { window.toggleEditRow(btn); };
+    btn.onclick = function() { window.toggleEditRow(btn); };
 }
 
-window.salvarAcessos = function () {
+window.salvarAcessos = function() {
     var rows = document.querySelectorAll('#tbAcessos tbody tr');
     const batch = db.batch();
     
-    // Deleta apenas os manuais antigos para regravar
     acessosData.forEach(ac => {
         batch.delete(db.collection("acessos").doc(ac.email));
     });
