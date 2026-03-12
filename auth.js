@@ -111,3 +111,26 @@ window.verificarAcessoBD = async function(email) {
         window.customAlert("Erro na comunicação com o banco de dados: " + err.message, "Erro Crítico");
     }
 }
+
+window.loginGoogle = function() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('loginLoader').style.display = 'block';
+    
+    auth.signInWithPopup(provider).catch(() => {
+        document.getElementById('loginLoader').style.display = 'none';
+        document.getElementById('loginCard').style.display = 'block';
+        document.getElementById('login-error').style.display = 'block';
+    });
+}
+
+window.fazerLogout = function() {
+    auth.signOut();
+}
+
+window.switchSection = function(idModulo, btnElement) {
+    document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.btn-sidebar').forEach(el => el.classList.remove('active'));
+    document.getElementById(idModulo).classList.add('active');
+    btnElement.classList.add('active');
+}

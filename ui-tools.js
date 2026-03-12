@@ -1,5 +1,3 @@
-const db = window.db;
-
 window.mostrarToast = function(msg, type = 'success') {
     let container = document.getElementById('toastContainer');
     let toast = document.createElement('div');
@@ -74,7 +72,6 @@ window.buildEditorHTML = function(id, content = '') {
     <div class="rich-editor admin-input ev-desc" contenteditable="true" id="${id}">${content}</div>`;
 }
 
-// ARRASTAR E REDIMENSIONAR
 window.aplicarPosicoes = function() {
     for (let id in window.layoutConfig) {
         if (id === 'sponsorInner') continue;

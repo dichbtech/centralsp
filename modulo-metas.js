@@ -1,5 +1,3 @@
-const db = window.db;
-
 window.escutarMetasDoFirebase = function() {
     db.collection("sistema").doc("metas").onSnapshot((doc) => {
         if (doc.exists && doc.data().dados) {
@@ -178,7 +176,6 @@ window.renderMemberDetails = function() {
     stEl.style.color = sFinal.toLowerCase().includes('não') ? '#ef4444' : '#4caf50';
 }
 
-// DASHBOARD & EVENTOS
 window.abrirDashboard = function() {
     document.getElementById('modal-dashboard').style.display = 'flex';
     window.renderAdminEventosList();
@@ -298,11 +295,8 @@ window.escutarConfigDashboard = function() {
                 } else {
                     window.dashboardEventosData.forEach((ev, i) => {
                         let dtTxt = '';
-                        if (ev.dataInicio && ev.dataFim) {
-                            dtTxt = `${window.formatarDataBR(ev.dataInicio)} a ${window.formatarDataBR(ev.dataFim)}`;
-                        } else if (ev.dataInicio) {
-                            dtTxt = `A partir de ${window.formatarDataBR(ev.dataInicio)}`;
-                        }
+                        if (ev.dataInicio && ev.dataFim) dtTxt = `${window.formatarDataBR(ev.dataInicio)} a ${window.formatarDataBR(ev.dataFim)}`;
+                        else if (ev.dataInicio) dtTxt = `A partir de ${window.formatarDataBR(ev.dataInicio)}`;
                         
                         let pUI = '';
                         if (ev.premiosTexto || ev.hc || ev.moedas) {
@@ -334,14 +328,15 @@ window.escutarConfigDashboard = function() {
             window.setupPrizesResizable();
             if (window.membrosDataArray.length > 0) {
                 window.processarPodio();
-                if (document.getElementById('select-membro').value) window.renderMemberDetails();
+                if (document.getElementById('select-membro').value) {
+                    window.renderMemberDetails();
+                }
                 window.renderTabelaPontosExtras();
             }
         }
     });
 }
 
-// PONTOS EXTRAS
 window.abrirModalPontosExtras = function() {
     document.getElementById('modal-pontos-extras').style.display = 'flex';
     let sel = document.getElementById('pe-select-membro');

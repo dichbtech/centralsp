@@ -11,11 +11,10 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// Vinculando ao escopo global (window) para os outros arquivos enxergarem
-window.auth = firebase.auth();
-window.db = firebase.firestore();
+// Usar "var" permite que essas variáveis existam globalmente para todos os outros módulos
+var auth = firebase.auth();
+var db = firebase.firestore();
 
-// Variáveis Globais Protegidas
 window.usuarioLogadoEmail = '';
 window.usuarioLogadoNick = '';
 window.nivelUsuarioGlobal = 'SUPERVISOR';

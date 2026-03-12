@@ -1,5 +1,4 @@
 const db = window.db;
-
 let militaresEstrelasData = [];
 
 window.escutarCargos = function() {
