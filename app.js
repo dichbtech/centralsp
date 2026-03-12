@@ -3,7 +3,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth(); const db = firebase.firestore();
 
 let usuarioLogadoEmail = ''; let usuarioLogadoNick = ''; let nivelUsuarioGlobal = 'SUPERVISOR'; 
-let acessosData = []; let membrosDataArray = []; let dashboardEventosData = []; let pontosExtrasMap = {}; 
+let acessosData = []; let planilhaAcessos = {}; let membrosDataArray = []; let dashboardEventosData = []; let pontosExtrasMap = {}; 
 let eventoAtivo = false; let eventoMult = 1; let cargosMap = {}; 
 
 let layoutConfig = { 'img-podio-base': { left: '100px', top: '150px', width: 'auto' }, 'avatar-1': { left: '175px', top: '50px', width: 'auto' }, 'medal-1': { left: '175px', top: '0px', width: 'auto' }, 'nick-1': { left: '160px', top: '120px', width: 'auto' }, 'avatar-2': { left: '80px', top: '100px', width: 'auto' }, 'medal-2': { left: '80px', top: '50px', width: 'auto' }, 'nick-2': { left: '60px', top: '170px', width: 'auto' }, 'avatar-empate-1': { left: '175px', top: '50px', width: 'auto' }, 'txt-empate-1': { left: '175px', top: '20px', width: 'auto' }, 'avatar-empate-2': { left: '80px', top: '100px', width: 'auto' }, 'txt-empate-2': { left: '80px', top: '70px', width: 'auto' }, 'img-palco-base': { left: '50px', top: '220px', width: 'auto' }, 'img-brasao': { left: '10px', top: '10px', width: 'auto' }, 'img-emblema-sup': { left: '45px', top: '40px', width: 'auto' }, 'avatar-selecionado': { left: '130px', top: '100px', width: 'auto' }, 'sponsorInner': { left: '0px', top: '-10px', width: '60px' } };
@@ -34,34 +34,38 @@ window.liberarPainel = function() {
 
 auth.onAuthStateChanged((user) => { if (user) { usuarioLogadoEmail = user.email.toLowerCase(); verificarAcessoBD(usuarioLogadoEmail); } else { document.getElementById('appWrapper').style.display = 'none'; document.getElementById('loginCard').style.display = 'block'; document.getElementById('loginScreen').style.display = 'flex'; setTimeout(() => { document.getElementById('loginScreen').style.opacity = '1'; }, 10); } });
 
-function verificarAcessoBD(email) {
+async function verificarAcessoBD(email) {
     let authEmail = email.toLowerCase().trim();
-    db.collection("acessos").get().then((snap) => {
-        if (snap.empty) { db.collection("acessos").doc(authEmail).set({ email: authEmail, nick: 'Admin', nivel: "LIDER" }).then(() => window.location.reload()); return; }
-        let autorizado = false; nivelUsuarioGlobal = 'SUPERVISOR'; acessosData = [];
-        snap.forEach((doc) => {
-            let d = doc.data(); let dbEmail = (d.email || '').toLowerCase().trim();
-            let nivelNormalizado = (d.nivel || 'SUPERVISOR').toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
-            if(nivelNormalizado === 'VICELIDER') nivelNormalizado = 'VICE-LIDER'; if(nivelNormalizado === 'SUBLIDER') nivelNormalizado = 'SUB-LIDER';
-            acessosData.push({ id: doc.id, email: dbEmail, nick: d.nick || '', nivel: nivelNormalizado });
-            if (dbEmail === authEmail) { autorizado = true; nivelUsuarioGlobal = nivelNormalizado; usuarioLogadoNick = d.nick || 'Desconhecido'; }
-        });
-        if (autorizado) {
-            if (nivelUsuarioGlobal === 'COMANDO') { window.customAlert("Acesso apenas pelo Painel Público. Redirecionando...", "Área Restrita"); setTimeout(()=> { auth.signOut(); window.location.href = "https://dichitech.github.io/ranking"; }, 3000); return; }
-            if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') { document.getElementById('admin-only-menus').style.display = 'flex'; document.getElementById('admin-drag-controls').style.display = 'flex'; renderTabelaAcessos(); }
-            if (nivelUsuarioGlobal === 'SUPERVISOR') { document.getElementById('menu-avais').style.display = 'none'; document.getElementById('menu-feedbacks').style.display = 'none'; document.getElementById('menu-estrelas').style.display = 'none'; }
-            window.switchSection('modulo-metas', document.getElementById('menu-metas'));
-            window.liberarPainel();
-        } else { window.customAlert("ACESSO NEGADO.", "Erro"); setTimeout(()=>auth.signOut(), 3000); }
-    });
+    
+    let planSnap = await db.collection("sistema").doc("acessos_planilha").get();
+    if(planSnap.exists && planSnap.data().dados) { try { planilhaAcessos = JSON.parse(planSnap.data().dados); } catch(e){} }
+    
+    let manualSnap = await db.collection("acessos").get();
+    acessosData = [];
+    manualSnap.forEach(doc => { acessosData.push({ id: doc.id, ...doc.data() }); });
+
+    let userManual = acessosData.find(u => u.email.toLowerCase() === authEmail);
+    let userPlan = planilhaAcessos[authEmail];
+    let autorizado = false;
+
+    if(userManual) { autorizado = true; nivelUsuarioGlobal = userManual.nivel; usuarioLogadoNick = userManual.nick; } 
+    else if(userPlan) { autorizado = true; nivelUsuarioGlobal = userPlan.nivel; usuarioLogadoNick = userPlan.nick; }
+
+    if (autorizado) {
+        nivelUsuarioGlobal = nivelUsuarioGlobal.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+        if(nivelUsuarioGlobal === 'VICELIDER') nivelUsuarioGlobal = 'VICE-LIDER'; if(nivelUsuarioGlobal === 'SUBLIDER') nivelUsuarioGlobal = 'SUB-LIDER';
+        
+        if (nivelUsuarioGlobal === 'COMANDO') { window.customAlert("Acesso apenas pelo Painel Público.", "Restrito"); setTimeout(()=> { auth.signOut(); window.location.href = "https://dichitech.github.io/ranking"; }, 3000); return; }
+        if (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') { document.getElementById('admin-only-menus').style.display = 'flex'; document.getElementById('admin-drag-controls').style.display = 'flex'; renderTabelaAcessos(); document.getElementById('box-editor-privacidade').innerHTML = buildEditorHTML('editor-privacidade', 'Carregando...'); }
+        if (nivelUsuarioGlobal === 'SUPERVISOR') { document.getElementById('menu-avais').style.display = 'none'; document.getElementById('menu-feedbacks').style.display = 'none'; document.getElementById('menu-estrelas').style.display = 'none'; }
+        window.switchSection('modulo-metas', document.getElementById('menu-metas')); window.liberarPainel();
+    } else { window.customAlert("ACESSO NEGADO.", "Erro"); setTimeout(()=>auth.signOut(), 3000); }
 }
+
 window.loginGoogle = function() { const provider = new firebase.auth.GoogleAuthProvider(); document.getElementById('loginCard').style.display = 'none'; document.getElementById('loginLoader').style.display = 'block'; auth.signInWithPopup(provider).catch(() => { document.getElementById('loginLoader').style.display = 'none'; document.getElementById('loginCard').style.display = 'block'; document.getElementById('login-error').style.display = 'block'; }); }
 window.fazerLogout = function() { auth.signOut(); }
 window.switchSection = function(idModulo, btnElement) { document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active')); document.querySelectorAll('.btn-sidebar').forEach(el => el.classList.remove('active')); document.getElementById(idModulo).classList.add('active'); btnElement.classList.add('active'); }
 
-// ==========================================
-// ESTRELAS E VALIDAÇÃO EM LOTE
-// ==========================================
 let militaresEstrelasData = [];
 function escutarCargos() { db.collection("sistema").doc("cargos").onSnapshot((doc) => { if (doc.exists && doc.data().dados) { try { cargosMap = JSON.parse(doc.data().dados); renderTabelaEstrelas(); } catch(e) {} } }); }
 function escutarMilitaresEstrelas() { db.collection("militares").onSnapshot((snapshot) => { militaresEstrelasData = []; snapshot.forEach((docSnap) => { militaresEstrelasData.push({ id: docSnap.id, ...docSnap.data() }); }); renderTabelaEstrelas(); }); }
@@ -83,14 +87,13 @@ function renderTabelaEstrelas() {
 
 function registrarLogEstrela(bene, acao, idProm, detalhes) { db.collection("logs_estrelas").add({ timestamp: new Date().getTime(), data_hora: new Date().toLocaleString('pt-BR'), autor: usuarioLogadoNick, beneficiado: bene, acao: acao, id_promocao: idProm || '-', detalhes: detalhes }); }
 
-// LOTE DE VALIDAÇÕES
+// LOTE
 window.buscarPromocoesLote = async function() {
     let dateVal = document.getElementById('lote-data').value;
     if(!dateVal) return window.mostrarToast("Selecione uma data para a validação.", "error");
 
     let [y, m, d] = dateVal.split('-'); let dataBr = `${d}/${m}/${y}`;
-    let excluidosStr = document.getElementById('lote-excluidos').value;
-    let excluidosArr = excluidosStr.split(',').map(s => s.trim()).filter(s => s !== "");
+    let excluidosStr = document.getElementById('lote-excluidos').value; let excluidosArr = excluidosStr.split(',').map(s => s.trim()).filter(s => s !== "");
 
     let docSnap = await db.collection("sistema").doc("promocoes").get();
     if(!docSnap.exists) return window.customAlert("A planilha oficial ainda não enviou os dados de promoções para o sistema.", "Erro de Sincronização");
@@ -118,40 +121,22 @@ window.confirmarLote = async function(contagem, idsColetados) {
         let qtd = contagem[nick];
         let officialNick = Object.keys(cargosMap).find(k => k.toLowerCase() === nick.toLowerCase());
         let dbNick = officialNick || nick;
-
         let ref = db.collection("militares").doc(dbNick);
         let docM = await ref.get();
-        
         let p = 0; let e = 0; let pr = 0; let status = 'Ativo';
-        if(docM.exists) {
-            let dados = docM.data();
-            if(dados.status === 'Suspenso') continue; 
-            p = dados.promocoes_realizadas || 0; e = dados.estrelas || 0; pr = dados.premios_acumulados || 0; status = dados.status;
-        }
+        if(docM.exists) { let dados = docM.data(); if(dados.status === 'Suspenso') continue; p = dados.promocoes_realizadas || 0; e = dados.estrelas || 0; pr = dados.premios_acumulados || 0; status = dados.status; }
 
-        let estrelasAntes = e;
-        p += qtd;
-        let estrelasGanhas = Math.floor(p / 3);
-        p = p % 3; 
-        e += estrelasGanhas;
+        let estrelasAntes = e; p += qtd; let estrelasGanhas = Math.floor(p / 3); p = p % 3; e += estrelasGanhas;
+        let detailLog = `Validou ${qtd} promoção(ões). `; if(estrelasGanhas > 0) detailLog += `Conquistou ${estrelasGanhas} estrela(s)! `;
 
-        let detailLog = `Validou ${qtd} promoção(ões). `;
-        if(estrelasGanhas > 0) detailLog += `Conquistou ${estrelasGanhas} estrela(s)! `;
-
-        // Aviso visual sem resetar a pontuação automaticamente
-        let atingiuPremio = Math.floor(estrelasAntes / 10) < Math.floor(e / 10);
-        if (atingiuPremio) {
+        if (Math.floor(estrelasAntes / 10) < Math.floor(e / 10)) { 
              window.customAlert(`🏅 O policial ${dbNick} acaba de atingir ${e} estrelas no sistema!<br><br>Avise o Comando para realizar o pagamento oficial destas 10 estrelas.`, "Aguardando Pagamento!");
              detailLog += " Atingiu cota para prêmio. (Aguardando Comando)";
         }
-
         await ref.set({ nome: dbNick, status: status, promocoes_realizadas: p, estrelas: e, premios_acumulados: pr }, {merge:true});
         registrarLogEstrela(dbNick, "Validação em Lote", idLoteStr, detailLog);
     }
-
-    window.mostrarToast("Lote processado com sucesso!", "success");
-    document.getElementById('resultado-lote').style.display = 'none';
-    document.getElementById('lote-data').value = ''; document.getElementById('lote-excluidos').value = '';
+    window.mostrarToast("Lote processado com sucesso!", "success"); document.getElementById('resultado-lote').style.display = 'none'; document.getElementById('lote-data').value = ''; document.getElementById('lote-excluidos').value = '';
 }
 
 function escutarLogsEstrelas() {
@@ -165,9 +150,6 @@ function escutarLogsEstrelas() {
     });
 }
 
-// ==========================================
-// DASHBOARD & MULTI-EVENTOS
-// ==========================================
 window.abrirDashboard = function() { document.getElementById('modal-dashboard').style.display = 'flex'; renderAdminEventosList(); }
 window.fecharDashboard = function() { document.getElementById('modal-dashboard').style.display = 'none'; }
 function formatarDataBR(dataStr) { if(!dataStr) return ""; let d = new Date(dataStr + "T00:00:00"); return d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}); }
@@ -194,6 +176,13 @@ function escutarConfigDashboard() {
             if(nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER') {
                 let tg = document.getElementById('dash-toggle-evento'); if(tg) tg.checked = eventoAtivo; let ml = document.getElementById('dash-mult-evento'); if(ml) ml.value = eventoMult; let pr = document.getElementById('dash-txt-patrocinio'); if(pr) pr.value = d.textoPatrocinio || '';
             }
+            
+            // Oculta botão de PONTOS EXTRAS se não houver evento ativo
+            let btnPE = document.getElementById('btn-pontos-extras');
+            if(btnPE && (nivelUsuarioGlobal === 'LIDER' || nivelUsuarioGlobal === 'VICE-LIDER')) {
+                btnPE.style.display = eventoAtivo ? 'inline-flex' : 'none';
+            }
+
             let banner = document.getElementById('evento-banner'); if(eventoAtivo && eventoMult > 1) { banner.style.display = 'flex'; } else { banner.style.display = 'none'; eventoMult = 1; }
             document.getElementById('ui-txt-patrocinio').innerText = d.textoPatrocinio || 'Deseja patrocinar algum dos eventos e ajudar a divisão? Procure a Liderança!';
 
@@ -223,20 +212,16 @@ function escutarConfigDashboard() {
     });
 }
 
-// PONTOS EXTRAS
 window.abrirModalPontosExtras = function() { document.getElementById('modal-pontos-extras').style.display = 'flex'; let sel = document.getElementById('pe-select-membro'); sel.innerHTML = '<option value="" disabled selected>Selecione...</option>'; [...membrosDataArray].sort((a,b) => a.nick.localeCompare(b.nick)).forEach(m => { sel.innerHTML += `<option value="${m.nick}">${m.nick}</option>`; }); renderTabelaPontosExtras(); }
 window.fecharModalPontosExtras = function() { document.getElementById('modal-pontos-extras').style.display = 'none'; }
 window.salvarPontoExtra = function() { let nick = document.getElementById('pe-select-membro').value; let pts = parseInt(document.getElementById('pe-input-pontos').value); if(!nick || isNaN(pts)) return window.mostrarToast("Selecione um membro e digite a pontuação.", "error"); pontosExtrasMap[nick] = pts; db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, {merge:true}).then(() => { document.getElementById('pe-input-pontos').value = ''; window.mostrarToast(`+${pts} pontos para ${nick}`, "success"); }); }
 window.removerPontoExtra = function(nick) { delete pontosExtrasMap[nick]; db.collection("sistema").doc("config_metas").set({ pontosExtras: pontosExtrasMap }, {merge:true}); }
 function renderTabelaPontosExtras() { let tbody = document.querySelector('#tb-pontos-extras tbody'); tbody.innerHTML = ''; for(let n in pontosExtrasMap) { tbody.innerHTML += `<tr><td>${n}</td><td style="text-align:center; color:var(--sup-neon); font-weight:bold;">+${pontosExtrasMap[n]}</td><td style="text-align:right;"><button class="btn-admin-icon btn-admin-del" onclick="window.removerPontoExtra('${n}')"><i class="fas fa-trash"></i></button></td></tr>`; } if(Object.keys(pontosExtrasMap).length === 0) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-sub);">Nenhum ponto extra.</td></tr>'; }
 
-// ==========================================
-// ARRASTAR E REDIMENSIONAR
-// ==========================================
 function aplicarPosicoes() { for(let id in layoutConfig) { if(id === 'sponsorInner') continue; let el = document.getElementById(id); if(el) { if(layoutConfig[id].left) el.style.left = layoutConfig[id].left; if(layoutConfig[id].top) el.style.top = layoutConfig[id].top; if(layoutConfig[id].width) el.style.width = layoutConfig[id].width; } } aplicarSponsorInner(); }
 function aplicarSponsorInner() { let conf = layoutConfig['sponsorInner'] || {width: '60px', left: '0px', top: '-10px'}; document.querySelectorAll('.sponsor-avatar img').forEach(img => { if(conf.left) img.style.left = conf.left; if(conf.top) img.style.top = conf.top; if(conf.width) img.style.width = conf.width; }); }
 function carregarLayoutConfig() { db.collection("sistema").doc("config_layout").get().then((doc) => { if(doc.exists && doc.data().posicoes) { let loaded = doc.data().posicoes; for(let k in loaded) { layoutConfig[k] = { ...layoutConfig[k], ...loaded[k] }; } } aplicarPosicoes(); }); }
-window.savePositions = function() { db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, {merge: true}).then(() => { window.mostrarToast("Posições salvas!", "success"); if(isEditMode) window.toggleEditMode(); }); }
+window.savePositions = function() { db.collection("sistema").doc("config_layout").set({ posicoes: layoutConfig }, {merge: true}).then(() => { window.mostrarToast("Posições salvas!", "success"); if(isEditMode) window.toggleEditMode(); }).catch((e) => window.mostrarToast("Erro ao salvar posições: " + e.message, "error")); }
 
 window.toggleEditMode = function() {
     isEditMode = !isEditMode; let btn = document.getElementById('btn-edit-pos'); let dica = document.getElementById('dica-resize'); let elsDrag = document.querySelectorAll('.draggable-item'); let elsSponImg = document.querySelectorAll('.sponsor-avatar img'); let elsPrize = document.querySelectorAll('.resizable-prize'); let areaDet = document.getElementById('area-detalhes-membro');
@@ -256,67 +241,48 @@ window.toggleEditMode = function() {
 function setupPrizesResizable() { document.querySelectorAll('.resizable-prize').forEach(img => { if(img.dataset.dragReady) return; img.dataset.dragReady = "true"; img.ondragstart = () => false; img.addEventListener('wheel', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let w = parseFloat(img.style.width) || img.offsetWidth; w += e.deltaY < 0 ? 5 : -5; if(w < 15) w = 15; img.style.width = w + 'px'; layoutConfig[img.id] = layoutConfig[img.id] || {}; layoutConfig[img.id].width = w + 'px'; }, { passive: false }); }); }
 function setupAllDraggables() { document.querySelectorAll('.draggable-item').forEach(el => { if(el.dataset.dragReady) return; el.dataset.dragReady = "true"; el.ondragstart = () => false; el.addEventListener('mousedown', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let startX = e.clientX; let startY = e.clientY; let startLeft = el.offsetLeft; let startTop = el.offsetTop; const onMouseMove = (mEv) => { mEv.preventDefault(); el.style.left = (startLeft + (mEv.clientX - startX)) + 'px'; el.style.top = (startTop + (mEv.clientY - startY)) + 'px'; }; const onMouseUp = () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); layoutConfig[el.id] = layoutConfig[el.id] || {}; layoutConfig[el.id].left = el.style.left; layoutConfig[el.id].top = el.style.top; }; document.addEventListener('mousemove', onMouseMove); document.addEventListener('mouseup', onMouseUp); }); el.addEventListener('wheel', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let w = parseFloat(window.getComputedStyle(el).width) || el.offsetWidth; w += e.deltaY < 0 ? 5 : -5; if(w < 15) w = 15; el.style.width = w + 'px'; layoutConfig[el.id] = layoutConfig[el.id] || {}; layoutConfig[el.id].width = el.style.width; }, { passive: false }); }); }
 
-// ==========================================
-// METAS E PÓDIO
-// ==========================================
-function escutarMetasDoFirebase() {
-    db.collection("sistema").doc("metas").onSnapshot((doc) => {
-        if (doc.exists && doc.data().dados) {
-            let rows = []; try { rows = JSON.parse(doc.data().dados); } catch(e) { return; }
-            if(rows.length > 17 && rows[17][1]) document.getElementById('meta-week-title').innerText = rows[17][1];
-            membrosDataArray = []; let sponsorsList = [];
-            for(let i = 3; i < rows.length; i++) { if(rows[i][15]) sponsorsList.push(rows[i][15]); if(rows[i][16]) sponsorsList.push(rows[i][16]); if(rows[i][17]) sponsorsList.push(rows[i][17]); }
-            renderSponsors(sponsorsList);
-            for(let i = 20; i < rows.length; i++) {
-                if(!rows[i][3]) continue;
-                membrosDataArray.push({ cargo: rows[i][2] || '', nick: rows[i][3].trim(), convite: parseInt(rows[i][5]) || 0, ppp: parseInt(rows[i][6]) || 0, rels: parseInt(rows[i][7]) || 0, relcg: parseInt(rows[i][9]) || 0, avisos: parseInt(rows[i][10]) || 0, total_base: parseInt(rows[i][11]) || 0, status_base: (rows[i][12] || '').toString().trim() });
-            }
-            popularSelectMembros(); processarPodio();
-        }
-    });
-}
-function renderSponsors(lista) { let unique = [...new Set(lista.filter(n => n.trim() !== ''))]; let container = document.getElementById('sponsors-container'); container.innerHTML = ''; unique.forEach(nick => { container.innerHTML += `<div class="sponsor-avatar" title="${nick.trim()}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick.trim()}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div>`; }); aplicarSponsorInner(); document.querySelectorAll('.sponsor-avatar img').forEach(img => { if (img.dataset.dragReady) return; img.dataset.dragReady = "true"; img.ondragstart = () => false; img.addEventListener('mousedown', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let sX = e.clientX; let sY = e.clientY; let sL = img.offsetLeft; let sT = img.offsetTop; const onMv = (mEv) => { mEv.preventDefault(); layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {}; layoutConfig['sponsorInner'].left = (sL + (mEv.clientX - sX)) + 'px'; layoutConfig['sponsorInner'].top = (sT + (mEv.clientY - sY)) + 'px'; aplicarSponsorInner(); }; const onUp = () => { document.removeEventListener('mousemove', onMv); document.removeEventListener('mouseup', onUp); }; document.addEventListener('mousemove', onMv); document.addEventListener('mouseup', onUp); }); img.addEventListener('wheel', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let w = parseFloat(window.getComputedStyle(img).width) || img.offsetWidth; w += e.deltaY < 0 ? 3 : -3; if(w < 10) w = 10; layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {}; layoutConfig['sponsorInner'].width = w + 'px'; aplicarSponsorInner(); }, { passive: false }); if(isEditMode) img.classList.add('sponsor-edit', 'edit-mode'); }); }
+function escutarMetasDoFirebase() { db.collection("sistema").doc("metas").onSnapshot((doc) => { if (doc.exists && doc.data().dados) { let rows = []; try { rows = JSON.parse(doc.data().dados); } catch(e) { return; } if(rows.length > 17 && rows[17][1]) document.getElementById('meta-week-title').innerText = rows[17][1]; membrosDataArray = []; let sponsorsList = []; for(let i = 3; i < rows.length; i++) { if(rows[i][15]) sponsorsList.push(rows[i][15]); if(rows[i][16]) sponsorsList.push(rows[i][16]); if(rows[i][17]) sponsorsList.push(rows[i][17]); } renderSponsors(sponsorsList); for(let i = 20; i < rows.length; i++) { if(!rows[i][3]) continue; membrosDataArray.push({ cargo: rows[i][2] || '', nick: rows[i][3].trim(), convite: parseInt(rows[i][5]) || 0, ppp: parseInt(rows[i][6]) || 0, rels: parseInt(rows[i][7]) || 0, relcg: parseInt(rows[i][9]) || 0, avisos: parseInt(rows[i][10]) || 0, total_base: parseInt(rows[i][11]) || 0, status_base: (rows[i][12] || '').toString().trim() }); } popularSelectMembros(); processarPodio(); } }); }
+function renderSponsors(lista) { let unique = [...new Set(lista.filter(n => n.trim() !== ''))]; let container = document.getElementById('sponsors-container'); container.innerHTML = ''; unique.forEach(nick => { container.innerHTML += `<div class="sponsor-item" style="display:flex; flex-direction:column; align-items:center; gap:5px;"><div class="sponsor-avatar" title="${nick.trim()}"><img src="https://www.habbo.com.br/habbo-imaging/avatarimage?user=${nick.trim()}&action=std&direction=2&head_direction=2&gesture=sml&size=b" draggable="false"></div><span style="color:var(--sup-neon); font-size:11px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">${nick.trim()}</span></div>`; }); aplicarSponsorInner(); document.querySelectorAll('.sponsor-avatar img').forEach(img => { if (img.dataset.dragReady) return; img.dataset.dragReady = "true"; img.ondragstart = () => false; img.addEventListener('mousedown', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let sX = e.clientX; let sY = e.clientY; let sL = img.offsetLeft; let sT = img.offsetTop; const onMv = (mEv) => { mEv.preventDefault(); layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {}; layoutConfig['sponsorInner'].left = (sL + (mEv.clientX - sX)) + 'px'; layoutConfig['sponsorInner'].top = (sT + (mEv.clientY - sY)) + 'px'; aplicarSponsorInner(); }; const onUp = () => { document.removeEventListener('mousemove', onMv); document.removeEventListener('mouseup', onUp); }; document.addEventListener('mousemove', onMv); document.addEventListener('mouseup', onUp); }); img.addEventListener('wheel', (e) => { if(!isEditMode) return; e.preventDefault(); e.stopPropagation(); let w = parseFloat(window.getComputedStyle(img).width) || img.offsetWidth; w += e.deltaY < 0 ? 3 : -3; if(w < 10) w = 10; layoutConfig['sponsorInner'] = layoutConfig['sponsorInner'] || {}; layoutConfig['sponsorInner'].width = w + 'px'; aplicarSponsorInner(); }, { passive: false }); if(isEditMode) img.classList.add('sponsor-edit', 'edit-mode'); }); }
 function popularSelectMembros() { let sel = document.getElementById('select-membro'); let valAtual = sel.value; sel.innerHTML = '<option value="" disabled selected>Selecione um membro...</option>'; let sorted = [...membrosDataArray].sort((a,b) => a.nick.localeCompare(b.nick)); sorted.forEach(m => { sel.innerHTML += `<option value="${m.nick}">${m.cargo} ${m.nick}</option>`; }); if(valAtual) sel.value = valAtual; }
 function getPontuacaoFinal(m) { return (m.total_base * eventoMult) + (pontosExtrasMap[m.nick] || 0); }
-function processarPodio() {
-    if(isEditMode) return; 
-    let a1 = document.getElementById('avatar-1'); let m1 = document.getElementById('medal-1'); let n1 = document.getElementById('nick-1'); let a2 = document.getElementById('avatar-2'); let m2 = document.getElementById('medal-2'); let n2 = document.getElementById('nick-2'); let ae1 = document.getElementById('avatar-empate-1'); let te1 = document.getElementById('txt-empate-1'); let ae2 = document.getElementById('avatar-empate-2'); let te2 = document.getElementById('txt-empate-2');
-    [a1,m1,n1,a2,m2,n2,ae1,te1,ae2,te2].forEach(el => el.style.display = 'none');
-    if(membrosDataArray.length === 0) return;
-    let top = [...membrosDataArray].sort((a,b) => getPontuacaoFinal(b) - getPontuacaoFinal(a)); let p1 = getPontuacaoFinal(top[0]); let p2 = (top.length > 1) ? getPontuacaoFinal(top[1]) : 0;
-    if(top.length >= 2 && p1 > 0 && p1 === p2) { ae1.src = ae2.src = "https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b"; [ae1,te1,ae2,te2].forEach(el => el.style.display = 'block'); } else if(top.length > 0 && p1 > 0) { a1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; n1.innerText = top[0].nick; [a1,m1,n1].forEach(el => el.style.display = 'block'); if(top.length > 1 && p2 > 0) { a2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; n2.innerText = top[1].nick; [a2,m2,n2].forEach(el => el.style.display = 'block'); } }
-}
-window.renderMemberDetails = function() {
-    let nick = document.getElementById('select-membro').value; let m = membrosDataArray.find(x => x.nick === nick); if(!m) return;
-    document.getElementById('area-detalhes-membro').style.display = 'flex'; setTimeout(() => { document.getElementById('area-detalhes-membro').style.opacity = '1'; }, 50);
-    let tCalc = getPontuacaoFinal(m); let ptsExtra = pontosExtrasMap[m.nick] || 0;
-    document.getElementById('avatar-selecionado').src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${m.nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`;
-    document.getElementById('det-total').innerHTML = `<span>${tCalc}</span>` + (ptsExtra > 0 ? `<span style="font-size:16px; color:#4caf50; font-weight:normal;">(+${ptsExtra} bônus)</span>` : '');
-    document.getElementById('det-convite').innerText = m.convite * eventoMult; document.getElementById('det-ppp').innerText = m.ppp * eventoMult; document.getElementById('det-rels').innerText = m.rels * eventoMult; document.getElementById('det-relcg').innerText = m.relcg * eventoMult; document.getElementById('det-avisos').innerText = m.avisos * eventoMult;
-    let stEl = document.getElementById('det-status'); let sFinal = m.status_base; if(tCalc >= 5) sFinal = "CUMPRIDA"; stEl.innerText = sFinal; stEl.style.color = sFinal.toLowerCase().includes('não') ? '#ef4444' : '#4caf50';
-}
+function processarPodio() { if(isEditMode) return; let a1 = document.getElementById('avatar-1'); let m1 = document.getElementById('medal-1'); let n1 = document.getElementById('nick-1'); let a2 = document.getElementById('avatar-2'); let m2 = document.getElementById('medal-2'); let n2 = document.getElementById('nick-2'); let ae1 = document.getElementById('avatar-empate-1'); let te1 = document.getElementById('txt-empate-1'); let ae2 = document.getElementById('avatar-empate-2'); let te2 = document.getElementById('txt-empate-2'); [a1,m1,n1,a2,m2,n2,ae1,te1,ae2,te2].forEach(el => el.style.display = 'none'); if(membrosDataArray.length === 0) return; let top = [...membrosDataArray].sort((a,b) => getPontuacaoFinal(b) - getPontuacaoFinal(a)); let p1 = getPontuacaoFinal(top[0]); let p2 = (top.length > 1) ? getPontuacaoFinal(top[1]) : 0; if(top.length >= 2 && p1 > 0 && p1 === p2) { ae1.src = ae2.src = "https://www.habbo.com.br/habbo-imaging/avatarimage?user=DIC-Sp&action=std&direction=2&head_direction=2&gesture=sml&size=b"; [ae1,te1,ae2,te2].forEach(el => el.style.display = 'block'); } else if(top.length > 0 && p1 > 0) { a1.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[0].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; n1.innerText = top[0].nick; [a1,m1,n1].forEach(el => el.style.display = 'block'); if(top.length > 1 && p2 > 0) { a2.src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${top[1].nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; n2.innerText = top[1].nick; [a2,m2,n2].forEach(el => el.style.display = 'block'); } } }
+window.renderMemberDetails = function() { let nick = document.getElementById('select-membro').value; let m = membrosDataArray.find(x => x.nick === nick); if(!m) return; document.getElementById('area-detalhes-membro').style.display = 'flex'; setTimeout(() => { document.getElementById('area-detalhes-membro').style.opacity = '1'; }, 50); let tCalc = getPontuacaoFinal(m); let ptsExtra = pontosExtrasMap[m.nick] || 0; document.getElementById('avatar-selecionado').src = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${m.nick}&action=std&direction=2&head_direction=2&gesture=sml&size=b`; document.getElementById('det-total').innerHTML = `<span>${tCalc}</span>` + (ptsExtra > 0 ? `<span style="font-size:16px; color:#4caf50; font-weight:normal;">(+${ptsExtra} bônus)</span>` : ''); document.getElementById('det-convite').innerText = m.convite * eventoMult; document.getElementById('det-ppp').innerText = m.ppp * eventoMult; document.getElementById('det-rels').innerText = m.rels * eventoMult; document.getElementById('det-relcg').innerText = m.relcg * eventoMult; document.getElementById('det-avisos').innerText = m.avisos * eventoMult; let stEl = document.getElementById('det-status'); let sFinal = m.status_base; if(tCalc >= 5) sFinal = "CUMPRIDA"; stEl.innerText = sFinal; stEl.style.color = sFinal.toLowerCase().includes('não') ? '#ef4444' : '#4caf50'; }
 
-// ==========================================
-// PRIVACIDADE, AVAIS E ACESSOS
-// ==========================================
 function carregarPrivacidade() { db.collection("sistema").doc("config_geral").get().then((doc) => { let htmlPadrao = `<p>Escreva aqui a Política de Privacidade.</p>`; if (doc.exists && doc.data().textoPrivacidade) document.getElementById('editor-privacidade').innerHTML = doc.data().textoPrivacidade; else document.getElementById('editor-privacidade').innerHTML = htmlPadrao; }); }
 window.salvarPrivacidade = function() { db.collection("sistema").doc("config_geral").set({ textoPrivacidade: document.getElementById('editor-privacidade').innerHTML }, { merge: true }).then(() => window.mostrarToast("Política de Privacidade salva!", "success")); }
+window.processarCalculo = function() { const d1 = document.getElementById('data-login').value; const d2 = document.getElementById('data-aval').value; const dAval = parseInt(document.getElementById('dias-aval').value); const d3 = document.getElementById('data-consulta').value; if (!d1 || !d2 || isNaN(dAval) || !d3) return window.customAlert("Preencha todos os campos corretamente.", "Atenção"); const u = new Date(d1+'T00:00:00'); const i = new Date(d2+'T00:00:00'); const c = new Date(d3+'T00:00:00'); const f = new Date(i); f.setDate(i.getDate() + dAval - 1); const UM_DIA = 1000*60*60*24; const dif = (ant, nov) => Math.floor((nov - ant)/UM_DIA); let m = ""; if (u > f) { m = `Aval obsoleto (terminou antes do último login). Ausência de <strong>${Math.max(0, dif(u,c))} dia(s)</strong>.`; } else if (c <= i) { m = `O aval ainda não começou. Ausência normal de <strong>${Math.max(0, dif(u,c))} dia(s)</strong>.`; } else { let a1 = Math.max(0, dif(u,i) - 1); if(c > f) { let a2 = Math.max(0, dif(f,c)); m = `Ausência pré-aval: <strong>${a1} dia(s)</strong><br>Ausência pós-aval: <strong>${a2} dia(s)</strong><br><span style="display:block; margin-top:10px;">Total: <strong>${a1+a2} dia(s)</strong></span>`; } else { m = `Militar em período de aval.<br>Ausência antes do aval: <strong>${a1} dia(s)</strong>.`; } } document.getElementById('texto-resultado').innerHTML = m; document.getElementById('resultado-aval').style.display = 'block'; }
 
-window.processarCalculo = function() {
-    const d1 = document.getElementById('data-login').value; const d2 = document.getElementById('data-aval').value; const dAval = parseInt(document.getElementById('dias-aval').value); const d3 = document.getElementById('data-consulta').value;
-    if (!d1 || !d2 || isNaN(dAval) || !d3) return window.customAlert("Preencha todos os campos corretamente.", "Atenção");
-    const u = new Date(d1+'T00:00:00'); const i = new Date(d2+'T00:00:00'); const c = new Date(d3+'T00:00:00'); const f = new Date(i); f.setDate(i.getDate() + dAval - 1);
-    const UM_DIA = 1000*60*60*24; const dif = (ant, nov) => Math.floor((nov - ant)/UM_DIA); let m = "";
-    
-    if (u > f) { m = `Aval obsoleto (terminou antes do último login). Ausência de <strong>${Math.max(0, dif(u,c))} dia(s)</strong>.`; }
-    else if (c <= i) { m = `O aval ainda não começou. Ausência normal de <strong>${Math.max(0, dif(u,c))} dia(s)</strong>.`; } 
-    else { let a1 = Math.max(0, dif(u,i) - 1); if(c > f) { let a2 = Math.max(0, dif(f,c)); m = `Ausência pré-aval: <strong>${a1} dia(s)</strong><br>Ausência pós-aval: <strong>${a2} dia(s)</strong><br><span style="display:block; margin-top:10px;">Total: <strong>${a1+a2} dia(s)</strong></span>`; } else { m = `Militar em período de aval.<br>Ausência antes do aval: <strong>${a1} dia(s)</strong>.`; } }
-    document.getElementById('texto-resultado').innerHTML = m; document.getElementById('resultado-aval').style.display = 'block';
+function renderTabelaAcessos() { 
+    var tbody = document.querySelector('#tbAcessos tbody'); tbody.innerHTML = ''; 
+    let rendered = new Set();
+    window.acessosData.forEach(item => { tbody.appendChild(criarRowAcesso(item, 'manual')); rendered.add(item.email.toLowerCase()); });
+    for(let email in planilhaAcessos) {
+        if(!rendered.has(email.toLowerCase())) {
+            let item = { email: email, nick: planilhaAcessos[email].nick, nivel: planilhaAcessos[email].nivel };
+            tbody.appendChild(criarRowAcesso(item, 'planilha'));
+        }
+    }
 }
 
-function renderTabelaAcessos() { var tbody = document.querySelector('#tbAcessos tbody'); tbody.innerHTML = ''; acessosData.forEach(item => tbody.appendChild(criarRowAcesso(item))); }
-function criarRowAcesso(item) { var tr = document.createElement('tr'); let sLider = item.nivel === 'LIDER' ? 'selected' : ''; let sVice = item.nivel === 'VICE-LIDER' ? 'selected' : ''; let sSub = item.nivel === 'SUB-LIDER' ? 'selected' : ''; let sSup = item.nivel === 'SUPERVISOR' ? 'selected' : ''; let hideAcoes = (nivelUsuarioGlobal === 'VICE-LIDER' && item.nivel === 'LIDER') ? 'display:none;' : ''; tr.innerHTML = `<td><input type="text" class="admin-input inp-email" value="${item.email || ''}" readonly></td><td><input type="text" class="admin-input inp-nick" value="${item.nick || ''}" readonly></td><td><select class="admin-input inp-nivel" disabled><option value="LIDER" ${sLider}>Líder</option><option value="VICE-LIDER" ${sVice}>Vice-Líder</option><option value="SUB-LIDER" ${sSub}>Sub-Líder</option><option value="SUPERVISOR" ${sSup}>Supervisor</option></select></td><td class="action-cell" style="${hideAcoes}"><button class="btn-admin-icon btn-admin-edit" onclick="window.toggleEditRow(this)" title="Editar"><i class="fas fa-pencil-alt"></i></button><button class="btn-admin-icon btn-admin-del" onclick="this.closest('tr').remove()" title="Excluir"><i class="fas fa-trash"></i></button></td>`; return tr; }
-window.addLinhaAcesso = function() { var tbody = document.querySelector('#tbAcessos tbody'); var tr = criarRowAcesso({ email: '', nick: '', nivel: 'SUPERVISOR' }); tbody.appendChild(tr); window.toggleEditRow(tr.querySelector('.btn-admin-edit')); }
+function criarRowAcesso(item, origem) { 
+    var tr = document.createElement('tr'); 
+    let sL = item.nivel === 'LIDER' ? 'selected' : ''; let sV = item.nivel === 'VICE-LIDER' ? 'selected' : ''; let sS = item.nivel === 'SUB-LIDER' ? 'selected' : ''; let sSup = item.nivel === 'SUPERVISOR' ? 'selected' : ''; let hideAcoes = (nivelUsuarioGlobal === 'VICE-LIDER' && item.nivel === 'LIDER') ? 'display:none;' : ''; 
+    let tBadge = origem === 'planilha' ? '<span style="background:rgba(251,191,36,0.2); color:var(--sup-neon); padding:2px 6px; border-radius:4px; font-size:10px; margin-left:8px;">PLANILHA</span>' : '<span style="background:rgba(76,175,80,0.2); color:#4caf50; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:8px;">MANUAL</span>';
+    let acoes = origem === 'planilha' ? '<span style="color:#888; font-size:11px;">Apenas Planilha</span>' : `<button class="btn-admin-icon btn-admin-edit" onclick="window.toggleEditRow(this)" title="Editar"><i class="fas fa-pencil-alt"></i></button><button class="btn-admin-icon btn-admin-del" onclick="this.closest('tr').remove()" title="Excluir"><i class="fas fa-trash"></i></button>`;
+    tr.innerHTML = `<td><input type="text" class="admin-input inp-email" value="${item.email || ''}" readonly style="width:70%; display:inline-block; margin-right:5px;">${tBadge}</td><td><input type="text" class="admin-input inp-nick" value="${item.nick || ''}" readonly></td><td><select class="admin-input inp-nivel" disabled><option value="LIDER" ${sL}>Líder</option><option value="VICE-LIDER" ${sV}>Vice-Líder</option><option value="SUB-LIDER" ${sS}>Sub-Líder</option><option value="SUPERVISOR" ${sSup}>Supervisor</option></select></td><td class="action-cell" style="${hideAcoes}" data-origem="${origem}">${acoes}</td>`; return tr; 
+}
+window.addLinhaAcesso = function() { var tbody = document.querySelector('#tbAcessos tbody'); var tr = criarRowAcesso({ email: '', nick: '', nivel: 'SUPERVISOR' }, 'manual'); tbody.appendChild(tr); window.toggleEditRow(tr.querySelector('.btn-admin-edit')); }
 window.toggleEditRow = function(btn) { var tr = btn.closest('tr'); tr.querySelectorAll('input, select').forEach(inp => inp.removeAttribute('disabled')); tr.querySelectorAll('input').forEach(inp => inp.removeAttribute('readonly')); btn.innerHTML = '<i class="fas fa-check"></i>'; btn.className = 'btn-admin-icon btn-admin-check'; btn.onclick = function() { window.confirmEditRow(btn); }; }
 window.confirmEditRow = function(btn) { var tr = btn.closest('tr'); tr.querySelectorAll('input, select').forEach(inp => inp.setAttribute('disabled', true)); tr.querySelectorAll('input').forEach(inp => inp.setAttribute('readonly', true)); btn.innerHTML = '<i class="fas fa-pencil-alt"></i>'; btn.className = 'btn-admin-icon btn-admin-edit'; btn.onclick = function() { window.toggleEditRow(btn); }; }
-window.salvarAcessos = function() { var rows = document.querySelectorAll('#tbAcessos tbody tr'); const batch = db.batch(); acessosData.forEach(ac => { batch.delete(db.collection("acessos").doc(ac.email)); }); rows.forEach(r => { var email = r.querySelector('.inp-email').value.trim().toLowerCase(); if(email) { batch.set(db.collection("acessos").doc(email), { email: email, nick: r.querySelector('.inp-nick').value.trim(), nivel: r.querySelector('.inp-nivel').value.toUpperCase() }); } }); batch.commit().then(() => { window.mostrarToast("Acessos salvos com sucesso!", "success"); }).catch((e) => { window.mostrarToast("Erro: " + e.message, "error"); }); }
+window.salvarAcessos = function() { 
+    var rows = document.querySelectorAll('#tbAcessos tbody tr'); const batch = db.batch(); 
+    window.acessosData.forEach(ac => { batch.delete(db.collection("acessos").doc(ac.email)); }); 
+    rows.forEach(r => { 
+        let isManual = r.querySelector('.action-cell').getAttribute('data-origem') === 'manual';
+        if(isManual) {
+            var email = r.querySelector('.inp-email').value.trim().toLowerCase(); 
+            if(email) { batch.set(db.collection("acessos").doc(email), { email: email, nick: r.querySelector('.inp-nick').value.trim(), nivel: r.querySelector('.inp-nivel').value.toUpperCase() }); }
+        }
+    }); 
+    batch.commit().then(() => { window.mostrarToast("Acessos manuais salvos com sucesso!", "success"); }).catch((e) => { window.mostrarToast("Erro: " + e.message, "error"); }); 
+}
