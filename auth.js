@@ -108,11 +108,9 @@ window.verificarAcessoBD = async function(email) {
                 if(menuAvais) menuAvais.style.display = 'none';
                 if(menuFeedbacks) menuFeedbacks.style.display = 'none';
                 if(menuEstrelas) menuEstrelas.style.display = 'none';
-                // System liberado! (Removido o bloqueio)
             } 
             else if (lvl === 'AUXILIAR') {
                 if(menuEstrelas) menuEstrelas.style.display = 'none';
-                // System liberado! (Removido o bloqueio)
             } 
             else if (lvl === 'SUB-LIDER') {
                 if(dragControls) dragControls.style.display = 'flex';
@@ -164,5 +162,13 @@ window.switchSection = function(idModulo, btnElement) {
     
     if(window.registrarLogAtividade) {
         window.registrarLogAtividade("Navegação de Módulo", `Acessou a aba: ${btnElement.innerText.trim()}`);
+    }
+}
+
+// NOVO: Função para abrir o System DIC num separador externo e auditar o clique
+window.abrirSystemDIC = function() {
+    window.open('https://dic.systemhb.net/divisao/supervisores', '_blank');
+    if(window.registrarLogAtividade) {
+        window.registrarLogAtividade("Acesso Externo", "Clicou para abrir o System DIC num separador novo.");
     }
 }
