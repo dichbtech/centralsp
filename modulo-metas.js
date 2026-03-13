@@ -265,14 +265,16 @@ window.escutarConfigDashboard = function() {
             window.pontosExtrasMap = d.pontosExtras || {};
             window.dashboardEventosData = d.eventos || [];
             
-            if (window.nivelUsuarioGlobal === 'LIDER' || window.nivelUsuarioGlobal === 'VICE-LIDER') {
+            // Sub-Liderança também tem acesso aos controles do Dashboard
+            if (['LIDER', 'VICE-LIDER', 'SUB-LIDER'].includes(window.nivelUsuarioGlobal)) {
                 let tg = document.getElementById('dash-toggle-evento'); if (tg) tg.checked = window.eventoAtivo;
                 let ml = document.getElementById('dash-mult-evento'); if (ml) ml.value = window.eventoMult;
                 let pr = document.getElementById('dash-txt-patrocinio'); if (pr) pr.value = d.textoPatrocinio || '';
             }
 
+            // Exibe o botão de Pontos Extras apenas se o evento estiver ativo E se tiver permissão
             let btnPE = document.getElementById('btn-pontos-extras');
-            if (btnPE && (window.nivelUsuarioGlobal === 'LIDER' || window.nivelUsuarioGlobal === 'VICE-LIDER')) {
+            if (btnPE && ['LIDER', 'VICE-LIDER', 'SUB-LIDER'].includes(window.nivelUsuarioGlobal)) {
                 btnPE.style.display = window.eventoAtivo ? 'inline-flex' : 'none';
             }
 

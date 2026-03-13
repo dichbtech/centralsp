@@ -1,4 +1,3 @@
-// O "Motor de Partida" do painel que faz a tela abrir
 window.liberarPainel = function() {
     document.getElementById('loginCard').style.display = 'none';
     document.getElementById('loginLoader').style.display = 'none';
@@ -14,17 +13,21 @@ window.liberarPainel = function() {
     const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     document.getElementById('mes-atual').innerText = meses[new Date().getMonth()] + " de " + new Date().getFullYear();
     
-    // Dispara todos os módulos para puxar dados
+    // Dispara todos os módulos globais
     window.carregarLayoutConfig();
     window.escutarCargos();
     window.escutarConfigDashboard();
     window.escutarMetasDoFirebase();
     
-    if (window.nivelUsuarioGlobal !== 'SUPERVISOR') {
+    let lvl = window.nivelUsuarioGlobal;
+    
+    // Módulo de Estrelas: Apenas Sub-Líder, Vice e Líder
+    if (['SUB-LIDER', 'VICE-LIDER', 'LIDER'].includes(lvl)) {
         window.escutarMilitaresEstrelas();
     }
     
-    if (window.nivelUsuarioGlobal === 'LIDER' || window.nivelUsuarioGlobal === 'VICE-LIDER') {
+    // Gestão de Liderança (Privacidade e Logs): Apenas Vice e Líder
+    if (['VICE-LIDER', 'LIDER'].includes(lvl)) {
         window.carregarPrivacidade();
         window.escutarLogsEstrelas();
     }
@@ -32,7 +35,6 @@ window.liberarPainel = function() {
     window.setupAllDraggables();
 }
 
-// Ouvinte de Login do Firebase
 auth.onAuthStateChanged((user) => {
     if (user) {
         window.usuarioLogadoEmail = user.email.toLowerCase();
@@ -41,61 +43,42 @@ auth.onAuthStateChanged((user) => {
         document.getElementById('appWrapper').style.display = 'none';
         document.getElementById('loginCard').style.display = 'block';
         document.getElementById('loginScreen').style.display = 'flex';
-        setTimeout(() => {
-            document.getElementById('loginScreen').style.opacity = '1';
-        }, 10);
+        setTimeout(() => { document.getElementById('loginScreen').style.opacity = '1'; }, 10);
     }
 });
 
-// Verificação de Segurança das Permissões
 window.verificarAcessoBD = async function(email) {
     try {
         let authEmail = email.toLowerCase().trim();
         
         let planSnap = await db.collection("sistema").doc("acessos_planilha").get();
         if (planSnap.exists && planSnap.data().dados) {
-            try {
-                window.planilhaAcessos = JSON.parse(planSnap.data().dados);
-            } catch (e) {
-                console.error("Erro JSON", e);
-            }
+            try { window.planilhaAcessos = JSON.parse(planSnap.data().dados); } catch (e) {}
         }
         
         let manualSnap = await db.collection("acessos").get();
         window.acessosData = [];
-        manualSnap.forEach(doc => {
-            window.acessosData.push({ id: doc.id, ...doc.data() });
-        });
+        manualSnap.forEach(doc => { window.acessosData.push({ id: doc.id, ...doc.data() }); });
 
         if (window.acessosData.length === 0 && Object.keys(window.planilhaAcessos).length === 0) {
             await db.collection("acessos").doc(authEmail).set({ email: authEmail, nick: 'Admin', nivel: "LIDER" });
-            window.location.reload();
-            return;
+            window.location.reload(); return;
         }
 
         let userManual = window.acessosData.find(u => (u.email || '').toLowerCase().trim() === authEmail);
         let userPlan = null;
         for (let key in window.planilhaAcessos) {
-            if (key.toLowerCase().trim() === authEmail) {
-                userPlan = window.planilhaAcessos[key];
-                break;
-            }
+            if (key.toLowerCase().trim() === authEmail) { userPlan = window.planilhaAcessos[key]; break; }
         }
 
         let autorizado = false;
 
         if (userPlan && (userPlan.nivel.includes("LIDER") || userPlan.nivel.includes("VICE"))) {
-            autorizado = true;
-            window.nivelUsuarioGlobal = userPlan.nivel;
-            window.usuarioLogadoNick = userPlan.nick;
+            autorizado = true; window.nivelUsuarioGlobal = userPlan.nivel; window.usuarioLogadoNick = userPlan.nick;
         } else if (userManual) {
-            autorizado = true;
-            window.nivelUsuarioGlobal = userManual.nivel;
-            window.usuarioLogadoNick = userManual.nick;
+            autorizado = true; window.nivelUsuarioGlobal = userManual.nivel; window.usuarioLogadoNick = userManual.nick;
         } else if (userPlan) {
-            autorizado = true;
-            window.nivelUsuarioGlobal = userPlan.nivel;
-            window.usuarioLogadoNick = userPlan.nick;
+            autorizado = true; window.nivelUsuarioGlobal = userPlan.nivel; window.usuarioLogadoNick = userPlan.nick;
         }
 
         if (autorizado) {
@@ -103,47 +86,56 @@ window.verificarAcessoBD = async function(email) {
             if (window.nivelUsuarioGlobal === 'VICELIDER') window.nivelUsuarioGlobal = 'VICE-LIDER';
             if (window.nivelUsuarioGlobal === 'SUBLIDER') window.nivelUsuarioGlobal = 'SUB-LIDER';
             
-            if (window.nivelUsuarioGlobal === 'COMANDO') {
+            let lvl = window.nivelUsuarioGlobal;
+
+            // COMANDO: Redireciona para fora da Central
+            if (lvl === 'COMANDO') {
                 window.customAlert("Acesso de Comando restrito ao Painel Público.", "Aviso");
-                setTimeout(() => {
-                    auth.signOut();
-                    window.location.href = "https://dichitech.github.io/ranking";
-                }, 3000);
+                setTimeout(() => { auth.signOut(); window.location.href = "https://dichitech.github.io/ranking"; }, 3000);
                 return;
             }
+
+            // Elementos de Menus e Controles
+            let menuAvais = document.getElementById('menu-avais');
+            let menuFeedbacks = document.getElementById('menu-feedbacks');
+            let menuEstrelas = document.getElementById('menu-estrelas');
+            let menuAdmin = document.getElementById('admin-only-menus');
             
-            if (window.nivelUsuarioGlobal === 'LIDER' || window.nivelUsuarioGlobal === 'VICE-LIDER') {
-                document.getElementById('admin-only-menus').style.display = 'flex';
-                document.getElementById('admin-drag-controls').style.display = 'flex';
-                window.renderTabelaAcessos();
+            let dragControls = document.getElementById('admin-drag-controls');
+            let btnEditPos = document.getElementById('btn-edit-pos');
+            let btnSavePos = document.querySelector('button[onclick="window.savePositions()"]');
+            let dicaResize = document.getElementById('dica-resize');
+
+            // 1. SUPERVISOR: Apenas Metas (Esconde todo o resto)
+            if (lvl === 'SUPERVISOR') {
+                if(menuAvais) menuAvais.style.display = 'none';
+                if(menuFeedbacks) menuFeedbacks.style.display = 'none';
+                if(menuEstrelas) menuEstrelas.style.display = 'none';
+            } 
+            // 2. AUXILIAR: Metas, Avais e Feedbacks (Esconde Estrelas)
+            else if (lvl === 'AUXILIAR') {
+                if(menuEstrelas) menuEstrelas.style.display = 'none';
+            } 
+            // 3. SUB-LÍDER: Metas (Com botões Extras e Dash), Avais, Feedbacks, Estrelas. (Esconde Layout/Admin)
+            else if (lvl === 'SUB-LIDER') {
+                if(dragControls) dragControls.style.display = 'flex'; // Exibe a barra, mas esconde a edição abaixo
+                if(btnEditPos) btnEditPos.style.display = 'none';
+                if(btnSavePos) btnSavePos.style.display = 'none';
+                if(dicaResize) dicaResize.style.display = 'none';
+            } 
+            // 4. LÍDER e VICE-LÍDER: Tudo liberado
+            else if (lvl === 'VICE-LIDER' || lvl === 'LIDER') {
+                if(menuAdmin) menuAdmin.style.display = 'flex';
+                if(dragControls) dragControls.style.display = 'flex';
                 
+                window.renderTabelaAcessos();
                 let boxPrivacidade = document.getElementById('box-editor-privacidade');
                 if (boxPrivacidade) {
                     boxPrivacidade.innerHTML = window.buildEditorHTML('editor-privacidade', 'Carregando...');
                 }
             }
             
-            // Regras do AUXILIAR: Libera Metas, Avais e Feedback. Bloqueia Estrelas.
-            if (window.nivelUsuarioGlobal === 'AUXILIAR') {
-                let menuEs = document.getElementById('menu-estrelas');
-                if (menuEs) menuEs.style.display = 'none';
-            }
-
-            // Regras do SUPERVISOR: Bloqueia Avais, Feedbacks e Estrelas. (Vê só Metas).
-            if (window.nivelUsuarioGlobal === 'SUPERVISOR') {
-                let menuAv = document.getElementById('menu-avais');
-                if (menuAv) menuAv.style.display = 'none';
-                
-                let menuFb = document.getElementById('menu-feedbacks');
-                if (menuFb) menuFb.style.display = 'none';
-                
-                let menuEs = document.getElementById('menu-estrelas');
-                if (menuEs) menuEs.style.display = 'none';
-            }
-            
             window.switchSection('modulo-metas', document.getElementById('menu-metas'));
-            
-            // Agora ele chama a função e libera a tela
             window.liberarPainel();
         } else {
             window.customAlert(`ACESSO NEGADO.<br><br>O e-mail <b>${authEmail}</b> não foi encontrado com permissões ativas.`, "Falha de Permissão");
@@ -154,7 +146,6 @@ window.verificarAcessoBD = async function(email) {
     }
 }
 
-// Botões de Ação do Login e Menu
 window.loginGoogle = function() {
     const provider = new firebase.auth.GoogleAuthProvider();
     document.getElementById('loginCard').style.display = 'none';
@@ -167,9 +158,7 @@ window.loginGoogle = function() {
     });
 }
 
-window.fazerLogout = function() {
-    auth.signOut();
-}
+window.fazerLogout = function() { auth.signOut(); }
 
 window.switchSection = function(idModulo, btnElement) {
     document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
