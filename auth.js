@@ -9,6 +9,7 @@ window.liberarPainel = function() {
     }, 300);
     
     document.getElementById('data-consulta').valueAsDate = new Date();
+    
     const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     document.getElementById('mes-atual').innerText = meses[new Date().getMonth()] + " de " + new Date().getFullYear();
     
@@ -49,6 +50,7 @@ auth.onAuthStateChanged((user) => {
 window.verificarAcessoBD = async function(email) {
     try {
         let authEmail = email.toLowerCase().trim();
+        
         let planSnap = await window.db.collection("sistema").doc("acessos_planilha").get();
         if (planSnap.exists && planSnap.data().dados) {
             try { window.planilhaAcessos = JSON.parse(planSnap.data().dados); } catch (e) {}
@@ -106,9 +108,11 @@ window.verificarAcessoBD = async function(email) {
                 if(menuAvais) menuAvais.style.display = 'none';
                 if(menuFeedbacks) menuFeedbacks.style.display = 'none';
                 if(menuEstrelas) menuEstrelas.style.display = 'none';
+                // System liberado! (Removido o bloqueio)
             } 
             else if (lvl === 'AUXILIAR') {
                 if(menuEstrelas) menuEstrelas.style.display = 'none';
+                // System liberado! (Removido o bloqueio)
             } 
             else if (lvl === 'SUB-LIDER') {
                 if(dragControls) dragControls.style.display = 'flex';
