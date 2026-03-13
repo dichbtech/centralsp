@@ -91,7 +91,7 @@ window.verificarAcessoBD = async function(email) {
             // COMANDO: Redireciona para fora da Central
             if (lvl === 'COMANDO') {
                 window.customAlert("Acesso de Comando restrito ao Painel Público.", "Aviso");
-                setTimeout(() => { auth.signOut(); window.location.href = "https://dichbtech.github.io/ranking"; }, 3000);
+                setTimeout(() => { auth.signOut(); window.location.href = "https://dichbtech.github.io/estrelas/"; }, 3000);
                 return;
             }
 
@@ -167,3 +167,4 @@ window.switchSection = function(idModulo, btnElement) {
     btnElement.classList.add('active');
 
 }
+
