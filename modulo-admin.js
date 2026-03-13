@@ -77,6 +77,7 @@ window.criarRowAcesso = function(item, origem) {
     let sL = item.nivel === 'LIDER' ? 'selected' : '';
     let sV = item.nivel === 'VICE-LIDER' ? 'selected' : '';
     let sS = item.nivel === 'SUB-LIDER' ? 'selected' : '';
+    let sAux = item.nivel === 'AUXILIAR' ? 'selected' : '';
     let sSup = item.nivel === 'SUPERVISOR' ? 'selected' : '';
     let sC = item.nivel === 'COMANDO' ? 'selected' : '';
     
@@ -94,6 +95,7 @@ window.criarRowAcesso = function(item, origem) {
                 <option value="LIDER" ${sL}>Líder</option>
                 <option value="VICE-LIDER" ${sV}>Vice-Líder</option>
                 <option value="SUB-LIDER" ${sS}>Sub-Líder</option>
+                <option value="AUXILIAR" ${sAux}>Auxiliar</option>
                 <option value="SUPERVISOR" ${sSup}>Supervisor</option>
                 <option value="COMANDO" ${sC}>Comando</option>
             </select>

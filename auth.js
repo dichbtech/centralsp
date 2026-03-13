@@ -1,38 +1,3 @@
-// O "Motor de Partida" do painel que havia ficado de fora
-window.liberarPainel = function() {
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('loginLoader').style.display = 'none';
-    document.getElementById('loginScreen').style.opacity = '0';
-    
-    setTimeout(() => {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appWrapper').style.display = 'flex';
-    }, 300);
-    
-    document.getElementById('data-consulta').valueAsDate = new Date();
-    
-    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    document.getElementById('mes-atual').innerText = meses[new Date().getMonth()] + " de " + new Date().getFullYear();
-    
-    // Dispara todos os módulos
-    window.carregarLayoutConfig();
-    window.escutarCargos();
-    window.escutarConfigDashboard();
-    window.escutarMetasDoFirebase();
-    
-    if (window.nivelUsuarioGlobal !== 'SUPERVISOR') {
-        window.escutarMilitaresEstrelas();
-    }
-    
-    if (window.nivelUsuarioGlobal === 'LIDER' || window.nivelUsuarioGlobal === 'VICE-LIDER') {
-        window.carregarPrivacidade();
-        window.escutarLogsEstrelas();
-    }
-    
-    window.setupAllDraggables();
-}
-
-// Ouvinte de Login do Firebase
 auth.onAuthStateChanged((user) => {
     if (user) {
         window.usuarioLogadoEmail = user.email.toLowerCase();
@@ -47,7 +12,6 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// Verificação de Segurança das Permissões
 window.verificarAcessoBD = async function(email) {
     try {
         let authEmail = email.toLowerCase().trim();
@@ -67,7 +31,6 @@ window.verificarAcessoBD = async function(email) {
             window.acessosData.push({ id: doc.id, ...doc.data() });
         });
 
-        // Salva-vidas: primeiro login cria o admin
         if (window.acessosData.length === 0 && Object.keys(window.planilhaAcessos).length === 0) {
             await db.collection("acessos").doc(authEmail).set({ email: authEmail, nick: 'Admin', nivel: "LIDER" });
             window.location.reload();
@@ -104,7 +67,6 @@ window.verificarAcessoBD = async function(email) {
             if (window.nivelUsuarioGlobal === 'VICELIDER') window.nivelUsuarioGlobal = 'VICE-LIDER';
             if (window.nivelUsuarioGlobal === 'SUBLIDER') window.nivelUsuarioGlobal = 'SUB-LIDER';
             
-            // Bloqueio do Comando
             if (window.nivelUsuarioGlobal === 'COMANDO') {
                 window.customAlert("Acesso de Comando restrito ao Painel Público.", "Aviso");
                 setTimeout(() => {
@@ -125,6 +87,13 @@ window.verificarAcessoBD = async function(email) {
                 }
             }
             
+            // Regras do AUXILIAR: Libera Metas, Avais e Feedback. Bloqueia Estrelas.
+            if (window.nivelUsuarioGlobal === 'AUXILIAR') {
+                let menuEs = document.getElementById('menu-estrelas');
+                if (menuEs) menuEs.style.display = 'none';
+            }
+
+            // Regras do SUPERVISOR: Bloqueia Avais, Feedbacks e Estrelas. (Vê só Metas).
             if (window.nivelUsuarioGlobal === 'SUPERVISOR') {
                 let menuAv = document.getElementById('menu-avais');
                 if (menuAv) menuAv.style.display = 'none';
@@ -137,8 +106,6 @@ window.verificarAcessoBD = async function(email) {
             }
             
             window.switchSection('modulo-metas', document.getElementById('menu-metas'));
-            
-            // Aqui ele finalmente aciona a ignição
             window.liberarPainel();
         } else {
             window.customAlert(`ACESSO NEGADO.<br><br>O e-mail <b>${authEmail}</b> não foi encontrado com permissões ativas.`, "Falha de Permissão");
@@ -149,7 +116,6 @@ window.verificarAcessoBD = async function(email) {
     }
 }
 
-// Botões de Ação do Login e Menu
 window.loginGoogle = function() {
     const provider = new firebase.auth.GoogleAuthProvider();
     document.getElementById('loginCard').style.display = 'none';
