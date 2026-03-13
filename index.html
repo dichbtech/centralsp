@@ -205,6 +205,7 @@
         <button class="btn-sidebar" id="menu-avais" onclick="window.switchSection('modulo-avais', this)"><i class="fas fa-calculator"></i> Cálculo de Avais</button>
         <button class="btn-sidebar" id="menu-feedbacks" onclick="window.switchSection('modulo-feedbacks', this)"><i class="fas fa-comments"></i> Painel de Feedbacks</button>
         <button class="btn-sidebar" id="menu-estrelas" onclick="window.switchSection('modulo-estrelas', this)"><i class="fas fa-star"></i> Estrelas Promocionais</button>
+        <button class="btn-sidebar" id="menu-grupos" onclick="window.switchSection('modulo-grupos', this)"><i class="fas fa-users"></i> Controle de Grupos</button>
         <button class="btn-sidebar" id="menu-system" onclick="window.abrirSystemDIC()"><i class="fas fa-external-link-alt"></i> System DIC</button>
         
         <div id="admin-only-menus" style="display: none; flex-direction: column; gap: 10px;">
@@ -284,6 +285,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div id="modulo-grupos" class="admin-section" style="padding: 20px;">
+          <h3 style="margin-bottom: 15px;"><i class="fas fa-users"></i> Controle de Grupos</h3>
+          <div style="width: 100%; height: calc(100vh - 230px); background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.15); overflow: hidden;">
+            <iframe src="https://script.google.com/macros/s/AKfycbxRpzWNrcjbQMV4cgYpAUTPQVBhB2he6ft2Kvk0EA7eXdQuLzq-NUmu_24lP9wQokfP/exec" style="width: 100%; height: 100%; border: none;"></iframe>
+          </div>
         </div>
 
         <div id="modulo-logs-atividades" class="admin-section">

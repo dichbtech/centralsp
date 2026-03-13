@@ -97,6 +97,7 @@ window.verificarAcessoBD = async function(email) {
             let menuAvais = document.getElementById('menu-avais');
             let menuFeedbacks = document.getElementById('menu-feedbacks');
             let menuEstrelas = document.getElementById('menu-estrelas');
+            let menuGrupos = document.getElementById('menu-grupos');
             let menuAdmin = document.getElementById('admin-only-menus');
             
             let dragControls = document.getElementById('admin-drag-controls');
@@ -108,9 +109,11 @@ window.verificarAcessoBD = async function(email) {
                 if(menuAvais) menuAvais.style.display = 'none';
                 if(menuFeedbacks) menuFeedbacks.style.display = 'none';
                 if(menuEstrelas) menuEstrelas.style.display = 'none';
+                // Controle de Grupos agora está liberado!
             } 
             else if (lvl === 'AUXILIAR') {
                 if(menuEstrelas) menuEstrelas.style.display = 'none';
+                // Controle de Grupos agora está liberado!
             } 
             else if (lvl === 'SUB-LIDER') {
                 if(dragControls) dragControls.style.display = 'flex';
@@ -165,7 +168,6 @@ window.switchSection = function(idModulo, btnElement) {
     }
 }
 
-// NOVO: Função para abrir o System DIC num separador externo e auditar o clique
 window.abrirSystemDIC = function() {
     window.open('https://dic.systemhb.net/divisao/supervisores', '_blank');
     if(window.registrarLogAtividade) {
