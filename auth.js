@@ -91,7 +91,7 @@ window.verificarAcessoBD = async function(email) {
             // COMANDO: Redireciona para fora da Central
             if (lvl === 'COMANDO') {
                 window.customAlert("Acesso de Comando restrito ao Painel Público.", "Aviso");
-                setTimeout(() => { auth.signOut(); window.location.href = "https://dichitech.github.io/ranking"; }, 3000);
+                setTimeout(() => { auth.signOut(); window.location.href = "https://dichbtech.github.io/ranking"; }, 3000);
                 return;
             }
 
@@ -165,4 +165,5 @@ window.switchSection = function(idModulo, btnElement) {
     document.querySelectorAll('.btn-sidebar').forEach(el => el.classList.remove('active'));
     document.getElementById(idModulo).classList.add('active');
     btnElement.classList.add('active');
+
 }
