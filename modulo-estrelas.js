@@ -105,19 +105,53 @@ window.buscarPromocoesLote = async function() {
     let filtradas = promocoes.filter(p => p.data === dataBr && !excluidosArr.includes(p.id));
     if (filtradas.length === 0) return window.customAlert(`Nenhuma promoção válida encontrada para a data ${dataBr}.`, "Busca Vazia");
 
-    let contagem = {};
+    // Agrupa os IDs por promotor
+    let promotorData = {};
     let idsColetados = [];
     
     filtradas.forEach(p => {
-        contagem[p.promotor] = (contagem[p.promotor] || 0) + 1;
+        if (!promotorData[p.promotor]) promotorData[p.promotor] = [];
+        promotorData[p.promotor].push(p.id);
         idsColetados.push(p.id);
     });
 
-    let html = `<div style="color:#fff; margin-bottom:10px; font-size:15px;"><i class="fas fa-check-circle" style="color:#4caf50;"></i> ${filtradas.length} promoções válidas localizadas.</div><ul style="color:var(--text-sub); margin-bottom:15px;">`;
-    for (let nick in contagem) {
-        html += `<li><strong style="color:var(--sup-neon);">${nick}</strong>: validou ${contagem[nick]} promoção(ões)</li>`;
+    // Link geral para o System com a data buscada
+    let sysLink = `https://dic.systemhb.net/promocao?filtro%5Bdata_inicio%5D=${dateVal}&filtro%5Bdata_termino%5D=${dateVal}&filtro%5Blista%5D=todas`;
+
+    // Monta o cabeçalho do resultado
+    let html = `
+    <div style="color:#fff; margin-bottom:15px; font-size:15px; display:flex; flex-direction:column; gap:8px; background: rgba(76,175,80,0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(76,175,80,0.3);">
+        <div><i class="fas fa-check-circle" style="color:#4caf50;"></i> ${filtradas.length} promoções válidas localizadas.</div>
+        <a href="${sysLink}" target="_blank" style="color:var(--sup-neon); font-size:13px; text-decoration:none;"><i class="fas fa-external-link-alt"></i> Clique aqui para conferir promoções no system.</a>
+    </div>
+    <ul style="color:var(--text-sub); margin-bottom:15px; list-style: none; padding: 0; display:flex; flex-direction:column; gap:10px;">`;
+    
+    // Contagem simplificada que será enviada para a função de salvar
+    let contagemParaConfirmacao = {};
+
+    for (let nick in promotorData) {
+        let ids = promotorData[nick];
+        let qtd = ids.length;
+        contagemParaConfirmacao[nick] = qtd;
+        
+        // Tratamento de plural e singular
+        let txtPromo = qtd === 1 ? "promoção válida" : "promoções válidas";
+        
+        // Gera os botões clicáveis de IDs
+        let linksIDs = ids.map(id => `<a href="https://dic.systemhb.net/promocao/ver/${id}" target="_blank" style="color:var(--sup-neon); text-decoration:none; font-weight:bold; background:rgba(251,191,36,0.1); padding:3px 8px; border-radius:4px; margin-right:5px; border: 1px solid rgba(251,191,36,0.2); display:inline-block; margin-bottom:5px; transition:0.3s;" onmouseover="this.style.background='var(--sup-neon)'; this.style.color='#000';" onmouseout="this.style.background='rgba(251,191,36,0.1)'; this.style.color='var(--sup-neon)';">#${id}</a>`).join("");
+        
+        html += `
+        <li style="background:rgba(0,0,0,0.4); padding:15px; border-radius:8px; border-left:3px solid var(--sup-neon);">
+            <div style="color:#fff; font-size:15px; margin-bottom:8px;">
+                <strong style="color:var(--sup-neon); text-transform:uppercase;">${nick}</strong> efetuou ${qtd} ${txtPromo}.
+            </div>
+            <div style="font-size:12px; display:flex; flex-wrap:wrap; align-items:center;">
+                <span style="margin-right:10px;">IDs:</span> ${linksIDs}
+            </div>
+        </li>`;
     }
-    html += `</ul><button class="btn-tech btn-save" style="width:100%;" onclick='window.confirmarLote(${JSON.stringify(contagem)}, ${JSON.stringify(idsColetados)})'><i class="fas fa-check-double"></i> Atribuir Ciclos Oficiais</button>`;
+    
+    html += `</ul><button class="btn-tech btn-save" style="width:100%; margin-top:10px;" onclick='window.confirmarLote(${JSON.stringify(contagemParaConfirmacao)}, ${JSON.stringify(idsColetados)})'><i class="fas fa-check-double"></i> Atribuir Ciclos Oficiais</button>`;
 
     document.getElementById('resultado-lote').innerHTML = html;
     document.getElementById('resultado-lote').style.display = 'block';
